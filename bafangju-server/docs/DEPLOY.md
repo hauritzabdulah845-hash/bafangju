@@ -218,7 +218,12 @@ sudo bash bafangju-server/scripts/pull-deploy.sh --no-restart
 
 # 拉其它分支（如灰度）
 sudo bash bafangju-server/scripts/pull-deploy.sh --branch arena/014fb136-bafangju
+
+# 代码已是最新但想强制重新同步 + 重启（运行目录被误删、依赖装坏时用）
+sudo bash bafangju-server/scripts/pull-deploy.sh --force
 ```
+
+> 脚本自带自愈：即使 git 已是最新提交，只要 `/opt/bafangju/src/server.js` 缺失，也会自动重新同步，不会「空转退出」。
 
 ### 8.4 回滚
 
