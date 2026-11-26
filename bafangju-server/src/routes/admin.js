@@ -535,6 +535,14 @@ module.exports = function register(app, ctx) {
     } catch (e) { res.status(400).json({ error: e.message }); }
   });
 
+  // 储备金余额 + 最近流水（后台「储备金账户」面板用；此前只有 POST 划入，进面板看不到余额）
+  app.get('/api/admin/reserve', (req, res) => {
+    res.json({
+      balanceFen: quarter.reserveBalanceFen(db),
+      recent: db.reserveFlows.all().slice(-50).reverse(),
+    });
+  });
+
   app.post('/api/admin/reserve/deposit', (req, res) => {
     try {
       const flow = quarter.reserveDeposit(db, req.body);

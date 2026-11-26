@@ -195,6 +195,16 @@ document.addEventListener('click', (e) => {
   fn(el.dataset.id, cast(el.dataset.p1), cast(el.dataset.p2));
 });
 
+// 侧栏版本号：读 /api/rules/version 的规则版本（不再写死在 HTML 里，避免每次发版忘记改）
+(async function showVersion() {
+  const el = document.getElementById('appVersion');
+  if (!el) return;
+  try {
+    const r = await fetch('/api/rules/version').then((x) => x.json());
+    if (r && r.version) el.textContent = r.version;
+  } catch (e) { /* 保留静态文案 */ }
+})();
+
 // ==================== 页面导航 ====================
 let curPane = 'overview';
 const paneData = {}; // 各页数据缓存（供全局搜索过滤）
@@ -233,16 +243,50 @@ document.querySelectorAll('.sidebar .tab').forEach((t) => t.onclick = () => {
   document.getElementById('pageSub').textContent = t.dataset.sub || '';
   document.getElementById('globalSearch').value = '';
   document.getElementById('refreshHint').textContent = '';
-  const L = { overview: loadOverview, orders: loadOrders, catalog: loadCatalog, queue: loadSlots, withdraw: () => { loadWithdraws(); loadTransfers(); loadRewardWithdrawals(); }, adCenter: () => { loadAdRewardPane(); loadAds(); }, merchants: () => { loadMerchants(); loadEntryApps(); loadAlliance(); loadFeeBills(); }, users: loadAdminUsers, content: loadContent, risk: loadRisk, jobs: loadJobs, messages: loadMessages, settings: loadSettings, audit: loadAudit }[curPane];
+  syncSearchState();
+  // 每个面板都必须在这里挂加载函数：漏挂 = 进入面板后数据区永久空白（储备金/功能开关曾因此没有任何数据）
+  const L = {
+    overview: loadOverview, orders: loadOrders, catalog: loadCatalog, queue: loadSlots,
+    withdraw: () => { loadWithdraws(); loadTransfers(); loadRewardWithdrawals(); },
+    adCenter: () => { loadAdRewardPane(); loadAds(); },
+    merchants: () => { loadMerchants(); loadEntryApps(); loadAlliance(); loadFeeBills(); },
+    users: loadAdminUsers, content: loadContent, risk: loadRisk, jobs: loadJobs,
+    messages: loadMessages, settings: loadSettings, audit: loadAudit,
+    // 兜底式加载：这两个面板之前没有加载入口，切过去只见空白卡片
+    switches: () => loadSwitches(),
+    reserve: () => loadReserve(),
+  }[curPane];
   if (L) L();
 });
 function gotoPane(pane) { const tab = document.querySelector(`.sidebar .tab[data-pane="${pane}"]`); if (tab) tab.click(); }
 
-// 全局搜索：对当前页缓存数据做前端过滤（回车或输入即生效）
+// 全局搜索：仅订单 / 商品两页有数据可过滤。
+// 其它页面禁用输入框并给出提示，避免「敲了字却毫无反应」被误判为系统卡死。
+const SEARCH_PANES = { orders: '订单', catalog: '商品' };
+function syncSearchState() {
+  const box = document.getElementById('globalSearch');
+  if (!box) return;
+  const label = SEARCH_PANES[curPane];
+  box.disabled = !label;
+  box.placeholder = label
+    ? `搜索当前页${label}（回车或边输边筛）`
+    : '当前页不支持搜索（仅订单 / 商品页可用）';
+  box.title = label ? '' : '全局搜索目前只覆盖订单与商品两页';
+}
 document.getElementById('globalSearch').addEventListener('input', (e) => {
   const kw = e.target.value.trim();
-  if (curPane === 'orders' && paneData.orders) renderOrders(filterOrders(paneData.orders, kw));
-  if (curPane === 'catalog' && paneData.catalog) renderProducts(filterProducts(paneData.catalog, kw));
+  if (curPane === 'orders' && paneData.orders) {
+    const hit = filterOrders(paneData.orders, kw);
+    renderOrders(hit);
+    if (kw && !hit.length) document.getElementById('refreshHint').textContent = `没有匹配「${kw}」的订单`;
+    else document.getElementById('refreshHint').textContent = '';
+  }
+  if (curPane === 'catalog' && paneData.catalog) {
+    const hit = filterProducts(paneData.catalog, kw);
+    renderProducts(hit);
+    if (kw && !hit.length) document.getElementById('refreshHint').textContent = `没有匹配「${kw}」的商品`;
+    else document.getElementById('refreshHint').textContent = '';
+  }
 });
 function filterOrders(list, kw) {
   if (!kw) return list;

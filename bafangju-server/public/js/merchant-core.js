@@ -6,6 +6,15 @@ let TOKEN = localStorage.getItem('bfj_merchant_token') || '';
 let MERCHANT = { id: localStorage.getItem('bfj_merchant_id') || '', name: localStorage.getItem('bfj_merchant_name') || '' };
 
 const escHtml = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// 商品/封面图兜底：素材被删或上传中断时显示占位块，而不是浏览器默认的破图图标。
+// 用法：<img class="thumb" src="..." alt="" onerror="imgFallback(this,'🛍️','thumb-ph')">
+function imgFallback(img, emoji, phClass) {
+  const ph = document.createElement('span');
+  ph.className = phClass || 'thumb-ph';
+  ph.textContent = emoji || '🛍️';
+  if (img.parentNode) img.parentNode.replaceChild(ph, img);
+}
 const fen2yuan = (fen) => ((fen || 0) / 100).toFixed(2);
 const yuan = (fen) => '¥' + fen2yuan(fen);
 

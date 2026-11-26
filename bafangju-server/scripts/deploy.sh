@@ -127,6 +127,14 @@ server {
 
     client_max_body_size 40m;
 
+    # 压缩：后台首屏 60KB HTML + 20 个 JS/CSS，不压缩在建站/移动网络下明显拖慢
+    gzip on;
+    gzip_comp_level 5;
+    gzip_min_length 1024;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml application/xml;
+
     # __PAY_NOTIFY_BLOCK__
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -144,6 +152,14 @@ server {
     server_name __DOMAIN__;
 
     client_max_body_size 40m;
+
+    # 压缩：后台首屏 60KB HTML + 20 个 JS/CSS，不压缩在建站/移动网络下明显拖慢
+    gzip on;
+    gzip_comp_level 5;
+    gzip_min_length 1024;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml application/xml;
 
     # __PAY_NOTIFY_BLOCK__
     location / {

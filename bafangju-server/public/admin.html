@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>八方聚平台 · 管理后台</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="css/admin-base.css">
 <link rel="stylesheet" href="css/admin-components.css">
 <link rel="stylesheet" href="css/admin-responsive.css">
@@ -118,7 +120,7 @@
     账号与权限
   </div>
   <div class="sidebar-foot">
-    <div>V3.3 合规版 ｜ 数据全部真实聚合</div>
+    <div>规则版本 <span id="appVersion">—</span> ｜ 数据全部真实聚合</div>
     <div class="filing-bar" data-filing></div>
   </div>
 </aside>
@@ -476,8 +478,14 @@
         </select></div>
       <div class="field"><div class="f-label">金额（元）</div><input id="resFen" type="number" placeholder="如 1000" style="width:140px"></div>
       <button class="sm" onclick="deposit()">划入</button>
+      <button class="sm plain" onclick="loadReserve()">刷新</button>
       <span id="resBalance" class="muted"></span>
     </div>
+    <p class="muted" style="margin:10px 0 0">储备金只接受平台真实利润划入（交易服务费 / 广告收益 / 经审核批准），季度分红从这里出账。</p>
+  </div>
+  <div class="card">
+    <h3>储备金流水 <span class="h3-extra">近 50 笔，倒序；只读</span></h3>
+    <table id="reserveFlows"><thead><tr><th>时间</th><th>方向</th><th>来源 / 事由</th><th>金额</th><th>关联单号</th></tr></thead><tbody></tbody></table>
   </div>
 </div>
 

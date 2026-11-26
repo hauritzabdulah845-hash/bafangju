@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>八方聚共享平台 · 买得越多 · 付得越少</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="description" content="异业联盟复购让利平台：在联盟商家重复消费，前 n 单按标价，尾段 4 单让利 10%~40%。让利内嵌于售价，明明白白。">
 <meta name="keywords" content="八方聚,异业联盟,复购让利,阶梯售价,尾段让利,商家联盟">
 <meta name="theme-color" content="#B02A30">
@@ -379,13 +381,22 @@ fetch('/api/home').then((r) => r.json()).then((d) => {
     const hit = CAT_ICONS.find(([kw]) => new RegExp(kw).test(name || ''));
     return hit ? hit[1] : FALLBACK_CAT_ICON;
   };
-  document.getElementById('catGrid').innerHTML = cats.map((c, i) => `
+  // 转义：类目名 / 图标地址由后台录入，直接拼进 innerHTML 会造成存储型 XSS
+  const esc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+  // 图标地址只允许站内路径：防 javascript:/data: 伪协议、目录穿越（..）与引号属性逃逸
+  const safeSrc = (u) => { const v = String(u || '');
+    return (/^\/(img|uploads)\/[\w\-./]+$/.test(v) && !v.includes('..')) ? esc(v) : ''; };
+  document.getElementById('catGrid').innerHTML = cats.map((c, i) => {
+    const src = safeSrc(c.iconImage);
+    const name = esc(c.name);
+    return `
     <div class="cat">
-      ${c.iconImage
-        ? `<img src="${c.iconImage}" alt="${c.name}" loading="lazy">`
+      ${src
+        ? `<img src="${src}" alt="${name}" loading="lazy">`
         : `<div style="width:44px;height:44px;border-radius:50%;background:${tones[i % tones.length]};display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto">${catIcon(c.name)}</div>`}
-      <div class="n">${c.name}</div>
-    </div>`).join('');
+      <div class="n">${name}</div>
+    </div>`;
+  }).join('');
 }).catch(() => {});
 </script>
 </body>
