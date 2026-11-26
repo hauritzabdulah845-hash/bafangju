@@ -2,7 +2,12 @@
   <view class="login-title">八方聚 · 商家端</view>
   <view class="login-sub">异业联盟商家工作台</view>
   <input class="login-input" placeholder="商家账号（默认同商家名称）" value="{{username}}" bindinput="onUsername" />
-  <input class="login-input" placeholder="登录密码" password value="{{password}}" bindinput="onPassword" />
+  <view class="pwd-field">
+    <input class="login-input" placeholder="登录密码" password="{{!showPwd}}" value="{{password}}" bindinput="onPassword" />
+    <view class="eye" bindtap="togglePwd" aria-label="{{showPwd ? '隐藏密码' : '显示密码'}}">
+      <view class="eye-ico {{showPwd ? 'on' : 'off'}}"></view>
+    </view>
+  </view>
   <view class="btn {{!username || !password || loading ? 'disabled' : ''}}" bindtap="doLogin">登 录</view>
   <view class="entry-link" bindtap="goEntry">还没有账号？申请入驻（提交资质审核） ›</view>
   <view class="muted login-note">账号与初始密码由平台审核通过后提供；核销、投放广告位、收益与提现均需登录。</view>

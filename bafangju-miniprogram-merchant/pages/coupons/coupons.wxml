@@ -24,5 +24,13 @@
   </view>
   <view class="t-weak" style="margin-top:8rpx">{{item.typeText}} · 领取后 {{item.validDays}} 天有效 · 每人限领 {{item.perUserLimit}} 张</view>
   <view class="t-weak" style="margin-top:6rpx">已领 {{item.claimed}} 张 · 已核销 {{item.used}} 次</view>
+  <!-- 自助止损：发错券一键停发；已领取的券不受影响，仍可正常核销 -->
+  <view class="row-between" style="margin-top:12rpx">
+    <text class="t-weak">{{item.status === 'valid' ? '停发后用户端立即不可领，已领的券仍可核销' : '已停发：用户端不可领，可随时恢复'}}</text>
+    <text class="toggle-link {{item.status === 'valid' ? 'stop' : 'resume'}}"
+      data-id="{{item.id}}" data-title="{{item.title}}" data-status="{{item.status}}" bindtap="toggleStatus">
+      {{item.status === 'valid' ? '暂停发券' : '恢复发券'}}
+    </text>
+  </view>
 </view>
 <view class="empty muted" wx:if="{{!list.length && !loading}}">还没有发券，填上面的表单即可创建</view>

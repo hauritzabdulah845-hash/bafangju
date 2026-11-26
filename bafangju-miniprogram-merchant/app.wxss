@@ -1,7 +1,8 @@
 @import "design-tokens.wxss";
 
 /* ============================================================
-   八方聚商家端 · 设计系统 V3.0
+   商家分包差异样式（原商家端 app.wxss 迁移，仅商家页面生效）
+   使用方式：商家分包每个页面 wxss 顶部 @import '../../merchant-base.wxss'
    ----------------------------------------------------------
    共享层：design-tokens.wxss（文字层级 / 卡片 / 布局 / 价格 / 合规提示 …）
    本文件只写**商家端差异项**。改共享样式请改 design-tokens.wxss
@@ -63,6 +64,17 @@ page { --page-bg: #F6F6F6; }
 .tag.danger { background: #FDECEC; color: #C22A2F; } /* 失败/异常标签 */
 .tag.gold { background: #FFF7E6; color: #996300; }
 
+
+/* ============================================================
+   密码可见切换（眼睛开关）——登录页 / 改密页共用
+   图标基线：24 网格 / 1.8 描边 / 未激活 #666666
+   ============================================================ */
+.pwd-field { position: relative; }
+.pwd-field .login-input, .pwd-field .ipt { padding-right: 96rpx; }
+.eye { position: absolute; right: 6rpx; top: 50%; transform: translateY(-50%); width: 80rpx; height: 80rpx; display: flex; align-items: center; justify-content: center; }
+.eye-ico { width: 40rpx; height: 40rpx; background-repeat: no-repeat; background-size: contain; background-position: center; }
+.eye-ico.off { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23666666'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M2.5%2012s3.2-6%209.5-6c2%200%203.7.6%205.1%201.5M21.5%2012s-3.2%206-9.5%206c-2%200-3.7-.6-5.1-1.5'/%3E%3Cpath%20d='M4%204l16%2016'/%3E%3C/svg%3E"); }
+.eye-ico.on { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23666666'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M2.5%2012s3.2-6%209.5-6%209.5%206%209.5%206-3.2%206-9.5%206-9.5-6-9.5-6Z'/%3E%3Ccircle%20cx='12'%20cy='12'%20r='2.6'/%3E%3C/svg%3E"); }
 
 /* ============================================================
    共享功能图标库（ICON TOKENS）

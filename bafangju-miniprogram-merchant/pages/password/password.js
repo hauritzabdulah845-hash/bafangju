@@ -2,8 +2,9 @@
 const api = require('../../utils/api');
 
 Page({
-  data: { oldPassword: '', newPassword: '', confirmPassword: '', submitting: false },
+  data: { oldPassword: '', newPassword: '', confirmPassword: '', showOld: false, showNew: false, showConfirm: false, submitting: false },
   onInput(e) { this.setData({ [e.currentTarget.dataset.k]: e.detail.value }); },
+  toggleEye(e) { const k = e.currentTarget.dataset.k; this.setData({ [k]: !this.data[k] }); },
   submit() {
     const { oldPassword, newPassword, confirmPassword, submitting } = this.data;
     if (submitting) return;

@@ -2,9 +2,10 @@
 const api = require('../../utils/api');
 
 Page({
-  data: { username: '', password: '', loading: false },
+  data: { username: '', password: '', showPwd: false, loading: false },
   onUsername(e) { this.setData({ username: e.detail.value }); },
   onPassword(e) { this.setData({ password: e.detail.value }); },
+  togglePwd() { this.setData({ showPwd: !this.data.showPwd }); },
   async doLogin() {
     const { username, password, loading } = this.data;
     if (loading) return;
@@ -29,7 +30,7 @@ Page({
           success: (m) => { if (m.confirm) wx.navigateTo({ url: '/pages/password/password' }); },
         });
       }
-      wx.reLaunch({ url: '/pages/index/index' });
+      wx.switchTab({ url: '/pages/index/index' });
     } catch (e) {
       wx.showToast({ title: e.message, icon: 'none' });
     } finally {
@@ -38,6 +39,11 @@ Page({
   },
   goEntry() { wx.navigateTo({ url: '/pages/entry/entry' }); },
   onShow() {
-    if (getApp().globalData.merchantId) wx.reLaunch({ url: '/pages/index/index' });
+    // 自动跳回工作台必须同时具备 merchantId 与 token：
+    // 只看 merchantId 会与 401 兜底形成互跳死循环（token 已被服务端轮换/重置时）
+    const token = wx.getStorageSync('merchant_token');
+    if (getApp().globalData.merchantId && token) {
+      wx.switchTab({ url: '/pages/index/index' });
+    }
   },
 });

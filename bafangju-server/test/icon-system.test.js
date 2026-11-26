@@ -12,6 +12,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const zlib = require('node:zlib');
 
 const ROOT = path.join(__dirname, '../..');
 const USER = path.join(ROOT, 'bafangju-miniprogram-user');
@@ -139,14 +140,103 @@ test('旧 /img/icons 类目 PNG 已废弃：种子不写 iconImage，启动幂�
   assert.ok(!fs.existsSync(path.join(PUB, 'img/icons')), '旧 PNG 目录应已删除');
 });
 
-test('tabBar PNG 生成脚本与 SVG 同色同语义，且「赚实惠」图标语义正确', () => {
-  const gen = read(path.join(ROOT, 'redesign-20261102/tools/gen_tabbar_icons.py'));
-  assert.match(gen, /ON = \(176, 42, 48/, 'PNG 选中色必须是 #B02A30');
-  assert.match(gen, /OFF = \(102, 102, 102/, 'PNG 普通态必须是 #666666');
-  assert.match(gen, /G = OUT \/ 24/, 'PNG 必须按 24 网格生成');
-  assert.match(gen, /draw_ads[\s\S]{0,200}购物袋/, '赚实惠图标应为购物袋（不再用喇叭）');
-  assert.match(gen, /draw_earn[\s\S]{0,200}银行卡/, '收益图标应与 SVG 同为银行卡');
-  assert.match(gen, /draw_returns[\s\S]{0,200}柱/, '阶梯图标应与 SVG 同为柱状');
+/** 解码 8-bit RGBA PNG，返回尺寸与完全不透明像素的主色 RGB */
+function inspectTabbarPng(file) {
+  const buf = fs.readFileSync(file);
+  assert.strictEqual(buf.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', file + ' 不是有效 PNG');
+  const width = buf.readUInt32BE(16);
+  const height = buf.readUInt32BE(20);
+  const bitDepth = buf[24];
+  const colorType = buf[25];
+  assert.strictEqual(bitDepth, 8, file + ' 位深应为 8');
+  assert.strictEqual(colorType, 6, file + ' 颜色类型应为 RGBA(6)');
+  const idat = [];
+  for (let off = 8; off < buf.length;) {
+    const len = buf.readUInt32BE(off);
+    const type = buf.toString('ascii', off + 4, off + 8);
+    if (type === 'IDAT') idat.push(buf.subarray(off + 8, off + 8 + len));
+    off += 12 + len;
+  }
+  const raw = zlib.inflateSync(Buffer.concat(idat));
+  const bpp = 4;
+  const stride = width * bpp;
+  const prev = Buffer.alloc(stride);
+  const cur = Buffer.alloc(stride);
+  const counts = new Map();
+  let p = 0;
+  for (let y = 0; y < height; y++) {
+    const filter = raw[p++];
+    for (let i = 0; i < stride; i++) {
+      const x = raw[p++];
+      const a = i >= bpp ? cur[i - bpp] : 0;
+      const b = prev[i];
+      const c = i >= bpp ? prev[i - bpp] : 0;
+      let v = x;
+      if (filter === 1) v = (x + a) & 255;
+      else if (filter === 2) v = (x + b) & 255;
+      else if (filter === 3) v = (x + ((a + b) >> 1)) & 255;
+      else if (filter === 4) {
+        const pa = Math.abs(b - c), pb = Math.abs(a - c), pc = Math.abs(a + b - 2 * c);
+        const pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c);
+        v = (x + pr) & 255;
+      }
+      cur[i] = v;
+    }
+    cur.copy(prev);
+    for (let x = 0; x < width; x++) {
+      if (cur[x * 4 + 3] === 255) {
+        const key = `${cur[x * 4]},${cur[x * 4 + 1]},${cur[x * 4 + 2]}`;
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+    }
+  }
+  return { width, height, counts };
+}
+
+test('tabBar PNG 与 SVG 同色同语义，且「赚实惠」图标语义正确', () => {
+  // 若设计稿源目录在本地存在，同步校验生成脚本常量；纯源码交付仓库未携带 redesign-20261102 时直接校验产物 PNG
+  const genScript = path.join(ROOT, 'redesign-20261102/tools/gen_tabbar_icons.py');
+  if (fs.existsSync(genScript)) {
+    const gen = read(genScript);
+    assert.match(gen, /ON = \(176, 42, 48/, 'PNG 选中色必须是 #B02A30');
+    assert.match(gen, /OFF = \(102, 102, 102/, 'PNG 普通态必须是 #666666');
+    assert.match(gen, /G = OUT \/ 24/, 'PNG 必须按 24 网格生成');
+    assert.match(gen, /draw_ads[\s\S]{0,200}购物袋/, '赚实惠图标应为购物袋（不再用喇叭）');
+    assert.match(gen, /draw_earn[\s\S]{0,200}银行卡/, '收益图标应与 SVG 同为银行卡');
+    assert.match(gen, /draw_returns[\s\S]{0,200}柱/, '阶梯图标应与 SVG 同为柱状');
+  }
+
+  // 直接校验仓库内交付的 tabBar PNG 真实像素（81×81，选中 #B02A30 = 176,42,48，未选中 #666666 = 102,102,102）
+  const pngDirs = [
+    path.join(USER, 'assets/tabbar'),
+    path.join(ROOT, 'bafangju-miniprogram-merchant/assets/tabbar'),
+  ].filter((d) => fs.existsSync(d));
+  assert.ok(pngDirs.length >= 1, '缺少 tabbar PNG 资源目录');
+  for (const dir of pngDirs) {
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith('.png'));
+    assert.ok(files.length >= 8, dir + ' PNG 数量不足');
+    for (const f of files) {
+      const info = inspectTabbarPng(path.join(dir, f));
+      assert.strictEqual(info.width, 81, f + ' 宽度应为 81px');
+      assert.strictEqual(info.height, 81, f + ' 高度应为 81px');
+      if (f.endsWith('-on.png')) {
+        assert.ok((info.counts.get('176,42,48') || 0) >= 100, f + ' 选中态缺少 #B02A30 (176,42,48) 主色像素');
+        for (const rgb of info.counts.keys()) {
+          const [r, g, b] = rgb.split(',').map(Number);
+          assert.ok(r >= 170 && r <= 205 && g >= 38 && g <= 55 && b >= 44 && b <= 60,
+            f + ' 选中态含非枣红像素：' + rgb);
+        }
+      } else if (f.endsWith('-off.png')) {
+        assert.ok((info.counts.get('102,102,102') || 0) >= 100, f + ' 未选中态缺少 #666666 (102,102,102) 主色像素');
+        for (const rgb of info.counts.keys()) {
+          const [r, g, b] = rgb.split(',').map(Number);
+          assert.ok(r === g && g === b && r >= 98 && r <= 118,
+            f + ' 未选中态含非中性灰像素：' + rgb);
+        }
+      }
+    }
+  }
+
   // custom-tab-bar 的赚实惠图标必须是购物袋路径
   const tab = read(path.join(USER, 'custom-tab-bar/index.wxss'));
   const svgs = [...tab.matchAll(B64_RE)]

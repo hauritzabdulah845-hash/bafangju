@@ -30,8 +30,13 @@ function check(name, ok, detail) {
 }
 
 /** 搭一个最小可运营的世界：3 商家 / 3 类目商品 / 12 用户（含 2 组推客关系） */
-function buildWorld() {
+function buildWorld(options = {}) {
   const db = createStore();
+  if (options.paidAlliance) {
+    // 可选演练「收费模式」（V3.6/V4.4 口径）：显式开启 3%/5% 服务费率；生产默认（V4.5）为 0 = 免费导流
+    db.switches.set('couponServiceFeeRate', 0.03);
+    db.switches.set('verificationServiceFeeRate', 0.05);
+  }
 
   for (const [id, name] of [['m1', '张记粮油店'], ['m2', '李记小馆'], ['m3', '王姐美业']]) {
     db.merchants.insert({ id, name, status: 'active', username: name, passwordHash: 'x', createdAt: new Date().toISOString() });
@@ -97,7 +102,11 @@ function runMonth(world) {
   for (const c of couponPlan) {
     const tpl = coupon.createCoupon(db, { merchantId: c.mid, title: c.title, type: 'cash', amountOffFen: c.off, minSpendFen: c.min });
     const claim = coupon.claimCoupon(db, { couponId: tpl.id, userId: c.uid });
-    coupon.redeemCoupon(db, { code: claim.code, merchantId: c.mid, amountFen: c.amountFen });
+    const redeemed = coupon.redeemCoupon(db, { code: claim.code, merchantId: c.mid, amountFen: c.amountFen });
+    // 收费模式下（V4.4）：核销只挂应收单，需后台确认收款后才计入储备专户/平台留存并允许分佣解冻
+    if (redeemed.feeBillId) {
+      coupon.markFeeBillPaid(db, { billId: redeemed.feeBillId, method: 'offline', operator: 'admin:drill' });
+    }
   }
 
   // ③ 广告：2 个位置，各投 1 单；平台审核通过后产生曝光/点击
@@ -164,6 +173,10 @@ function reconcile(world, monthResult) {
   const couponFeeFen = sum(allianceOrders, 'couponServiceFeeFen');
   const verifyFeeFen = sum(allianceOrders, 'verifyServiceFeeFen');
   const allianceBaseFen = sum(allianceOrders, 'baseFen');
+  const feeBills = db.merchantFeeBills.all();
+  const paidFeeBills = feeBills.filter((b) => b.status === 'paid');
+  const allianceFeeEnabled = (Number(db.switches.get('couponServiceFeeRate')) || 0) > 0
+    || (Number(db.switches.get('verificationServiceFeeRate')) || 0) > 0;
 
   const adBookings = db.adBookings.all();
   const adSpendFen = sum(adBookings, 'feeFen');
@@ -192,7 +205,9 @@ function reconcile(world, monthResult) {
     baseFen, directFen, leaderFen, platformFeeFen, indirectPoolFen,
     rolledBackBase: sum(rolledBack, 'baseFen'), rolledBackCount: rolledBack.length,
     poolIn, poolOut, poolBalance, reserveIn, reserveOut, platformIn, platformOut,
+    allianceCount: allianceOrders.length,
     couponFeeFen, verifyFeeFen, allianceBaseFen,
+    feeBillsCount: feeBills.length, paidFeeBillsCount: paidFeeBills.length, allianceFeeEnabled,
     adSpendFen, impressions, clicks,
     expectedEarning, actualEarning, worstPeriod, periodCount: periodTotals.length,
     ordersCount: paidWx.length, freeCount: freeOrders.length,
@@ -200,6 +215,7 @@ function reconcile(world, monthResult) {
 }
 
 function runChecks(r, monthResult) {
+  checks.length = 0;
   // ① 订单守恒：实付 = 成本 + 税费 + 运营 + 可分配（对每一单都成立，含免单负单）
   check('订单守恒（实付 = 成本+税费+运营+可分配）',
     r.paidFen === r.costFen + r.taxFen + r.opFen + r.allocFen,
@@ -238,10 +254,20 @@ function runChecks(r, monthResult) {
   check('每个返还周期可分配收益 ≥ 0', r.worstPeriod >= 0,
     `共 ${r.periodCount} 个周期，最差 ${yuan(r.worstPeriod)}`);
 
-  // ⑨ 联盟线不进商品线分红池：券服务费只体现在平台留存/储备，不在 pool 流入里重复计
+  // ⑨ 联盟线口径校验：
+  // - V4.5 默认免费导流模式（费率 0）：核销落单、0 服务费、0 应收欠费挂账；
+  // - 开启收费模式（--paid-alliance）：计提服务费、走应收单收款闭环，且只进平台留存/储备而不进商品线分红池
   const feeBase = r.couponFeeFen + r.verifyFeeFen;
-  check('联盟服务费已计提', feeBase > 0 && r.allianceBaseFen > 0,
-    `券服务费 ${yuan(r.couponFeeFen)} + 核销服务费 ${yuan(r.verifyFeeFen)}，方案B 基数 ${yuan(r.allianceBaseFen)}`);
+  if (r.allianceFeeEnabled) {
+    check('联盟服务费已计提且收款入账',
+      r.allianceCount > 0 && feeBase > 0 && r.allianceBaseFen > 0
+        && r.feeBillsCount === r.allianceCount && r.paidFeeBillsCount === r.feeBillsCount,
+      `核销 ${r.allianceCount} 单｜券服务费 ${yuan(r.couponFeeFen)} + 核销服务费 ${yuan(r.verifyFeeFen)}，方案B 基数 ${yuan(r.allianceBaseFen)}，应收已结清 ${r.paidFeeBillsCount}/${r.feeBillsCount}`);
+  } else {
+    check('联盟券免费导流闭环（V4.5 默认 0 费率）',
+      r.allianceCount > 0 && feeBase === 0 && r.allianceBaseFen === 0 && r.feeBillsCount === 0,
+      `核销 ${r.allianceCount} 单｜服务费 0.00 元，应收挂账 ${r.feeBillsCount} 笔（纯导流不收费，可用 --paid-alliance 演练收费模式）`);
+  }
 
   // ⑩ 广告收入入账
   check('广告收入入账', r.adSpendFen > 0 && r.impressions > 0,
@@ -307,8 +333,9 @@ function report(world, monthResult, r) {
   return failed.length;
 }
 
-function main() {
-  const world = buildWorld();
+function main(argv = process.argv.slice(2)) {
+  const paidAlliance = argv.includes('--paid-alliance');
+  const world = buildWorld({ paidAlliance });
   const monthResult = runMonth(world);
   const r = reconcile(world, monthResult);
   runChecks(r, monthResult);
