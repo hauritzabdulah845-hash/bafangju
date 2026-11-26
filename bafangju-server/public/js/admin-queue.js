@@ -12,6 +12,36 @@ async function deposit() {
   const r = await post('/api/admin/reserve/deposit', body);
   r.error ? toast('失败：' + r.error, 'err') : (document.getElementById('resBalance').innerHTML = `储备金账户余额：<b class="money">${yuan(r.balanceFen)}</b>`, toast('划入成功'));
 }
+/** 储备金账户面板加载：之前缺这个入口，点进「储备金账户」只看得到一张空卡片 */
+async function loadReserve() {
+  const el = document.getElementById('resBalance');
+  if (!el) return;
+  try {
+    const r = await authed('/api/admin/reserve').then((x) => x.json());
+    if (r.error) { el.textContent = r.error; return; }
+    el.innerHTML = `储备金账户余额：<b class="money">${yuan(r.balanceFen)}</b>`
+      + `<span class="muted" style="margin-left:10px">近 ${(r.recent || []).length} 笔流水</span>`;
+  } catch (e) {
+    el.textContent = '余额加载失败，请点「刷新」重试';
+  }
+  loadReserveFlows();
+}
+/** 储备金流水（只读，供财务核对；无数据时留空不占位） */
+async function loadReserveFlows() {
+  const tb = document.querySelector('#reserveFlows tbody');
+  if (!tb) return;
+  try {
+    const r = await authed('/api/admin/reserve').then((x) => x.json());
+    const rows = r.recent || [];
+    tb.innerHTML = rows.map((f) => `<tr>
+      <td class="muted">${escHtml(String(f.ts || '').slice(0, 16).replace('T', ' '))}</td>
+      <td>${f.direction === 'in' ? '<span class="tag green">划入</span>' : '<span class="tag danger">划出</span>'}</td>
+      <td>${escHtml(f.source || '')}</td>
+      <td class="money">${f.direction === 'in' ? '+' : '-'}${yuan(f.fen)}</td>
+      <td class="muted">${escHtml(f.ref || '-')}</td></tr>`).join('')
+      || '<tr><td colspan="5"><div class="empty"><div class="e-icon">—</div>暂无流水</div></td></tr>';
+  } catch (e) { /* 静默：面板主体已提示失败 */ }
+}
 // 业务自然日为北京时间（UTC+8）：不能用 toISOString()，否则北京时间 00:00–07:59 会错日，
 // 手动跑批（活跃快照/分红/超时退回）会记到前一天。与服务端 src/domain/bizdate.js 口径一致。
 function bjToday() { return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10); }

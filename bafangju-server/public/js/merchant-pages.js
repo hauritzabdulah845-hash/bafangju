@@ -122,7 +122,7 @@ function renderProducts() {
   const listHtml = P.list.length ? P.list.map((p) => `
     <div class="list-item">
       <div class="row-flex">
-        ${p.imageUrl ? `<img class="thumb" src="${escHtml(p.imageUrl)}" alt="">` : '<span class="thumb-ph">🛍️</span>'}
+        ${p.imageUrl ? `<img class="thumb" src="${escHtml(p.imageUrl)}" alt="" onerror="imgFallback(this,'🛍️','thumb-ph')">` : '<span class="thumb-ph">🛍️</span>'}
         <div class="col-flex">
           <div class="row-between"><span class="li-title">${escHtml(p.name)}</span>${productStatusHtml(p)}</div>
           <div class="li-sub">售价 ${yuan(p.priceFen)} · 成本 ${yuan(p.costFen)} · ${p.deliveryType === 'store' ? '到店自提/核销' : '快递到家'}</div>
@@ -151,7 +151,7 @@ function renderProducts() {
       </select>
       <div class="form-label">商品图</div>
       <div class="img-picker">
-        <div id="pdImgBox">${P.imageUrl ? `<img class="img-preview" src="${escHtml(P.imageUrl)}">` : ''}</div>
+        <div id="pdImgBox">${P.imageUrl ? `<img class="img-preview" src="${escHtml(P.imageUrl)}" alt="" onerror="imgFallback(this,'🖼️','thumb-ph')">` : ''}</div>
         <div class="img-btn" id="pdImgBtn" onclick="pickProductImage()">＋</div>
       </div>
       <div style="display:flex;gap:10px;margin-top:16px">
@@ -171,7 +171,7 @@ function pickProductImage() {
     btn.textContent = '＋';
     if (err) { toast(err.message, 'err'); return; }
     P.imageUrl = url;
-    document.getElementById('pdImgBox').innerHTML = `<img class="img-preview" src="${escHtml(url)}">`;
+    document.getElementById('pdImgBox').innerHTML = `<img class="img-preview" src="${escHtml(url)}" alt="" onerror="imgFallback(this,'🖼️','thumb-ph')">`;
   });
 }
 
@@ -677,7 +677,7 @@ function renderAdVideos() {
       </div>
       <div class="form-label">封面（可选，建议 16:9）</div>
       <div class="img-picker">
-        <div id="avCoverBox">${ADV.coverUrl ? `<img class="img-preview" src="${escHtml(ADV.coverUrl)}">` : ''}</div>
+        <div id="avCoverBox">${ADV.coverUrl ? `<img class="img-preview" src="${escHtml(ADV.coverUrl)}" alt="" onerror="imgFallback(this,'🎬','thumb-ph')">` : ''}</div>
         <div class="img-btn" onclick="pickAdCover()">＋</div>
       </div>
       <div class="form-label">视频时长（秒，上传后自动识别）</div>
@@ -725,7 +725,7 @@ function pickAdCover() {
     if (err) { toast(err.message, 'err'); return; }
     ADV.coverUrl = url;
     const box = document.getElementById('avCoverBox');
-    if (box) box.innerHTML = `<img class="img-preview" src="${escHtml(url)}">`;
+    if (box) box.innerHTML = `<img class="img-preview" src="${escHtml(url)}" alt="" onerror="imgFallback(this,'🎬','thumb-ph')">`;
   });
 }
 

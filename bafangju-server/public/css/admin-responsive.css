@@ -6,7 +6,13 @@
   .topbar { padding: 0 12px; gap: 10px; }
   .topbar .t-burger { display: inline-flex; align-items: center; }
   .topbar .t-logo { font-size: 14px; }
-  .topbar .t-search { max-width: none; }
+  /* 窄屏把搜索框压到最小可用宽度：否则它会挤掉右侧「修改密码 / 退出登录」，
+     且禁用态（非订单/商品页）时仍占满整行，把顶栏撑爆 */
+  .topbar .t-search { max-width: none; min-width: 0; flex: 1 1 120px; }
+  .topbar .t-search input { padding: 0 12px 0 32px; font-size: 12px; }
+  .topbar .t-search input:disabled { background: rgba(255,255,255,.55); color: #6b6f7a; }
+  .topbar .t-right { gap: 8px; }
+  .topbar .t-right a { padding: 4px 6px; white-space: nowrap; }
   .topbar .t-right .who { display: none; }
   .sidebar { transform: translateX(-100%); transition: transform .22s ease; width: 240px; box-shadow: 0 0 24px rgba(0,0,0,.16); }
   body.nav-open .sidebar { transform: translateX(0); }

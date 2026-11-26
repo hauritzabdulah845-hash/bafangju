@@ -21,6 +21,30 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 input, select, textarea { padding: 7px 10px; border: 1px solid var(--line); border-radius: 9px; margin-right: 8px;
   font-size: 12.5px; outline: none; font-family: inherit; background: #fff; color: var(--ink); }
 input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+/* 键盘可达性：Tab 聚焦时给出清晰焦点环（鼠标点击不触发，避免视觉噪音） */
+button:focus-visible,
+.tab:focus-visible,
+.tr-item:focus-visible,
+.ptag:focus-visible,
+.perm-chip:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+/* 复选框/开关用系统强调色，键盘聚焦时同样有环 */
+input[type="checkbox"]:focus-visible, input[type="radio"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  accent-color: var(--accent);
+}
+/* 减弱动效偏好：尊重系统设置，减少过渡动画 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
 textarea { resize: vertical; }
 .switch-item { display: inline-block; margin: 4px 14px 4px 0; }
 .ok { color: var(--green); } .warn { color: var(--orange); }

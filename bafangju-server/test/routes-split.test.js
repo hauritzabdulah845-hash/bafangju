@@ -168,6 +168,7 @@ POST /api/admin/quarter/assess
 POST /api/admin/quarter/payout
 POST /api/admin/quarter/payout-auto
 POST /api/admin/refund-anomalies/retry
+GET /api/admin/reserve
 POST /api/admin/reserve/deposit
 POST /api/admin/risk/appeals/resolve
 POST /api/admin/risk/blacklist
@@ -287,7 +288,7 @@ function indexOfMiddleware(fnName) {
   return -1;
 }
 
-test('路由清单与拆分前基线完全一致（219 条）', () => {
+test('路由清单与拆分前基线完全一致（220 条）', () => {
   const actual = collectRoutes();
   assert.strictEqual(actual.length, EXPECTED_ROUTES.length, `路由总数应为 ${EXPECTED_ROUTES.length}，实际 ${actual.length}`);
   const missing = EXPECTED_ROUTES.filter((r) => !actual.includes(r));

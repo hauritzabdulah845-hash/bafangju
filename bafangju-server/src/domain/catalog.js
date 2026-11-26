@@ -11,7 +11,12 @@ const ladder = require('./ladder');
 
 /** 新增类目：r ∈ (0,1)，n 自动由阶梯引擎推导；icon 为首页金刚区图标（emoji） */
 function createCategory(db, { name, r, icon, operator = 'admin' }) {
-  if (!name) throw new Error('类目名称必填');
+  // 名称会同时出现在后台表格、官网类目区与小程序首页：先做字符与长度约束（前端另有转义，双保险）
+  const nm = String(name == null ? '' : name).trim();
+  if (!nm) throw new Error('类目名称必填');
+  if (nm.length > 12) throw new Error('类目名称不超过 12 字（官网类目卡为单行展示）');
+  if (/[<>\u0000-\u001F]/.test(nm)) throw new Error('类目名称不能包含尖括号或控制字符');
+  name = nm;
   const rv = Number(r);
   if (!Number.isFinite(rv) || rv <= 0 || rv >= 1) throw new Error('r 必须为 0 到 1 之间的小数（每周期让利比例）');
   if (db.categories.where((c) => c.name === name).length > 0) throw new Error('类目名称已存在');
@@ -135,12 +140,13 @@ function createProduct(db, { categoryId, name, priceFen, costFen, deliveryType, 
   return p;
 }
 
-// 商品图 URL 白名单：仅允许站内静态路径，防外链与脚本注入
+// 商品图 URL 白名单：仅允许站内静态路径，防外链、脚本注入与目录穿越
 function sanitizeImageUrl(url) {
   if (!url) return '';
   const u = String(url).trim();
   if (!u) return '';
   if (!/^\/(img|uploads)\/[\w\-./]+$/i.test(u)) throw new Error('imageUrl 必须为站内 /img/ 或 /uploads/ 路径');
+  if (u.includes('..')) throw new Error('imageUrl 不允许包含 ..');
   return u;
 }
 

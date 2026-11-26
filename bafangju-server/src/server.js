@@ -31,6 +31,8 @@ const app = express();
 // 反向代理（Nginx）后取真实客户端 IP：TRUST_PROXY=1 时信任 1 层代理转发的 X-Forwarded-For，
 // 上传限流按 IP 计量时必须拿到真实来源 IP，否则同一出口 IP 的所有用户会被算成一个人。
 app.set('trust proxy', process.env.TRUST_PROXY === '1' ? 1 : false);
+// 不暴露框架指纹（降低被针对性扫描的价值）
+app.disable('x-powered-by');
 // 保留原始报文（微信支付回调验签必须对"原始字节"验签，JSON 解析后重序列化会导致验签失败）
 // limit 提到 8MB：/api/upload 接收 base64 图片（4MB 原图 ≈ 5.4MB base64）
 // 广告视频上传单独放宽到 40MB（24MB mp4 的 base64 约 32MB，留足 JSON 包头余量）；只对该路径生效，不扩大其余接口的攻击面
@@ -42,11 +44,27 @@ app.use(express.json({
 // 上传目录：商品/广告素材（公开，用户端需匿名浏览）；入驻证照（私有，仅管理后台可查看，P0-3）
 const UPLOAD_DIR = process.env.BAFANGJU_UPLOAD_DIR || path.join(__dirname, '../data/uploads');
 const PRIVATE_UPLOAD_DIR = process.env.BAFANGJU_UPLOAD_PRIVATE_DIR || path.join(__dirname, '../data/uploads-private');
-app.use(express.static(path.join(__dirname, '../public'))); // 管理后台静态页 /admin.html
-app.use('/uploads', express.static(UPLOAD_DIR)); // 公开素材目录（静态只读）
+// 静态资源缓存策略（无构建步骤，文件名不带 hash）：
+// - HTML 每次都回源校验（ETag），保证发版后立刻生效；
+// - CSS/JS 缓存 1 小时 + 回源校验，兼顾首屏与更新时效；
+// - 用户上传的图片不变式强（UUID 文件名），可长缓存。
+const STATIC_CACHE = {
+  setHeaders(res, filePath) {
+    if (/\.html?$/i.test(filePath)) res.setHeader('Cache-Control', 'no-cache');
+    else if (/\.(css|js)$/i.test(filePath)) res.setHeader('Cache-Control', 'public, max-age=3600');
+  },
+};
+app.use(express.static(path.join(__dirname, '../public'), STATIC_CACHE)); // 管理后台静态页 /admin.html
+app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '7d', immutable: true })); // 公开素材目录（静态只读）
 // 私有证照目录**不挂静态路由**：只能经 /api/admin/uploads/private/:name 鉴权后获取
 
 // 根路径：服务状态页（浏览器访问 / 时给出指引，避免 "Cannot GET /" 困惑）
+// 安全：req.get('host') 完全由客户端控制，直接插进 HTML 会造成反射型 XSS（实测 Host: x"><script>... 可执行）。
+// 这里只允许 字母/数字/点/横线/冒号/方括号（IPv6），其余一律丢弃，回落到 localhost。
+function safeHost(req) {
+  const raw = String(req.get('host') || '');
+  return /^[A-Za-z0-9.:[\]-]{1,80}$/.test(raw) ? raw : 'localhost';
+}
 app.get('/', (req, res) => {
   res.type('html').send(`<!DOCTYPE html>
 <html lang="zh"><head><meta charset="utf-8"><title>八方聚共享平台 · API 服务</title>
@@ -68,7 +86,7 @@ code{background:#f5f5f5;border-radius:4px;padding:1px 6px;font-size:13px}
 <tr><td>管理后台</td><td><a href="/admin.html">/admin.html</a>（浏览器打开）</td></tr>
 <tr><td>用户端小程序</td><td>微信开发者工具导入 <code>bafangju-miniprogram-user</code></td></tr>
 <tr><td>商家端小程序</td><td>微信开发者工具导入 <code>bafangju-miniprogram-merchant</code></td></tr>
-<tr><td>API 基础地址</td><td><code>${req.protocol}://${req.get('host')}/api/*</code></td></tr>
+<tr><td>API 基础地址</td><td><code>${req.protocol}://${safeHost(req)}/api/*</code></td></tr>
 </table>
 <div class="note">⚠️ 本服务是小程序的后端 API，不是网页商城。<br>
 小程序端请在 <b>微信开发者工具</b> 中打开对应目录运行；两个小程序的 <code>config.js</code> 中已配置本服务地址。</div>
@@ -129,8 +147,31 @@ require('./routes/upload')(app, ctx);
 require('./routes/admin')(app, ctx);   // 内含 /api/admin 鉴权中间件
 require('./routes/merchant')(app, ctx); // 内含 /api/merchant 鉴权中间件
 
+// ---------- 统一错误处理（必须在所有路由之后注册）----------
+// 踩过的坑：没有这个中间件时，Express 默认错误页会把完整堆栈 + 服务器绝对路径
+// （/opt/bafangju/node_modules/...）以 HTML 返回给客户端 —— 既是信息泄露，也让小程序
+// 端的 r.json() 解析失败。这里统一改成 JSON，且生产环境不回显堆栈。
+app.use((req, res, next) => {
+  res.status(404).json({ error: '接口不存在' });
+});
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  const status = err.status || err.statusCode || 500;
+  const isClient = status >= 400 && status < 500;
+  if (!isClient) console.error(`[bafangju-server] ${req.method} ${req.originalUrl} 处理失败：`, err && err.stack ? err.stack : err);
+  // 4xx 可安全回显原因（如请求体格式错误）；5xx 只给通用文案，避免泄露内部实现
+  res.status(status).json({
+    error: isClient ? (err.expose !== false && err.message) || '请求有误' : '服务器开小差了，请稍后重试',
+  });
+});
+
 // ---------- 定时跑批（开发版内置调度；生产替换为 crontab/任务框架） ----------
 const { runDailyJobsOnce } = createDailyJobs(ctx);
+
+// 兜底：任何漏网的 Promise 拒绝不应让进程静默崩溃（PM2 会重启，但会丢日志上下文）
+process.on('unhandledRejection', (reason) => {
+  console.error('[bafangju-server] 未处理的 Promise 拒绝：', reason && reason.stack ? reason.stack : reason);
+});
 
 const PORT = process.env.PORT || 3000;
 // 监听地址：生产建议 HOST=127.0.0.1（只允许 nginx 反代访问，3000 不暴露到公网）；
