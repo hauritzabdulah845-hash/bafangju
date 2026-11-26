@@ -1,6 +1,6 @@
 # 八方聚共享平台 · 部署上线指南
 
-> 适用版本：V3.3 确认稿对应实现（测试 74/74 通过）。
+> 适用版本：V4.6（测试 429/429 通过）。
 > 架构：Node.js 22 + Express + SQLite（node:sqlite 内置，零外部依赖），域逻辑与传输层分离，可平滑迁移 MySQL。
 
 ## 一、服务器要求
@@ -169,7 +169,80 @@ server {
 - [ ] 提现通道（`withdrawEnabled`）保持关闭，待商户入驻满 90 天评估后开启（待确认 19）
 - [ ] 微信审核预案：分批提审，先用户端基础购物链路；降级开关 `auditDowngrade` 可一键隐藏分红/团队入口
 
-## 八、常见运维操作
+## 八、从 GitHub 一键更新（方式二：手动确认式部署）
+
+代码仓库：`https://github.com/hauritzabdulah845-hash/bafangju`（公开仓库，`main` 为发布分支）。
+
+**原理**：本地改完 → 合并进 GitHub 的 `main` → 服务器上敲一行命令拉取并热更新。全程人工确认，不依赖 CI 直连生产。
+
+### 8.1 首次准备（只做一次）
+
+```bash
+# 1) 把代码克隆到服务器（与 /opt/bafangju 运行目录分开，互不干扰）
+git clone https://github.com/hauritzabdulah845-hash/bafangju.git /opt/bafangju-repo
+
+# 2) 已有线上环境时先备份（重要）
+sudo sqlite3 /opt/bafangju/data/bafangju.db ".backup '/opt/bafangju/backups/before-git.db'"
+sudo cp -a /etc/nginx/conf.d/bafangju.conf "/root/bafangju.conf.$(date +%F).bak"
+
+# 3) 首次部署（会先落地 env 文件后退出，填完再跑一次）
+sudo bash /opt/bafangju-repo/bafangju-server/scripts/deploy.sh
+sudo nano /etc/bafangju.env      # 填 ADMIN_PASSWORD / WX_APPID / WX_SECRET / DOMAIN
+sudo bash /opt/bafangju-repo/bafangju-server/scripts/deploy.sh
+```
+
+### 8.2 日常更新（每次只需一行）
+
+```bash
+cd /opt/bafangju-repo && sudo bash bafangju-server/scripts/pull-deploy.sh
+```
+
+`pull-deploy.sh` 做的事：
+
+| 步骤 | 行为 | 安全性 |
+| ---- | ---- | ---- |
+| 1 | 用 `sqlite3 .backup` 先备份数据库到 `backups/pull-<时间>.db` | 备份失败即中止，不改任何文件 |
+| 2 | `git fetch` + 快进合并 `origin/main` | 服务器仓库有本地改动时**直接报错退出**，不覆盖 |
+| 3 | `rsync` 同步到 `/opt/bafangju` | 排除 `data`/`backups`/`logs`/`certs`/`node_modules` |
+| 4 | `npm ci --omit=dev` | 只装运行依赖 |
+| 5 | 注入 `/etc/bafangju.env` 后 `pm2` 重建进程（主服务 + 看门狗） | 与 `deploy.sh` 同一套逻辑 |
+| 6 | `curl /api/health` 轮询 20 秒 | 失败则打印日志并给出回滚命令 |
+
+**不会做的事**：不写 `/etc/nginx/conf.d/bafangju.conf`、不动 SSL 证书、不碰数据库与上传文件。因此日常更新没有「把 HTTPS 配置改坏」的风险。
+
+### 8.3 可选参数
+
+```bash
+# 只同步代码、先不重启（观察用）
+sudo bash bafangju-server/scripts/pull-deploy.sh --no-restart
+
+# 拉其它分支（如灰度）
+sudo bash bafangju-server/scripts/pull-deploy.sh --branch arena/014fb136-bafangju
+```
+
+### 8.4 回滚
+
+```bash
+cd /opt/bafangju-repo
+git log --oneline -5                      # 找到上一个提交
+sudo git reset --hard <上一个提交>
+sudo bash bafangju-server/scripts/pull-deploy.sh
+```
+
+数据层回滚（极少用）：`sudo sqlite3 /opt/bafangju/data/bafangju.db ".restore '/opt/bafangju/backups/pull-<时间>.db'"`，然后 `pm2 restart bafangju-server`。
+
+### 8.5 什么时候才需要跑完整 `deploy.sh`
+
+| 场景 | 用什么 |
+| ---- | ---- |
+| 只改了业务代码 / 前端页面 / 测试 | `pull-deploy.sh`（日常 99% 情况） |
+| 改了 `ecosystem.config.js`（PM2 进程名、看门狗参数） | `pull-deploy.sh`（已包含 PM2 重建） |
+| 改了 nginx 模板、要切 HTTPS、换域名 | `sudo bash bafangju-server/scripts/deploy.sh` |
+| 新机器首次部署、要装 Node/nginx/PM2 | `sudo bash bafangju-server/scripts/deploy.sh` |
+
+> `deploy.sh` 会重写 `/etc/nginx/conf.d/bafangju.conf`，且要求证书在 `/etc/nginx/ssl/<DOMAIN>.pem|.key`。手工改过 nginx 配置的机器，跑之前务必先备份。
+
+## 九、常见运维操作
 
 | 操作 | 方式 |
 | ---- | ---- |
@@ -179,3 +252,4 @@ server {
 | 商家建档/停用 | 管理后台「商家管理」页签 |
 | 提现审核 | 管理后台「提现审核」页签（含收款人补录与失败重试） |
 | 服务日志 | `logs/pm2-out.log` / `pm2 logs bafangju-server` |
+| 从 GitHub 更新 | `cd /opt/bafangju-repo && sudo bash bafangju-server/scripts/pull-deploy.sh` |
