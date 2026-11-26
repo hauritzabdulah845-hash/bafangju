@@ -1,0 +1,7 @@
+/* 自定义 tabBar 为 fixed 定位，不自动占位，需自行留出底部高度（116rpx + 安全区） */
+page { padding-bottom: calc(124rpx + env(safe-area-inset-bottom)); box-sizing: border-box; }
+
+.sum-row { display: flex; justify-content: space-between; padding: 10rpx 0; }
+.flow { display: flex; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f0f0f0; }
+.flow:last-child { border-bottom: none; }
+.empty { text-align: center; padding: 60rpx 0; }

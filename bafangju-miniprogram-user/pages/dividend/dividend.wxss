@@ -1,0 +1,36 @@
+/* 我的分红 · 拼多多配色重设计 */
+
+.dividend { min-height: 100vh; padding-bottom: 40rpx; }
+.wrap { padding: 0; }
+
+/* 渐变带内的图标（与 pay-result 的 .hero-icon 同形，但放大到 88rpx 以匹配分红页的视觉重量） */
+.grad-header .hero-icon {
+  width: 88rpx; height: 88rpx; line-height: 88rpx; margin: 0 auto;
+  border-radius: 50%; background: rgba(255,255,255,.22);
+  font-size: 48rpx; color: #FFFFFF;
+}
+
+/* 上浮状态卡内的进度条（原渐变头内的进度条已迁入此卡） */
+.hero-card { position: relative; }
+.hero-card .gh-progress { height: 12rpx; background: #F0F0F0; border-radius: 6rpx; margin-top: 20rpx; overflow: hidden; }
+.hero-card .gh-progress-fill { height: 100%; background: linear-gradient(90deg, #FFC940, #B7791F); border-radius: 6rpx; }
+
+/* 规则入口角标：提示整卡可点 */
+.gh-rules { position: absolute; top: 20rpx; right: 24rpx; font-size: 22rpx; color: #8F1F26; }
+
+/* 队位列表行 */
+.ladder-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20rpx 0; border-bottom: 1rpx solid #EEEEEE;
+}
+.ladder-row:last-child { border-bottom: none; }
+.slot-dot { width: 12rpx; height: 12rpx; border-radius: 6rpx; background: #B7791F; margin-right: 12rpx; }
+.slot-dot.done { background: #07C160; }
+.slot-dot.skip { background: #B7791F; }
+.slot-dot.revoked { background: #C9CDD4; }
+
+/* 维护占位：品牌渐变圆底 + 共享线性图标（原 emoji 跨平台渲染不一致） */
+.empty-ic {
+  width: 88rpx; height: 88rpx; margin: 0 auto; border-radius: 50%;
+  background: linear-gradient(135deg, #C9525A, #B02A30);
+}

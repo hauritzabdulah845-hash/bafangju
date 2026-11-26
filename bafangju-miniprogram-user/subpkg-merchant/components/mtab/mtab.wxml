@@ -1,0 +1,7 @@
+<view class="tab-bar">
+  <view class="tab-bar-border"></view>
+  <view wx:for="{{list}}" wx:key="pagePath" class="tab-bar-item" data-path="{{item.pagePath}}" data-index="{{index}}" bindtap="onTap">
+    <view class="tb-icon tb-{{item.icon}} {{index === selected ? 'on' : ''}}"></view>
+    <view class="tb-text {{index === selected ? 'on' : ''}}">{{item.text}}</view>
+  </view>
+</view>

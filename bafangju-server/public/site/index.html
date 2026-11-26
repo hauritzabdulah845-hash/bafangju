@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>八方聚共享平台 · 买得越多 · 付得越少</title>
+<meta name="description" content="异业联盟复购让利平台：在联盟商家重复消费，前 n 单按标价，尾段 4 单让利 10%~40%。让利内嵌于售价，明明白白。">
+<meta name="keywords" content="八方聚,异业联盟,复购让利,阶梯售价,尾段让利,商家联盟">
+<meta name="theme-color" content="#B02A30">
+<link rel="canonical" href="/site/index.html">
+<!-- 社交分享卡片（P3-7）—— 上线前请把下方绝对地址替换为生产域名 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="八方聚共享平台">
+<meta property="og:title" content="八方聚共享平台 · 买得越多 · 付得越少">
+<meta property="og:description" content="异业联盟复购让利平台：在联盟商家重复消费，前 n 单按标价，尾段 4 单让利 10%~40%。让利内嵌于售价，明明白白。">
+<meta property="og:image" content="/site/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="八方聚共享平台 · 买得越多 · 付得越少">
+<meta name="twitter:description" content="异业联盟复购让利平台：前 n 单按标价，尾段 4 单让利 10%~40%。">
+<meta name="twitter:image" content="/site/og-cover.png">
+<style>
+  /* ===== 八方聚官网 · 品牌橙设计系统（与小程序 / 后台同一色板） ===== */
+  :root {
+    --accent: #B02A30; --accent-press: #8F1F26; --accent-soft: #FAF0F0;
+    --orange: #E07C24; --gold: #B7791F;
+    --grad: linear-gradient(135deg, #C9525A, #B02A30);
+    --bg: #FFFFFF; --bg-soft: #F9F9F9; --ink: #3F3E3E; --ink2: #666666; --ink3: #999999;
+    --line: #EEEEEE; --dark: #2A2926;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+  /* ===== 导航栏 ===== */
+  .nav { position: sticky; top: 0; z-index: 50; height: 72px; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; }
+  .nav .wrap { display: flex; align-items: center; width: 100%; }
+  .logo { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; }
+  .logo-mark { width: 30px; height: 30px; border-radius: 9px; background: var(--grad); position: relative; flex: none; }
+  .logo-mark::after { content: ''; position: absolute; left: 11px; top: 6px; width: 8px; height: 18px; border-radius: 3px; background: rgba(255,255,255,.92); }
+  .nav-links { display: flex; gap: 36px; margin-left: 56px; font-size: 15px; color: var(--ink2); }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta { margin-left: auto; background: var(--accent); color: #fff; font-size: 14px; font-weight: 500; padding: 9px 22px; border-radius: 20px; }
+  .nav-cta:hover { background: var(--accent-press); }
+  /* 汉堡按钮（P1-5）：≤860px 显示，≥861px 隐藏 */
+  .nav-toggle { display: none; margin-left: 12px; width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer;
+    align-items: center; justify-content: center; border-radius: 10px; padding: 0; }
+  .nav-toggle:hover { background: var(--bg-soft); }
+  .nav-toggle span { display: block; width: 20px; height: 2px; background: var(--ink); border-radius: 2px; position: relative; transition: transform .2s ease; }
+  .nav-toggle span::before, .nav-toggle span::after { content: ''; position: absolute; left: 0; width: 20px; height: 2px; background: var(--ink); border-radius: 2px; transition: transform .2s ease; }
+  .nav-toggle span::before { top: -6px; } .nav-toggle span::after { top: 6px; }
+  .nav-toggle[aria-expanded="true"] span { background: transparent; }
+  .nav-toggle[aria-expanded="true"] span::before { transform: translateY(6px) rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] span::after { transform: translateY(-6px) rotate(-45deg); }
+  /* 移动端抽屉 */
+  .nav-drawer { display: none; position: fixed; left: 0; right: 0; top: 72px; z-index: 49; background: #fff;
+    border-bottom: 1px solid var(--line); box-shadow: 0 10px 24px rgba(0,0,0,.08); padding: 8px 0; }
+  .nav-drawer.open { display: block; }
+  .nav-drawer a { display: block; padding: 14px 32px; font-size: 16px; color: var(--ink); }
+  .nav-drawer a:hover { background: var(--accent-soft); color: var(--accent); }
+  .nav-mask { display: none; position: fixed; left: 0; right: 0; top: 72px; bottom: 0; background: rgba(24,26,32,.38); z-index: 48; }
+  .nav-mask.open { display: block; }
+  @media (max-width: 860px) {
+    .nav-links { display: none; }
+    .nav-toggle { display: inline-flex; }
+    .nav-cta { margin-left: auto; padding: 9px 16px; font-size: 13px; }
+    .wrap { padding: 0 20px; }
+  }
+
+  /* ===== Hero ===== */
+  .hero { background: var(--grad); color: #fff; padding: 76px 0 84px; text-align: center; }
+  .hero-chip { display: inline-block; font-size: 13px; background: rgba(255,255,255,.18); border-radius: 14px; padding: 5px 16px; margin-bottom: 28px; }
+  .hero h1 { font-size: 48px; font-weight: 700; letter-spacing: 1px; }
+  .hero-sub { font-size: 16px; opacity: .92; max-width: 640px; margin: 18px auto 0; }
+  .hero-btns { display: flex; gap: 16px; justify-content: center; margin-top: 36px; }
+  .btn-white { background: #fff; color: var(--accent); font-size: 15px; font-weight: 600; padding: 13px 36px; border-radius: 26px; }
+  .btn-white:hover { transform: translateY(-1px); }
+  .btn-ghost { border: 1px solid rgba(255,255,255,.7); color: #fff; font-size: 15px; padding: 13px 36px; border-radius: 26px; }
+  .btn-ghost:hover { background: rgba(255,255,255,.12); }
+
+  /* 阶梯演示条 */
+  .ladder { display: flex; gap: 12px; justify-content: center; margin-top: 48px; flex-wrap: wrap; }
+  .ladder-cell { background: #fff; color: var(--ink); border-radius: 10px; padding: 12px 22px; min-width: 86px; }
+  .ladder-cell .p { font-size: 20px; font-weight: 700; font-family: "DIN Alternate", "Helvetica Neue", sans-serif; }
+  .ladder-cell .l { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+  .ladder-cell.rebate { background: var(--gold); }
+  .ladder-cell.rebate .p { color: #5C3D00; }
+  .ladder-cell.rebate .l { color: rgba(92,61,0,.75); }
+  .ladder-cell .d { font-size: 11px; color: #8F1F26; margin-top: 2px; }
+  .ladder-cell.rebate .d { color: rgba(92,61,0,.85); }
+  .ladder-note { font-size: 12px; opacity: .85; margin-top: 16px; }
+  @media (max-width: 720px) { .hero h1 { font-size: 32px; } .ladder-cell { min-width: 72px; padding: 10px 14px; } }
+
+  /* ===== 数据带 ===== */
+  .stats { background: #fff; border-bottom: 1px solid var(--line); }
+  .stats .wrap { display: flex; justify-content: center; gap: 96px; padding-top: 40px; padding-bottom: 40px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat .v { font-size: 34px; font-weight: 700; color: var(--accent); font-family: "DIN Alternate", "Helvetica Neue", sans-serif; }
+  .stat .k { font-size: 13px; color: var(--ink3); margin-top: 4px; }
+
+  /* ===== 机制区 ===== */
+  .section { padding: 72px 0; }
+  .section.soft { background: var(--bg-soft); }
+  .sec-head { text-align: center; margin-bottom: 44px; }
+  .sec-head .t { font-size: 30px; font-weight: 700; }
+  .sec-head .s { font-size: 15px; color: var(--ink3); margin-top: 10px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .mcard { background: var(--bg-soft); border-radius: 16px; padding: 32px 28px; }
+  .section.soft .mcard { background: #fff; }
+  .mcard .badge { width: 44px; height: 44px; border-radius: 22px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 17px; }
+  .mcard h3 { font-size: 18px; margin-bottom: 10px; }
+  .mcard p { font-size: 14px; color: var(--ink2); }
+  @media (max-width: 860px) { .cards { grid-template-columns: 1fr; } }
+
+  /* ===== 类目区 ===== */
+  .cats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+  .cat { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 12px; text-align: center; transition: box-shadow .15s; }
+  .cat:hover { box-shadow: 0 6px 18px rgba(183, 121, 31,.10); }
+  .cat img { width: 44px; height: 44px; border-radius: 50%; }
+  .cat .n { font-size: 14px; margin-top: 10px; }
+  @media (max-width: 860px) { .cats { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 520px) { .cats { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ===== 入驻 CTA ===== */
+  .cta { background: var(--grad); color: #fff; }
+  .cta .wrap { display: flex; align-items: center; justify-content: space-between; gap: 48px; padding-top: 56px; padding-bottom: 56px; flex-wrap: wrap; }
+  .cta h2 { font-size: 28px; font-weight: 700; }
+  .cta .sub { font-size: 14px; opacity: .9; margin-top: 12px; }
+  .cta .btn-white { margin-top: 26px; display: inline-block; }
+  .cta-right { display: flex; flex-direction: column; gap: 14px; }
+  .cta-ben { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .cta-ben .dot { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; font-size: 11px; flex: none; }
+
+  /* ===== 页脚 ===== */
+  .foot { background: var(--dark); color: rgba(255,255,255,.72); padding: 44px 0 28px; font-size: 13px; }
+  .foot-top { display: flex; gap: 80px; flex-wrap: wrap; }
+  .foot .logo { color: #fff; font-size: 16px; }
+  .foot-col h4 { color: rgba(255,255,255,.9); font-size: 13px; margin-bottom: 14px; }
+  .foot-col a { display: block; padding: 4px 0; opacity: .75; }
+  .foot-col a:hover { opacity: 1; color: #fff; }
+  .foot-bottom { border-top: 1px solid rgba(255,255,255,.1); margin-top: 32px; padding-top: 20px; font-size: 12px; color: rgba(255,255,255,.45); }
+  .foot-filing { margin-top: 10px; font-size: 12px; color: rgba(255,255,255,.55); display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; }
+  .foot-filing:empty { display: none; }
+  .foot-filing a { color: inherit; text-decoration: none; }
+  .foot-filing a:hover { color: #fff; text-decoration: underline; }
+  .foot-filing .filing-item { display: inline-flex; align-items: center; gap: 4px; }
+</style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="logo" href="#"><span class="logo-mark"></span>八方聚共享平台</a>
+    <div class="nav-links">
+      <a href="#mechanism">平台机制</a>
+      <a href="#categories">服务类目</a>
+      <a href="#cta">商家入驻</a>
+      <a href="#footer">规则中心</a>
+    </div>
+    <a class="nav-cta" href="#cta">商家入驻</a>
+    <button class="nav-toggle" id="navToggle" aria-label="打开导航菜单" aria-expanded="false" aria-controls="navDrawer"><span></span></button>
+  </div>
+</nav>
+<!-- 移动端抽屉导航（P1-5） -->
+<div class="nav-drawer" id="navDrawer">
+  <a href="#mechanism">平台机制</a>
+  <a href="#categories">服务类目</a>
+  <a href="#cta">商家入驻</a>
+  <a href="#footer">规则中心</a>
+</div>
+<div class="nav-mask" id="navMask"></div>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="wrap">
+    <span class="hero-chip">异业联盟 · 复购让利平台</span>
+    <h1>买得越多 · 付得越少</h1>
+    <p class="hero-sub">在联盟商家重复消费，前 n 单按标价购买，尾段 4 单依次让利 10%、20%、30%、40%。让利内嵌于阶梯售价，花多少、省多少，明明白白。</p>
+    <div class="hero-btns">
+      <a class="btn-white" href="#cta">申请入驻</a>
+      <a class="btn-ghost" href="#mechanism">了解机制</a>
+    </div>
+    <div class="ladder">
+      <div class="ladder-cell"><div class="p">¥10</div><div class="l">第 1 单</div></div>
+      <div class="ladder-cell"><div class="p">¥10</div><div class="l">第 2 单</div></div>
+      <div class="ladder-cell"><div class="p">¥10</div><div class="l">第 3 单</div></div>
+      <div class="ladder-cell"><div class="p">¥10</div><div class="l">第 4 单</div></div>
+      <div class="ladder-cell"><div class="p">¥10</div><div class="l">第 5 单</div></div>
+      <div class="ladder-cell"><div class="p">¥10</div><div class="l">第 6 单</div></div>
+      <div class="ladder-cell rebate"><div class="p">¥9</div><div class="l">第 7 单</div><div class="d">省 10%</div></div>
+      <div class="ladder-cell rebate"><div class="p">¥8</div><div class="l">第 8 单</div><div class="d">省 20%</div></div>
+      <div class="ladder-cell rebate"><div class="p">¥7</div><div class="l">第 9 单</div><div class="d">省 30%</div></div>
+      <div class="ladder-cell rebate"><div class="p">¥6</div><div class="l">第 10 单</div><div class="d">省 40%</div></div>
+    </div>
+    <p class="ladder-note">以原价 ¥10、利润率 20% 的类目为例（全价段 6 单 + 让利段 4 单）· 每个类目独立计算进度</p>
+  </div>
+</header>
+
+<!-- 数据带（真实统计，接口 /api/stats/public） -->
+<section class="stats">
+  <div class="wrap">
+    <div class="stat"><div class="v" id="stMerchants">—</div><div class="k">联盟入驻商家</div></div>
+    <div class="stat"><div class="v" id="stUsers">—</div><div class="k">注册用户</div></div>
+    <div class="stat"><div class="v" id="stSaved">—</div><div class="k">累计为居民节省（元）</div></div>
+  </div>
+</section>
+
+<!-- 机制区 -->
+<section class="section" id="mechanism">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="t">三步机制 · 明明白白</div>
+      <div class="s">让利内嵌于商品售价，不承诺现金返还、不承诺全额返、不承诺保本</div>
+    </div>
+    <div class="cards">
+      <div class="mcard">
+        <div class="badge" style="background:var(--accent)">1</div>
+        <h3>选店下单</h3>
+        <p>在联盟商家消费，自动按所在类目的阶梯进度计价，第几单、付几价，结算页一目了然。</p>
+      </div>
+      <div class="mcard">
+        <div class="badge" style="background:var(--orange)">2</div>
+        <h3>复购推进度</h3>
+        <p>每完成一笔有效订单，该类目进度 +1。粮油、餐饮、美容等类目各自独立计算，互不影响。</p>
+      </div>
+      <div class="mcard">
+        <div class="badge" style="background:var(--gold)">3</div>
+        <h3>尾段让利收口</h3>
+        <p>全价段完成后，尾段 4 单依次让利 10%、20%、30%、40%；尾单支付后本周期收口，进度归零重新起算。让利内嵌于售价，不形成兑付承诺。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 类目区 -->
+<section class="section soft" id="categories">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="t">十大服务类目</div>
+      <div class="s">覆盖社区高频生活消费，各类目独立阶梯、独立周期</div>
+    </div>
+    <div class="cats" id="catGrid"></div>
+  </div>
+</section>
+
+<!-- 入驻 CTA -->
+<section class="cta" id="cta">
+  <div class="wrap">
+    <div class="cta-left">
+      <h2>把附近的客流，变成反复回头的客流</h2>
+      <p class="sub">0 入驻费 · 阶梯活动由平台补贴 · 收益按平台结算规则发放</p>
+      <a class="btn-white" href="#footer">申请入驻</a>
+    </div>
+    <div class="cta-right">
+      <div class="cta-ben"><span class="dot">✓</span>免费入驻，当天审核</div>
+      <div class="cta-ben"><span class="dot">✓</span>平台统一活动补贴，商家不垫资</div>
+      <div class="cta-ben"><span class="dot">✓</span>核销即记账，按平台结算规则发放</div>
+    </div>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="foot" id="footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="logo" href="#"><span class="logo-mark"></span>八方聚共享平台</a>
+      <div class="foot-col">
+        <h4>平台</h4>
+        <a href="#mechanism">平台机制</a>
+        <a href="#categories">服务类目</a>
+        <a href="#footer">规则中心</a>
+      </div>
+      <div class="foot-col">
+        <h4>商家</h4>
+        <a href="#cta">入驻指引</a>
+        <a href="#cta">收益结算</a>
+        <a href="#cta">广告投放</a>
+      </div>
+      <div class="foot-col">
+        <h4>支持</h4>
+        <a href="#footer">联系客服</a>
+        <a href="#footer">投诉建议</a>
+        <a href="#footer">隐私政策</a>
+      </div>
+    </div>
+    <div class="foot-bottom">2026 八方聚共享平台 · 让利以阶梯定价内嵌于售价，不形成兑付承诺</div>
+    <div class="foot-filing" data-filing></div>
+  </div>
+</footer>
+
+<!-- 结构化数据（P3-7）—— 上线前请把 url 替换为生产域名 -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "/site/index.html#organization",
+      "name": "八方聚共享平台",
+      "alternateName": "八方聚",
+      "url": "/site/index.html",
+      "description": "异业联盟复购让利平台：在联盟商家重复消费，前 n 单按标价，尾段 4 单让利 10%~40%。",
+      "slogan": "买得越多 · 付得越少"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "/site/index.html#website",
+      "name": "八方聚共享平台",
+      "url": "/site/index.html",
+      "inLanguage": "zh-CN",
+      "publisher": { "@id": "/site/index.html#organization" }
+    }
+  ]
+}
+</script>
+
+<script src="/js/filing-badge.js"></script>
+<script>
+// 移动端抽屉导航（P1-5）
+(function () {
+  var btn = document.getElementById('navToggle');
+  var drawer = document.getElementById('navDrawer');
+  var mask = document.getElementById('navMask');
+  function setOpen(open) {
+    drawer.classList.toggle('open', open);
+    mask.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.setAttribute('aria-label', open ? '关闭导航菜单' : '打开导航菜单');
+  }
+  btn.addEventListener('click', function () {
+    setOpen(!drawer.classList.contains('open'));
+  });
+  mask.addEventListener('click', function () { setOpen(false); });
+  drawer.addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') setOpen(false);
+  });
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 860) setOpen(false);
+  });
+})();
+
+// 数据带与类目区：同源接口真实数据（/api/stats/public、/api/home）
+function fmt(n) { return (n == null ? '—' : n); }
+fetch('/api/stats/public').then((r) => r.json()).then((d) => {
+  document.getElementById('stMerchants').textContent = d.merchants + ' 家';
+  document.getElementById('stUsers').textContent = d.users + ' 人';
+  document.getElementById('stSaved').textContent = d.savedYuan;
+}).catch(() => {
+  document.getElementById('stMerchants').textContent = '—';
+  document.getElementById('stUsers').textContent = '—';
+  document.getElementById('stSaved').textContent = '—';
+});
+fetch('/api/home').then((r) => r.json()).then((d) => {
+  const cats = (d.categories || []).slice(0, 10);
+  const tones = ['#FAF0F0', '#FAF0F0', '#FFF7E6', '#E8F9EF', '#F0F4FF'];
+  // 类目线性图标（24 网格 / 1.8 描边 / 品牌红，与小程序端同一体系）；按名称关键词匹配，未命中用店铺兜底
+  const svg = (inner) => `<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C2410C' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E${inner}%3C/svg%3E" alt="" style="width:26px;height:26px">`;
+  const CAT_ICONS = [
+    ['餐饮|美食', svg("%3Cpath d='M7 3v8a2 2 0 0 0 2 2h.5'/%3E%3Cpath d='M7 7h-1.8'/%3E%3Cpath d='M14 3.2c2 0 3.2 2 3.2 4.3 0 1.8-1 3-2.4 3.2V13'/%3E%3Cpath d='M14 3.2v9.8'/%3E%3Cpath d='M5 21h11'/%3E%3Cpath d='M10.5 13v8'/%3E")],
+    ['甜点|饮|茶|奶茶', svg("%3Cpath d='M6 8h12l-1 9a3 3 0 0 1-3 2.6H10A3 3 0 0 1 7 17z'/%3E%3Cpath d='M7 5.5c0-1 .8-1.5 1.5-1.5S10 4.5 10 5.5'/%3E%3Cpath d='M10.6 5c0-1 .8-1.6 1.4-1.6.7 0 1.4.6 1.4 1.6'/%3E%3Cpath d='M14 8h4a2 2 0 0 1 0 4h-4'/%3E")],
+    ['生鲜|果蔬|菜', svg("%3Cpath d='M20 4c-7 0-11 4-11 10 0 3 2 5 4 5 5 0 7-6 7-15z'/%3E%3Cpath d='M13 19c-4-1-7-4-7-9 0-2 .7-4 2-6'/%3E%3Cpath d='M6 21c1-3 3-5 6-6'/%3E")],
+    ['超市|便利', svg("%3Cpath d='M4 9.5h16v10.2a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.7z'/%3E%3Cpath d='M3 9.5l1.4-4.2h15.2L21 9.5'/%3E%3Cpath d='M9 21.2v-5.6h6v5.6'/%3E")],
+    ['休闲|玩|娱乐', svg("%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Ccircle cx='15' cy='9' r='1.2'/%3E%3Ccircle cx='9' cy='9' r='1.2'/%3E%3Cpath d='M8.5 14.5c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8'/%3E")],
+    ['丽人|美|理发', svg("%3Ccircle cx='6.5' cy='6.5' r='2.5'/%3E%3Ccircle cx='6.5' cy='17.5' r='2.5'/%3E%3Ccircle cx='17.5' cy='12' r='2.5'/%3E%3Cpath d='M8.7 8.7L15 13.5'/%3E%3Cpath d='M8.7 15.3L15 10.5'/%3E")],
+    ['健康|养生|按摩', svg("%3Cpath d='M12 20s-6.5-3.8-6.5-8.5C5.5 8.5 7.5 6.5 10 6.5c1 0 1.7.4 2 1 .3-.6 1-1 2-1 2.5 0 4.5 2 4.5 5C18.5 16.2 12 20 12 20z'/%3E%3Cpath d='M3 12h1.5'/%3E%3Cpath d='M19.5 12H21'/%3E")],
+    ['酒店|旅行|住宿', svg("%3Cpath d='M3 18V7a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v11'/%3E%3Cpath d='M16 10h3a2 2 0 0 1 2 2v6'/%3E%3Cpath d='M2 18h20'/%3E%3Cpath d='M6.5 8.5h2'/%3E%3Cpath d='M6.5 12h2'/%3E%3Cpath d='M6.5 15.5h2'/%3E")],
+    ['亲子|儿童|乐园', svg("%3Cellipse cx='12' cy='11.5' rx='4' ry='4.8'/%3E%3Cpath d='M12 6.7c-2-2-5-2-6.5-.6C4 7.5 4.4 10 6.5 11.5'/%3E%3Cpath d='M12 6.7c2-2 5-2 6.5-.6 1.5 1.4 1.1 3.9-1 5.4'/%3E%3Cpath d='M12 16.3V21'/%3E%3Cpath d='M9 21h6'/%3E")],
+    ['家政|保洁|维修', svg("%3Cpath d='M5 21l9-9'/%3E%3Crect x='12' y='4' width='8' height='6' rx='1.5' transform='rotate(45 16 7)'/%3E%3Cpath d='M7 4l1.5 4L12 8.5l2.5-3'/%3E")],
+    ['粮油|食品', svg("%3Cpath d='M12 21c-3.5 0-6-2.6-6-6.5C6 10 8.5 6.5 12 3c3.5 3.5 6 7 6 11.5 0 3.9-2.5 6.5-6 6.5z'/%3E%3Cpath d='M12 21V9'/%3E%3Cpath d='M12 13l3-2.2'/%3E%3Cpath d='M12 16.5l3.4-2.5'/%3E")],
+    ['百货|家居', svg("%3Cpath d='M4 11l8-7 8 7'/%3E%3Cpath d='M6 10v10h12V10'/%3E%3Cpath d='M10 20v-5h4v5'/%3E")],
+  ];
+  const FALLBACK_CAT_ICON = svg("%3Cpath d='M4 9.5h16v10.2a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.7z'/%3E%3Cpath d='M3 9.5l1.4-4.2h15.2L21 9.5'/%3E%3Cpath d='M9 21.2v-5.6h6v5.6'/%3E");
+  const catIcon = (name) => {
+    const hit = CAT_ICONS.find(([kw]) => new RegExp(kw).test(name || ''));
+    return hit ? hit[1] : FALLBACK_CAT_ICON;
+  };
+  document.getElementById('catGrid').innerHTML = cats.map((c, i) => `
+    <div class="cat">
+      ${c.iconImage
+        ? `<img src="${c.iconImage}" alt="${c.name}" loading="lazy">`
+        : `<div style="width:44px;height:44px;border-radius:50%;background:${tones[i % tones.length]};display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto">${catIcon(c.name)}</div>`}
+      <div class="n">${c.name}</div>
+    </div>`).join('');
+}).catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!-- 广告位（商家端）：选位 → 素材 → 提交审核 → 效果统计（V3.7） -->
+<view class="ad-page">
+
+  <!-- V4.2：视频广告自助入口（额度制） -->
+  <view class="card">
+    <view class="row-between">
+      <view>
+        <view class="t1">视频广告 · 按 IP 计费</view>
+        <view class="t-weak">上传视频、自助投放、查看效果与额度</view>
+      </view>
+      <button class="btn-sm" bindtap="goAdVideos">去管理 ›</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="t1">选择广告位</view>
+    <view class="t-weak" style="margin-top:6rpx">不同广告位价格不同，按投放天数收费。提交后需平台审核，审核通过才开始计算投放时间。</view>
+    <view class="slot {{selectedId === item.id ? 'on' : ''}}" wx:for="{{slots}}" wx:key="id" data-id="{{item.id}}" bindtap="pick">
+      <view class="row-between">
+        <view>
+          <view class="t2 t-bold">{{item.name}}</view>
+          <view class="t-weak">{{item.positionLabel}} · 最少投 {{item.minDays}} 天</view>
+        </view>
+        <view style="text-align:right">
+          <view class="price">¥{{item.priceText}}</view>
+          <view class="tag {{item.status === 'available' ? 'green' : 'gray'}}" style="margin-top:6rpx">{{item.statusText}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{!slots.length && !loading}}">平台暂未开放广告位</view>
+  </view>
+
+  <view class="card" wx:if="{{selectedId}}">
+    <view class="t1">投放素材</view>
+    <input class="ipt" placeholder="广告标题（如 国庆粮油节）" value="{{title}}" bindinput="onTitle" maxlength="40" />
+    <view class="row gap" style="margin-top:14rpx">
+      <view class="btn-plain btn-sm" bindtap="chooseImage">{{uploading ? '上传中…' : (imageUrl ? '重新上传' : '上传图片')}}</view>
+      <view class="btn-plain btn-sm" wx:if="{{imageUrl}}" bindtap="clearImage">清除</view>
+    </view>
+    <image wx:if="{{imageFull}}" class="ad-preview" src="{{imageFull}}" mode="aspectFill" />
+    <view class="t-weak" style="margin-top:8rpx">不上传图片时，广告会用纯文字 + 渐变色展示。</view>
+    <picker mode="selector" range="{{targetTypes}}" range-key="label" value="{{targetTypeIndex}}" bindchange="onTargetType">
+      <view class="ipt" style="margin-top:14rpx">点击跳转：{{targetTypeLabel}}</view>
+    </picker>
+    <input wx:if="{{targetType === 'product'}}" class="ipt" style="margin-top:14rpx" placeholder="点开后跳转的商品 ID" value="{{targetId}}" bindinput="onTarget" />
+    <input class="ipt" type="number" placeholder="投放天数（不少于最少天数，且为它的整数倍）" value="{{days}}" bindinput="onDays" />
+    <view class="btn" bindtap="book">{{submitting ? '提交中…' : '提交投放（待审核）'}}</view>
+  </view>
+
+  <view class="card">
+    <view class="row-between">
+      <view class="t1">我的投放</view>
+      <view class="t-weak" wx:if="{{summary}}">展示 {{summary.impressions}} 次 · 点击 {{summary.clicks}} 次 · 点击率 {{summary.ctrPercent}}%</view>
+    </view>
+    <view class="ad-row" wx:for="{{my}}" wx:key="id">
+      <view class="row-between">
+        <view class="t2 t-bold">{{item.title || item.slotName}}</view>
+        <text class="tag {{item.statusText === '投放中' ? 'green' : (item.statusText === '待审核' ? 'gold' : 'gray')}}">{{item.statusText}}</text>
+      </view>
+      <view class="t-weak" style="margin-top:6rpx">{{item.slotName}} · {{item.days}} 天 · ¥{{item.feeYuan}}</view>
+      <view class="t-weak" wx:if="{{item.startAt}}">{{item.startAtText}} ~ {{item.endAtText}}（剩余 {{item.daysLeft}} 天）</view>
+      <view class="t-weak" wx:if="{{item.reviewNote}}">备注：{{item.reviewNote}}</view>
+      <view class="t-weak" wx:if="{{item.statusText === '投放中' || item.statusText === '已结束'}}">
+        展示 {{item.impressionCount}} 次 · 点击 {{item.clickCount}} 次 · 点击率 {{item.ctrPercent}}%
+      </view>
+    </view>
+    <view class="empty" wx:if="{{!my.length && !loading}}">还没有投放记录</view>
+  </view>
+</view>

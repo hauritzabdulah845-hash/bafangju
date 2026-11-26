@@ -1,0 +1,29 @@
+/* 隐私政策与用户协议 */
+
+.page { padding-bottom: calc(40rpx + env(safe-area-inset-bottom)); }
+
+/* 渐变带内的图标（与其它页头部一致） */
+.grad-header .hero-icon {
+  width: 88rpx; height: 88rpx; line-height: 88rpx; margin: 0 auto;
+  border-radius: 50%; background: rgba(255,255,255,.22);
+  font-size: 48rpx; color: #FFFFFF;
+}
+
+/* 上浮白卡：页签 + 更新日期 */
+.hero-card { padding-bottom: 24rpx; }
+.tabs { display: flex; gap: 16rpx; }
+.tab {
+  flex: 1; text-align: center; font-size: 28rpx; color: #666666;
+  padding: 14rpx 0; border-radius: 32rpx; background: #F5F5F5;
+}
+.tab.on { background: #FAF0F0; color: #8F1F26; font-weight: 600; }
+.updated { margin-top: 16rpx; font-size: 22rpx; color: #999999; text-align: center; }
+
+/* 正文卡片 */
+.body { margin: 24rpx; padding: 8rpx 28rpx 24rpx; }
+.sec { margin-top: 28rpx; }
+.h { font-size: 28rpx; font-weight: 600; color: #3F3E3E; margin-bottom: 10rpx; }
+.p { font-size: 26rpx; line-height: 1.75; color: #666666; margin-top: 6rpx; }
+
+/* 技术支持署名 */
+.tech-support { margin: 0 24rpx 32rpx; text-align: center; font-size: 22rpx; color: #AAAAAA; }

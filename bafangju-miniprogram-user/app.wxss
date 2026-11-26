@@ -1,0 +1,145 @@
+@import "design-tokens.wxss";
+
+/* ============================================================
+   八方聚用户端 · 设计系统 V3.0
+   ----------------------------------------------------------
+   共享层：design-tokens.wxss（文字层级 / 卡片 / 布局 / 价格 / 合规提示 …）
+   本文件只写**用户端差异项**。改共享样式请改 design-tokens.wxss
+   （真源在 bafangju-design-tokens/，三份内容必须逐字节一致）。
+
+   与 UI 重设计稿 redesign-20261102/（规范页 spec.html + handoff 令牌表）一致
+   色板：品牌枣红 #B02A30 / 券金 #B7791F（仅营销条、促销标签）/ 奖励金 #996300
+   渐变：#C9525A → #B02A30（仅用于按钮、主 CTA；头部统一纯枣红）
+   原则：价格即视觉锤；枣红只给价格与主 CTA，金只给营销与奖励；密度优先（白卡 + 12px 圆角）
+
+   可读性（WCAG 2.1 AA）：
+   品牌枣红 #B02A30 在白底上 6.52:1（AA 小字达标）。需要更强对比的浅底文字
+   用深枣红 #8F1F26（白底 8.78:1 / #FAF0F0 上 7.85:1）。
+   ============================================================ */
+
+/* ---------- 用户端差异：页面底色（与令牌默认同值，显式声明便于查阅） ---------- */
+page { --page-bg: #F7F8FA; }
+
+/* ---------- 用户端差异：色底上的文字（消息/规则页标题） ---------- */
+.t-gold { color: #996300; }   /* 金色文字版 */
+.t-white { color: #FFFFFF; }
+
+/* ---------- 价格排版（用户端专属） ---------- */
+.price-row { display: flex; align-items: baseline; }
+.price-num.sm { font-size: 42rpx; }
+.price-origin { font-size: 28rpx; color: #666666; margin-left: 12rpx; text-decoration: line-through; }
+.price-unit { font-size: 28rpx; color: #666666; margin-left: 8rpx; }
+
+/* ---------- 按钮 ---------- */
+.btn-primary {
+  background: linear-gradient(90deg, #C9525A, #B02A30);
+  color: #FFFFFF; font-size: 30rpx; font-weight: 500;
+  border-radius: 44rpx; padding: 20rpx 48rpx; text-align: center;
+  box-shadow: 0 6rpx 16rpx rgba(176, 42, 48, 0.22);
+}
+.btn-primary.disabled { background: #F5CFCB; box-shadow: none; color: #FFFFFF; }
+.btn-outline {
+  background: #FFFFFF; color: #8F1F26; font-size: 28rpx; font-weight: 500;
+  border: 1rpx solid #B02A30; border-radius: 44rpx; padding: 18rpx 40rpx; text-align: center;
+}
+.btn-ghost {
+  background: #FFFFFF; color: #666666; font-size: 28rpx;
+  border: 1rpx solid #DDDDDD; border-radius: 44rpx; padding: 18rpx 40rpx; text-align: center;
+}
+.btn-sm { font-size: 28rpx; padding: 16rpx 28rpx; border-radius: 36rpx; }
+.btn-block { display: block; }
+
+/* ---------- 促销标签 ---------- */
+.tag { display: inline-block; font-size: 24rpx; border-radius: 8rpx; padding: 6rpx 14rpx; margin-right: 12rpx; vertical-align: middle; }
+.tag-promo { background: #FAF0F0; color: #8F1F26; }      /* 第 n 单专享 */
+.tag-orange { background: #FAF0F0; color: #8F1F26; }     /* 差 1 单收口 */
+.tag-gold { background: #FFF7E6; color: #996300; }       /* 让利 / 奖励金 */
+.tag-free { background: #B7791F; color: #5C3D00; font-weight: 600; } /* 免单达成（旧模型遗留 FREE 单展示用） */
+.tag-green { background: #E8F9EF; color: #067F43; }
+.tag-gray { background: #F2F2F2; color: #666666; }
+
+/* ---------- 阶梯表（核心组件） ----------
+   状态语言统一：past=已走过的步（浅红）/ next=下一单（红渐变，最强视觉）；
+   让利段（尾段 4 单）以 .lc-discount 折扣角标标注，无免单终点 */
+.ladder { display: flex; gap: 12rpx; position: relative; }
+.ladder::before { /* 节点连接线：从格子间隙穿过，强化阶梯进程感（单行模式） */
+  content: ''; position: absolute; left: 7%; right: 7%; top: 50%; height: 2rpx;
+  background: #F0F0F0; z-index: 0;
+}
+/* 多行模式：格数 > 5 时自动折行（每格宽由 JS 计算 flex-basis 下发），连接线失去意义，关闭 */
+.ladder.wrap { flex-wrap: wrap; row-gap: 20rpx; }
+.ladder.wrap::before { display: none; }
+.ladder-cell {
+  flex: 1; min-width: 0; position: relative; z-index: 1;
+  background: #F7F7F7; border-radius: 14rpx;
+  padding: 16rpx 4rpx 12rpx; text-align: center;
+}
+/* 节省额角标：挂在下一单格顶部，Absolute 定位突出格子上沿 */
+.lc-badge {
+  position: absolute; top: -16rpx; left: 50%; transform: translateX(-50%);
+  background: #B02A30; color: #FFFFFF; font-size: 22rpx; font-weight: 600;
+  padding: 2rpx 12rpx; border-radius: 999rpx; white-space: nowrap; line-height: 1.4; z-index: 2;
+}
+.ladder-cell .lc-price {
+  font-size: 28rpx; font-weight: 700; color: #3F3E3E; line-height: 1.2;
+  white-space: nowrap; font-family: "DIN Alternate", "Helvetica Neue", sans-serif;
+}
+.ladder-cell .lc-label { font-size: 24rpx; color: #666666; margin-top: 6rpx; line-height: 1.2; white-space: nowrap; }
+/* 已走过的步 */
+.ladder-cell.past { background: #FAF0F0; }
+.ladder-cell.past .lc-price { color: #8F1F26; }
+.ladder-cell.past .lc-label { color: #B23B34; }
+/* 下一单：用户下一个动作的目标，全组件最强视觉（含呼吸光晕） */
+.ladder-cell.next {
+  background: linear-gradient(180deg, #C9525A, #B02A30);
+  animation: lcPulse 2s ease-in-out infinite;
+}
+@keyframes lcPulse {
+  0%, 100% { box-shadow: 0 6rpx 16rpx rgba(176, 42, 48, 0.22); }
+  50% { box-shadow: 0 6rpx 26rpx rgba(176, 42, 48, 0.48); }
+}
+.ladder-cell.next .lc-price { color: #FFFFFF; }
+.ladder-cell.next .lc-label { color: rgba(255, 255, 255, 0.9); }
+/* 让利段折扣标注（尾段 4 单：省10%/20%/30%/40%） */
+.ladder-cell .lc-discount { font-size: 22rpx; color: #8F1F26; margin-top: 4rpx; line-height: 1.2; white-space: nowrap; }
+/* 免单终点（旧模型遗留样式，新模型不再产出 free 态） */
+.ladder-cell.free { background: linear-gradient(180deg, #FFC940, #B7791F); }
+.ladder-cell.free .lc-price { color: #5C3D00; }
+.ladder-cell.free .lc-label { color: rgba(92, 61, 0, 0.75); }
+.ladder-cell.free .lc-badge { background: #5C3D00; }
+
+/* ---------- 进度条 ---------- */
+.progress { height: 12rpx; background: #F0F0F0; border-radius: 6rpx; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #C9525A, #B02A30); border-radius: 6rpx; }
+.progress-fill.gold { background: linear-gradient(90deg, #FFC940, #B7791F); }
+.progress-fill.green { background: #07C160; }
+
+/* ---------- 合规提示（链接态为用户端专属） ---------- */
+.notice-link { color: #8F1F26; text-decoration: underline; }
+
+/* ---------- 兼容层：存量页面类名（订单/消息/任务/我的/规则/推广/团队/提现/地址） ---------- */
+.price { color: #B02A30; font-weight: 700; }
+
+
+/* ============================================================
+   共享功能图标库（ICON TOKENS）
+   ----------------------------------------------------------
+   替代页面头部散落的 emoji：emoji 在 iOS/Android/微信内置渲染各异，
+   且彩色面性与本系统的红金线性图标语言冲突。
+   统一基线：24×24 网格 / stroke-width 1.8 / round cap&join / fill none
+   渐变红头上的图标固定白色；浅底场景请给容器加深色底再用白色图标。
+   用法：<view class="hero-icon"><view class="hi hi-bag"></view></view>
+   ============================================================ */
+.hi { width: 100%; height: 100%; background-repeat: no-repeat; background-position: center; background-size: 56% 56%; }
+.hi-standalone { width: 56rpx; height: 56rpx; margin: 0 auto; }
+.hi-bag { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.6 8.4h14.8l-1.1 11a1.6 1.6 0 0 1-1.6 1.4H7.3a1.6 1.6 0 0 1-1.6-1.4z'/%3E%3Cpath d='M9 8.4V6.2a3 3 0 0 1 6 0v2.2'/%3E%3C/svg%3E"); }
+.hi-doc { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.4 3.2h7.4l4.2 4.2v13.4H6.4z'/%3E%3Cpath d='M13.8 3.2v4.2h4.2'/%3E%3Cpath d='M9.4 11.4h5.6M9.4 14.8h5.6M9.4 18.2h3.6'/%3E%3C/svg%3E"); }
+.hi-clipboard { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='4.6' width='14' height='16.4' rx='2'/%3E%3Cpath d='M9 4.6V3h6v1.6'/%3E%3Cpath d='M8.6 12.6l2.4 2.4 4.4-4.8'/%3E%3C/svg%3E"); }
+.hi-user { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8.2' r='3.8'/%3E%3Cpath d='M4.4 21c0-4 3.4-6.4 7.6-6.4s7.6 2.4 7.6 6.4'/%3E%3C/svg%3E"); }
+.hi-trend { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.4 19.6h17.2'/%3E%3Cpath d='M5 16.2l4.6-4.6 3.2 3.2L19 8.2'/%3E%3Cpath d='M15.4 8.2H19v3.6'/%3E%3C/svg%3E"); }
+.hi-megaphone { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.2' y='9' width='4.4' height='6' rx='1.2'/%3E%3Cpath d='M7.6 9l8.2-4.2v14.4L7.6 15z'/%3E%3Cpath d='M10.6 15.2l1 4.4'/%3E%3Cpath d='M18.4 9.2a4.2 4.2 0 0 1 0 5.6'/%3E%3C/svg%3E"); }
+.hi-clock { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M12 7v5.4l3.4 2'/%3E%3C/svg%3E"); }
+.hi-check { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.6'/%3E%3Cpath d='M8.2 12.2l2.8 2.8 4.8-5.4'/%3E%3C/svg%3E"); }
+.hi-pin { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s6.6-6 6.6-11a6.6 6.6 0 1 0-13.2 0C5.4 15 12 21 12 21z'/%3E%3Ccircle cx='12' cy='10' r='2.4'/%3E%3C/svg%3E"); }
+.hi-phone { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='7' y='2.8' width='10' height='18.4' rx='2'/%3E%3Cpath d='M10.8 18.4h2.4'/%3E%3C/svg%3E"); }
+.hi-search { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.6' cy='10.6' r='6.6'/%3E%3Cpath d='M15.4 15.4L20 20'/%3E%3C/svg%3E"); }

@@ -1,0 +1,149 @@
+<!-- 赚实惠 · 用户激励统一入口
+     结构：渐变头部 →「看视频 / 做任务」分段 → 分段内容 → 合规说明
+     看视频：商家视频广告（V4.2），完播得贡献值
+     做任务：每日任务摘要（完整清单在 pages/tasks/tasks），攒贡献值算活跃度
+     贡献值不可兑现、不可提现，页内口径必须保留 -->
+<view class="ads">
+
+  <view class="grad-header">
+    <view class="hero-icon"><view class="hi hi-bag"></view></view>
+    <view class="hero-title">赚实惠</view>
+    <view class="hero-sub">看视频、做任务，攒贡献值算活跃度</view>
+  </view>
+
+  <view class="body">
+
+    <!-- 分段切换：两个挣贡献值的动作归到同一个 tab，不再散在首页金刚区与「我的」 -->
+    <view class="seg">
+      <view class="seg-item {{activeTab === 'video' ? 'on' : ''}}" data-tab="video" bindtap="switchSeg">看视频</view>
+      <view class="seg-item {{activeTab === 'task' ? 'on' : ''}}" data-tab="task" bindtap="switchSeg">做任务</view>
+    </view>
+
+    <!-- ===== 看视频 ===== -->
+    <block wx:if="{{activeTab === 'video'}}">
+
+      <!-- 今日进度 -->
+      <view class="card" wx:if="{{dailyLimit > 0}}">
+        <view class="row-between">
+          <view class="t1">今日进度</view>
+          <view class="t-weak">已看 {{todayClaimed}} / {{dailyLimit}} 条</view>
+        </view>
+        <view class="today-track"><view class="today-fill" style="width:{{todayPercent}}%"></view></view>
+        <view class="t-weak tip">贡献值用来算活跃度（近 30 天满 80 算达标），不能换现金、不能提现。</view>
+      </view>
+
+      <!-- 商家视频广告 -->
+      <view class="card" wx:if="{{rewardVideos.length}}">
+        <view class="row-between">
+          <view class="t1">推荐视频</view>
+          <view class="t-weak">每人每条限参与 1 次</view>
+        </view>
+        <view class="rv-card" wx:for="{{rewardVideos}}" wx:key="id" bindtap="goWatch" data-id="{{item.id}}">
+          <view class="rv-cover">
+            <image class="rv-cover-img" wx:if="{{item.coverUrl}}" src="{{coverBase + item.coverUrl}}" mode="aspectFill"></image>
+            <view class="rv-play"></view>
+            <view class="rv-dur">{{item.durationS}}s</view>
+          </view>
+          <view class="rv-info">
+            <view class="rv-title">{{item.title}}</view>
+            <view class="rv-meta">{{item.merchantName}} · 完整观看</view>
+            <view class="rv-badge {{item.claimedByUser ? 'rv-done' : ''}}">{{item.claimedByUser ? '已领取' : '看完得 ' + (item.points || 1) + ' 贡献值'}}</view>
+            <view class="rv-left {{item.todayLeft <= 0 ? 'rv-left-out' : ''}}">今日剩余 {{item.todayLeft}} 份</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空态 -->
+      <view class="card" wx:if="{{!rewardVideos.length && loaded}}">
+        <view class="t1">暂时没有新视频</view>
+        <view class="t-weak" style="margin-top:12rpx">商家的新视频上线后会第一时间通知你，切到「做任务」也能攒贡献值。</view>
+      </view>
+
+      <!-- 观看历史 -->
+      <view class="card" wx:if="{{history.length}}">
+        <view class="t1">我的观看记录</view>
+        <view class="hist-row" wx:for="{{history}}" wx:key="id">
+          <view class="hist-title">{{item.title}}</view>
+          <view class="hist-meta">{{item.date}}</view>
+          <view class="hist-pts">+{{item.points}}</view>
+        </view>
+      </view>
+
+    </block>
+
+    <!-- ===== 做任务 ===== -->
+    <block wx:if="{{activeTab === 'task'}}">
+
+      <view class="card">
+        <view class="row-between">
+          <view class="t1">每日任务</view>
+          <view class="t-weak">已完成 {{taskDoneCount}} 项</view>
+        </view>
+
+        <view class="task-row">
+          <view class="task-icon ti-check"></view>
+          <view class="task-info">
+            <view class="t2 t-bold">每日签到</view>
+            <view class="t-weak">+{{taskRewards.sign_in || 10}} 贡献值</view>
+          </view>
+          <view class="task-btn {{taskSigned ? 'tb-gray' : 'tb-red'}}" bindtap="signIn">{{taskSigned ? '已签到' : '签到'}}</view>
+        </view>
+
+        <view class="divider"></view>
+
+        <view class="task-row">
+          <view class="task-icon ti-red"></view>
+          <view class="task-info">
+            <view class="t2 t-bold">浏览商品 15 秒</view>
+            <view class="t-weak">已逛 {{taskBrowseDone}} 个 · +{{taskRewards.browse || 5}} 贡献值/个</view>
+          </view>
+          <view class="task-btn tb-red" bindtap="goBrowse">去逛逛</view>
+        </view>
+
+        <view class="divider"></view>
+
+        <view class="task-row">
+          <view class="task-icon ti-orange"></view>
+          <view class="task-info">
+            <view class="t2 t-bold">再买一单</view>
+            <view class="t-weak">下单支付后累计该类商品的阶梯进度</view>
+          </view>
+          <view class="task-btn tb-red" bindtap="goHome">去买</view>
+        </view>
+
+        <view class="divider"></view>
+
+        <view class="task-row">
+          <view class="task-icon ti-gold"></view>
+          <view class="task-info">
+            <view class="t2 t-bold">邀请好友注册</view>
+            <view class="t-weak">好友首次下单过退货期后计入收益</view>
+          </view>
+          <view class="task-btn tb-gold" bindtap="goPromotion">去邀请</view>
+        </view>
+      </view>
+
+      <!-- 活跃进度：任务与看视频共用同一份贡献值 -->
+      <view class="card" wx:if="{{taskContrib}}">
+        <view class="row-between">
+          <view class="t1">30 天活跃进度</view>
+          <view class="t-weak">{{taskContrib.weight30d || 0}} / {{taskContrib.target || 80}}</view>
+        </view>
+        <view class="today-track"><view class="today-fill" style="width:{{taskContribPct}}%"></view></view>
+        <view class="t-weak tip">{{taskContrib.reached ? '已达活跃标准，算进季度分红的活跃度' : '继续看视频、做任务即可累计'}}</view>
+      </view>
+
+      <view class="card entry-card" bindtap="goTasks">
+        <view class="entry-title">查看全部任务与奖励 ›</view>
+        <view class="t-weak">连续签到、任务奖励、奖励金明细</view>
+      </view>
+
+    </block>
+
+    <view class="notice">贡献值只用来算活跃度，不能换现金、不能提现、不能转让；不构成兑付承诺。</view>
+
+    <view class="links">
+      <view class="link" bindtap="goHome">回首页 ›</view>
+    </view>
+  </view>
+</view>

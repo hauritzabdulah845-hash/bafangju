@@ -1,0 +1,70 @@
+<!-- 门店主页装修：门头照 → 基本信息 → 位置 → 保存 -->
+<view class="page" wx:if="{{!loading}}">
+
+  <view class="card">
+    <view class="row-between">
+      <view class="t1">门头照</view>
+      <view class="t-weak">建议横向实拍门面，用户第一眼看到的就是它</view>
+    </view>
+
+    <view class="cover-box" bindtap="chooseCover">
+      <image wx:if="{{coverPreview}}" class="cover-img" src="{{coverPreview}}" mode="aspectFill" />
+      <view wx:else class="cover-empty">
+        <view class="cover-plus">＋</view>
+        <view class="cover-hint">上传门头照</view>
+      </view>
+      <view class="cover-badge" wx:if="{{coverPreview}}">点击更换</view>
+    </view>
+    <view class="cover-actions" wx:if="{{coverPreview}}">
+      <text class="link-danger" bindtap="clearCover">移除门头照</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="t1">门店信息</view>
+
+    <view class="label">营业时间</view>
+    <view class="time-row">
+      <picker mode="time" value="{{startTime}}" data-key="startTime" bindchange="pickTime">
+        <view class="time-pick">{{startTime}}</view>
+      </picker>
+      <text class="time-sep">至</text>
+      <picker mode="time" value="{{endTime}}" data-key="endTime" bindchange="pickTime">
+        <view class="time-pick">{{endTime}}</view>
+      </picker>
+    </view>
+    <view class="hint">用户会据此判断现在能不能来店，建议按实际营业时间填写</view>
+
+    <view class="label">联系电话</view>
+    <input class="ipt" type="text" maxlength="20" placeholder="顾客到店前可能会先打电话" value="{{phone}}" data-key="phone" bindinput="onInput" />
+
+    <view class="label">一句话简介</view>
+    <textarea class="ipt area" maxlength="120" placeholder="例如：本地 15 年老店，现磨粮油，可到店自提" value="{{intro}}" data-key="intro" bindinput="onInput"></textarea>
+    <view class="hint" style="text-align:right">{{intro.length}}/120</view>
+  </view>
+
+  <view class="card">
+    <view class="t1">门店位置</view>
+    <view class="loc-pick {{locText ? 'picked' : ''}}" bindtap="chooseLocation">
+      <view class="lp-left">
+        <view class="lp-icon"></view>
+        <view class="lp-text">
+          <view class="lp-addr">{{address || '点击在地图上选择门店位置'}}</view>
+          <view class="lp-hint" wx:if="{{locText}}">坐标 {{locText}}</view>
+          <view class="lp-hint lp-hint-tip" wx:else>选点后用户可在「附近商家」按距离找到你</view>
+        </view>
+      </view>
+      <view class="lp-go">{{locText ? '重选' : '去选点'}}</view>
+    </view>
+  </view>
+
+  <view class="notice">门店名称与入驻资质需联系平台修改；门头照、营业时间、电话、地址、简介可随时自行更新，保存后立即在用户端生效。</view>
+
+  <view class="btn btn-block {{saving ? 'disabled' : ''}}" bindtap="save">{{saving ? '保存中…' : '保存门店主页'}}</view>
+</view>
+
+<view class="page" wx:elif="{{error}}">
+  <view class="empty">{{error}}</view>
+  <view class="btn-plain btn-block" bindtap="load">重试</view>
+</view>
+<view class="page" wx:else><view class="empty">加载中…</view></view>

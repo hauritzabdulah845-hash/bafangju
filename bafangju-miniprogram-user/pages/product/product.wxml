@@ -1,0 +1,115 @@
+<!-- 商品详情 · 拼多多配色重设计（对应 Ardot 屏幕-商品详情）
+     结构：主图 → 价格卡（大红价 + 第 n 单专享）→ 阶梯表（已走过/下一单/让利段）→ 履约 → 收货 → 规则同意 → 底部操作栏 -->
+<view class="pdp" wx:if="{{p}}">
+
+  <!-- 商品主图：通栏 -->
+  <image wx:if="{{p.img}}" class="p-hero-img" src="{{p.img}}" mode="aspectFill" />
+
+  <!-- 价格卡 -->
+  <view class="card price-card">
+    <view class="row">
+      <view class="price-row">
+        <text class="price-symbol">¥</text><text class="price-num">{{p.nextPayYuanText || p.nextPayYuan}}</text>
+      </view>
+      <view class="tag tag-promo">第 {{p.myStep}} 单专享</view>
+      <view class="price-origin">原价 ¥{{p.priceYuan}}</view>
+    </view>
+    <view class="p-name">{{p.name}}</view>
+    <view class="row p-tags">
+      <text class="tag tag-gray">已购 {{p.soldCount || 0}} 件</text>
+      <block wx:if="{{p.deliveryType !== 'store'}}">
+        <text class="tag tag-gray">全场包邮</text>
+        <text class="tag tag-gray">7天无理由</text>
+      </block>
+      <block wx:else>
+        <text class="tag tag-gray">到店使用</text>
+        <text class="tag tag-gray">下单后凭码消费</text>
+      </block>
+    </view>
+  </view>
+
+  <!-- 详情页广告位（商家投放，平台审核通过后展示） -->
+  <view class="ad-strip" wx:if="{{ads.length}}" bindtap="onAdTap" data-id="{{ads[0].bookingId}}">
+    <image wx:if="{{ads[0].fullImage}}" class="ad-strip-img" src="{{ads[0].fullImage}}" mode="aspectFill" />
+    <view wx:else class="ad-strip-text">{{ads[0].title}}</view>
+  </view>
+
+  <!-- 阶梯表：核心组件 -->
+  <view class="card">
+    <view class="row-between">
+      <view class="t1 ladder-title">这类商品越买越便宜</view>
+      <view class="t-weak" bindtap="goRules">规则说明 ›</view>
+    </view>
+    <view class="ladder-note">按你的购买进度实时生成</view>
+    <view class="ladder {{ladderWrap ? 'wrap' : ''}}" style="margin-top:20rpx">
+      <view class="ladder-cell {{item.cls}}" wx:for="{{ladder}}" wx:key="step" style="flex-basis:{{ladderCellWidth}}">
+        <view class="lc-badge" wx:if="{{item.saveYuan > 0 && item.cls === 'next'}}">省 ¥{{item.saveYuan}}</view>
+        <view class="lc-price">{{item.price}}</view>
+        <view class="lc-label">{{item.label}}</view>
+        <view class="lc-discount" wx:if="{{item.discount}}">{{item.discount}}</view>
+      </view>
+    </view>
+    <view class="progress" style="margin-top:20rpx">
+      <view class="progress-fill" style="width:{{p.myStep / p.total * 100}}%"></view>
+    </view>
+    <view class="row-between" style="margin-top:14rpx">
+      <view class="t-weak">第 {{p.myStep}} / 共 {{p.total}} 单</view>
+      <view class="t-weak" wx:if="{{p.myStep < p.total}}">再买 {{p.total - p.myStep}} 单完成这一轮 · 最后 4 单便宜 10%~40%</view>
+      <view class="t-gold t-bold" wx:else>本单支付后这一轮完成，获 1 个分红排队号</view>
+    </view>
+  </view>
+
+  <!-- 履约说明 -->
+  <view class="card seller-card">
+    <view class="row">
+      <view class="seller-avatar">八</view>
+      <view class="seller-info">
+        <view class="t2 t-bold">八方聚联盟商家</view>
+        <view class="t-weak">平台统一发货 · 售后由平台协调</view>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="row service-row">
+      <text class="t3" wx:if="{{p.deliveryType !== 'store'}}">7天无理由</text>
+      <text class="t3" wx:else>到店使用</text>
+      <text class="t3">极速退款</text>
+      <text class="t3">正品保障</text>
+      <view class="row service-link" bindtap="goRules">
+        <text class="t-weak t-accent">优惠规则</text><text class="t-accent">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 收货信息：快递到家需选地址；到店商品提示核销 -->
+  <view class="card">
+    <view class="addr-row" wx:if="{{p.deliveryType !== 'store'}}" bindtap="goAddress">
+      <view>
+        <view wx:if="{{selectedAddress}}" class="addr-line1">{{selectedAddress.name}} {{selectedAddress.phone}}</view>
+        <view wx:else class="addr-line1">快递到家 · 请选择收货地址</view>
+        <view wx:if="{{selectedAddress}}" class="addr-detail">{{selectedAddress.region}} {{selectedAddress.address}}</view>
+        <view wx:else class="addr-detail muted">姓名、电话、地址仅用于本单发货</view>
+      </view>
+      <text class="addr-arrow">›</text>
+    </view>
+    <view wx:else class="addr-row">
+      <view>
+        <view class="addr-line1">到店商品</view>
+        <view class="addr-detail muted">支付后凭消费码到店使用，无需收货地址</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 规则确认 -->
+  <view class="card">
+    <view bindtap="toggleAgree" class="row">
+      <radio checked="{{agreed}}" color="#B02A30" style="transform:scale(.8)" />
+      <text class="agree-text">我已阅读并同意<text class="notice-link" catchtap="goRules">《规则说明》</text>：阶梯优惠按你自己的购买进度累计，不承诺现金返还。</text>
+    </view>
+  </view>
+
+  <!-- 底部操作栏：单独购买（描边）/ 立即购买（渐变） -->
+  <view class="action-bar">
+    <view class="ab-btn ab-outline" bindtap="submit">单独购买 ¥{{p.priceYuan}}</view>
+    <view class="ab-btn ab-primary {{agreed ? '' : 'disabled'}}" bindtap="submit">{{submitting ? '提交中…' : '立即购买 ¥' + (p.nextPayYuanText || p.nextPayYuan)}}</view>
+  </view>
+</view>

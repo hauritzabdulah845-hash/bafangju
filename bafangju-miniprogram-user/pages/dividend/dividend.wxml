@@ -1,0 +1,99 @@
+<!-- 我的分红 · 拼多多配色重设计（对应 Ardot 屏幕-我的分红）
+     结构：渐变头部（我的分红余额）→ 我的队位 → 发放记录 → 贡献分参考价值 → 合规说明 -->
+<view class="dividend">
+
+  <!-- 降级维护占位：直达路径进入时可见（菜单入口已置灰拦截） -->
+  <view wx:if="{{downgrade}}" class="card" style="margin:40rpx 24rpx;padding:64rpx 24rpx;text-align:center">
+    <view class="empty-ic"><view class="hi hi-trend"></view></view>
+    <view class="t2" style="margin-top:16rpx">分红功能维护中</view>
+    <view class="t-weak" style="margin-top:8rpx">平台升级期间暂停展示，稍后再来看看</view>
+  </view>
+
+  <block wx:if="{{!downgrade}}">
+
+  <!-- 渐变带：只承载图标，文字移到下方上浮白卡 -->
+  <view class="grad-header">
+    <view class="hero-icon"><view class="hi hi-trend"></view></view>
+  </view>
+
+  <!-- 上浮状态卡：我的分红余额 + chips（整卡点按查看规则） -->
+  <view class="card hero-card" bindtap="goRules" hover-class="none">
+    <view class="gh-rules">规则说明 ›</view>
+    <view class="gh-label">我的分红余额（仅可用于消费）</view>
+    <view class="price-row" style="margin-top:8rpx;justify-content:center">
+      <text class="price-symbol">¥</text>
+      <text class="gh-num">{{loading || loadError ? '--' : myBalanceYuan}}</text>
+    </view>
+    <view style="margin-top:16rpx">
+      <text class="gh-chip">排队中 {{loading || loadError ? '--' : activeSlotCount}} 个</text>
+      <text class="gh-chip">累计分红 ¥{{loading || loadError ? '--' : dividendYuan}}</text>
+    </view>
+    <view class="gh-sub">平台分红池余额 ¥{{loading || loadError ? '--' : pool.balanceYuan}}（利润公示）· 按完成周期先后分红，和人数多少无关</view>
+  </view>
+
+  <view class="wrap">
+    <!-- 加载中 / 加载失败：失败时给出重试入口，避免误显示成「没有数据」 -->
+    <view class="t-weak" wx:if="{{loading}}" style="text-align:center;margin:16rpx 0">数据加载中…</view>
+    <view class="card" wx:if="{{loadError}}" style="text-align:center">
+      <view class="t2">分红数据加载失败，请稍后重试</view>
+      <view class="btn-primary" style="margin-top:20rpx" bindtap="load">重新加载</view>
+    </view>
+    <!-- 我的排队号 -->
+    <view class="card">
+      <view class="row-between">
+        <view class="t1">我的排队号{{loading || loadError ? '' : '（累计 ' + slots.length + ' 个）'}}</view>
+        <view class="t-weak">每完成一个周期得 1 个号</view>
+      </view>
+      <view class="ladder-row" wx:for="{{slots}}" wx:key="id">
+        <view class="row">
+          <view class="slot-dot {{item.status === 'paid' ? 'done' : (item.status === 'skipped' ? 'skip' : (item.status === 'revoked' ? 'revoked' : ''))}}"></view>
+          <text class="t2">排队号 #{{index + 1}}</text>
+        </view>
+        <view style="text-align:right">
+          <text class="t3">{{item.status === 'waiting' ? '排队中' : item.status === 'paid' ? '已发放' : item.status === 'skipped' ? '本轮跳过' : '已收回'}}</text>
+          <view class="t-weak" style="margin-top:4rpx" wx:if="{{item.rank}}">全场第 {{item.rank}} 位</view>
+        </view>
+      </view>
+      <view class="t-weak" wx:if="{{!loading && !loadError && !slots.length}}">每买完一轮（最后一单便宜 40%）得 1 个排队号，按号分享平台利润</view>
+    </view>
+
+    <!-- 发放记录 -->
+    <view class="card">
+      <view class="row-between">
+        <view class="t1">发放记录</view>
+        <view class="t-weak">{{loading || loadError ? '' : '共 ' + payouts.length + ' 条'}}</view>
+      </view>
+      <view class="ladder-row" wx:for="{{payouts}}" wx:key="id">
+        <view>
+          <view class="t2">{{item.quarter ? '季度分红' : '排队分红'}} · {{item.date || item.quarter}}</view>
+          <view class="t-weak">默认进入消费余额，不可提现</view>
+        </view>
+        <text class="price-num sm">+¥{{item.yuan}}</text>
+      </view>
+      <view class="t-weak" wx:if="{{!loading && !loadError && !payouts.length}}">暂无发放记录</view>
+    </view>
+
+    <!-- 贡献分单位参考价值 -->
+    <view class="card" wx:if="{{unitValue !== null}}">
+      <view class="row-between">
+        <view class="t1">贡献值参考价值（公示）</view>
+        <view class="tag tag-gold" wx:if="{{!unitZero}}">透明公示</view>
+        <view class="t-weak" wx:else>暂无可分配</view>
+      </view>
+      <block wx:if="{{unitZero}}">
+        <view class="t-weak" style="margin-top:14rpx">本季度储备专户暂无可分配余额（或全场贡献值为 0），单位参考价值暂按 0 公示。仅作透明公示，不构成任何兑换或兑付承诺。</view>
+      </block>
+      <block wx:else>
+        <view class="price-row" style="margin-top:14rpx">
+          <text class="price-symbol">¥</text><text class="price-num sm">{{unitValue}}</text>
+          <text class="price-unit">/ 分</text>
+        </view>
+        <view class="t-weak" style="margin-top:14rpx">= 储备金账户当季余额 × 60% ÷ 全场贡献值总数。仅作透明公示，不构成任何兑换或兑付承诺；兑现唯一通道为季度分红；不承诺只涨不跌。贡献值不可转让、不可交易。</view>
+      </block>
+    </view>
+
+    <view class="notice">{{ct['dividend.note'] || '排队分红只分平台真实利润，与你的货款完全分开；排队号按完成轮次的先后发放、按号分红；不承诺分红金额与到账时间；分红默认进入消费余额、不可提现。'}}</view>
+  </view>
+
+  </block>
+</view>

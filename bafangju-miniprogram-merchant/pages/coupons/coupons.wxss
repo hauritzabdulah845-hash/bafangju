@@ -1,0 +1,12 @@
+/* 券卡根节点：券卡主体沿用 .card，卡内信息结构不变，仅用左侧品牌色条标识券卡
+   （.card 为 content-box，左侧加 6rpx 边框需回补 padding，保证正文与其他卡片左对齐） */
+.coupon-card { border-left: 6rpx solid #B02A30; padding-left: 18rpx; }
+.empty { text-align: center; padding: 80rpx 0; }
+
+/* 发券表单（V3.6） */
+.form-card { margin-top: 0; }
+.picker { font-size: 28rpx; color: #333333; padding: 16rpx 20rpx; background: #FAFAFA; border-radius: 10rpx; margin-bottom: 14rpx; }
+.ipt { background: #FAFAFA; border-radius: 10rpx; padding: 18rpx 20rpx; font-size: 28rpx; margin-bottom: 14rpx; }
+.row.gap { gap: 14rpx; }
+.ipt.half { flex: 1; }
+

@@ -1,0 +1,69 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/orders/orders",
+    "pages/verify/verify",
+    "pages/earnings/earnings",
+    "pages/profile/profile",
+    "pages/coupons/coupons",
+    "pages/products/products",
+    "pages/ads/ads",
+    "pages/ad-videos/ad-videos",
+    "pages/withdraw/withdraw",
+    "pages/fee-bills/fee-bills",
+    "pages/shop/shop",
+    "pages/entry/entry",
+    "pages/agreement/agreement",
+    "pages/password/password"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "八方聚商家端",
+    "backgroundColor": "#F6F6F6"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#666666",
+    "selectedColor": "#B02A30",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "工作台",
+        "iconPath": "assets/tabbar/work-off.png",
+        "selectedIconPath": "assets/tabbar/work-on.png"
+      },
+      {
+        "pagePath": "pages/verify/verify",
+        "text": "核销",
+        "iconPath": "assets/tabbar/verify-off.png",
+        "selectedIconPath": "assets/tabbar/verify-on.png"
+      },
+      {
+        "pagePath": "pages/earnings/earnings",
+        "text": "收益",
+        "iconPath": "assets/tabbar/earn-off.png",
+        "selectedIconPath": "assets/tabbar/earn-on.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/tabbar/profile-off.png",
+        "selectedIconPath": "assets/tabbar/profile-on.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于入驻时标注店铺位置，便于向附近用户展示"
+    }
+  },
+  "requiredPrivateInfos": [
+    "chooseLocation"
+  ],
+  "sitemapLocation": "sitemap.json"
+}

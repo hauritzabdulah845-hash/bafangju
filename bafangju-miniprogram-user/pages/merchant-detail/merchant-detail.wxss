@@ -1,0 +1,92 @@
+/* 商家详情 · 统一色板 V1.1
+   页面底色跟随全局 --page-bg；券卡形态由共享令牌 .coupon 提供。 */
+
+.page { min-height: 100vh; padding-bottom: 40rpx; }
+
+/* 门店信息卡 */
+.shop-card { margin: 24rpx 24rpx 0; }
+
+/* 门头照：负边距铺满卡片顶部，与卡片圆角对齐 */
+.shop-cover {
+  display: block;
+  width: calc(100% + 64rpx);
+  height: 300rpx;
+  margin: -32rpx -32rpx 24rpx;
+  border-radius: 32rpx 32rpx 0 0;
+  background: #F5F5F5;
+}
+/* 一句话简介：门头照之外，用户最快判断"这家卖什么"的信息 */
+.shop-intro {
+  margin-top: 18rpx; font-size: 26rpx; color: #666666; line-height: 1.6;
+}
+/* 营业时间：到店前最关心的信息之一，做成浅底小条更醒目 */
+.shop-hours {
+  display: inline-flex; align-items: center; margin-top: 16rpx;
+  background: #FAF0F0; border-radius: 8rpx; padding: 8rpx 16rpx;
+}
+.hours-label { font-size: 24rpx; color: #8F1F26; margin-right: 12rpx; }
+.hours-val { font-size: 26rpx; color: #3F3E3E; font-weight: 600; }
+.shop-top { display: flex; align-items: center; }
+.shop-avatar {
+  width: 120rpx; height: 120rpx; border-radius: 24rpx; flex-shrink: 0;
+  background: #FAECEC; display: flex; align-items: center; justify-content: center; font-size: 64rpx;
+}
+.shop-avatar-img { width: 86%; height: 86%; }
+.shop-info { flex: 1; margin-left: 24rpx; }
+.shop-name { font-size: 42rpx; font-weight: 700; color: #3F3E3E; }
+.shop-sub { display: flex; align-items: center; margin-top: 12rpx; }
+.shop-cat {
+  font-size: 24rpx; color: #8F1F26; background: #FAF0F0;
+  border-radius: 6rpx; padding: 3rpx 12rpx; margin-right: 14rpx;
+}
+.shop-dist { font-size: 28rpx; color: #8F1F26; font-weight: 600; }
+.shop-addr { font-size: 28rpx; color: #666666; margin-top: 18rpx; line-height: 1.5; }
+
+/* 门店操作：导航 / 致电 / 我的券 */
+.shop-actions {
+  display: flex; margin-top: 24rpx; padding-top: 24rpx;
+  border-top: 1rpx solid #F0F0F0;
+}
+.act { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.act-icon { font-size: 42rpx; }
+.act-text { font-size: 28rpx; color: #666666; margin-top: 8rpx; }
+
+/* 门店优惠区块：标题 + 券卡列表（不套卡片外壳，让齿孔挖在页面底上） */
+.sec { margin-top: 32rpx; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; padding: 0 24rpx; }
+.sec-note { padding: 16rpx 24rpx 0; font-size: 24rpx; color: #666666; line-height: 1.6; }
+
+/* 在售商品行 */
+.p-row { display: flex; align-items: center; margin-top: 24rpx; }
+.p-img, .p-visual {
+  width: 160rpx; height: 160rpx; border-radius: 16rpx; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28rpx; color: #8F1F26; text-align: center; padding: 0 12rpx;
+  box-sizing: border-box; overflow: hidden;
+}
+.p-visual { background: #F7F7F7; }
+/* 无图占位色轮换：与首页商品卡共用同一套浅底渐变（原为 6 个深色纯色，白字与品牌色系脱节） */
+.p-visual.tone-1 { background: linear-gradient(160deg, #F7E4E2, #EFCFCC); }
+.p-visual.tone-2 { background: linear-gradient(160deg, #F6F1E7, #EBE1D0); }
+.p-visual.tone-3 { background: linear-gradient(160deg, #F4F4F4, #E9E9E9); }
+.p-visual.tone-4 { background: linear-gradient(160deg, #FFF3D9, #FFE7B8); }
+.p-visual.tone-5 { background: linear-gradient(160deg, #F7EDF0, #EEDFE4); }
+.p-visual.tone-6 { background: linear-gradient(160deg, #EFE3E2, #E2D1CF); }
+.p-info { flex: 1; margin-left: 20rpx; }
+.p-name {
+  font-size: 28rpx; font-weight: 500; color: #3F3E3E; line-height: 1.4;
+  overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.p-price-row { display: flex; align-items: baseline; margin-top: 10rpx; }
+.p-symbol { font-size: 28rpx; color: #8F1F26; font-weight: 700; }
+.p-price { font-size: 42rpx; color: #B02A30; font-weight: 700; font-family: "DIN Alternate", "Helvetica Neue", sans-serif; }
+.p-go { font-size: 28rpx; color: #8F1F26; font-weight: 500; flex-shrink: 0; margin-left: 12rpx; }
+
+.empty { text-align: center; padding: 120rpx 48rpx; color: #666666; font-size: 28rpx; }
+
+/* 操作图标（红金体系，与首页图标风格一致） */
+.act-icon { display: inline-block; width: 44rpx; height: 44rpx; background: center / contain no-repeat; }
+.act-compass { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23C2410C'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%2211%22%2F%3E%3Cpath%20d%3D'M20.5%2011.5l-2.8%206.2-6.2%202.8%202.8-6.2z'%20stroke%3D'%23C89B5A'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); }
+.act-phone { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23C2410C'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D%22M6%208c0-1.7%201.3-3%203-3h2l2%205.5-3%202a14%2014%200%200%200%207.5%207.5l2-3L25%2019v2c0%201.7-1.3%203-3%203C12.5%2024%206%2017.5%206%208z%22%2F%3E%3Cpath%20d%3D'M20%209.5a5%205%200%200%201%203.5%203.5'%20stroke%3D'%23C89B5A'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); }
+.act-coupon { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23C2410C'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D%22M5%2011h22v10H5z%22%2F%3E%3Cpath%20d%3D%22M10%208.5v15%22%2F%3E%3Cpath%20d%3D'M10%208.5v15'%20stroke-dasharray%3D'2.5%202.5'%20stroke%3D'%23C89B5A'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); }
+.addr-pin { display: inline-block; width: 26rpx; height: 26rpx; margin-right: 6rpx; vertical-align: -4rpx; background: center / contain no-repeat url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23C2410C'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D%22M16%204a9%209%200%200%201%209%209c0%206.5-9%2015-9%2015S7%2019.5%207%2013a9%209%200%200%201%209-9z%22%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'13'%20r%3D'3'%20stroke%3D'%23C89B5A'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); }

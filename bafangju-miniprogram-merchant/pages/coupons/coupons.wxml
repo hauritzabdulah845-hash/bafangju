@@ -1,0 +1,28 @@
+<!-- 我的券（商家端）：发券表单 + 券列表（领取/核销统计） -->
+<view class="card form-card">
+  <view class="t1" style="margin-bottom:12rpx">发券</view>
+  <picker mode="selector" range="{{types}}" range-key="label" bindchange="onType">
+    <view class="picker">券类型：{{types[typeIndex].label}} ›</view>
+  </picker>
+  <input class="ipt" placeholder="券名称（如 满30减5）" value="{{title}}" data-k="title" bindinput="onInput" />
+  <input class="ipt" wx:if="{{types[typeIndex].key === 'cash'}}" type="digit" placeholder="满减金额（元）" value="{{amountYuan}}" data-k="amountYuan" bindinput="onInput" />
+  <input class="ipt" wx:if="{{types[typeIndex].key === 'discount'}}" type="digit" placeholder="折扣（0.8 表示打 8 折）" value="{{discount}}" data-k="discount" bindinput="onInput" />
+  <input class="ipt" wx:if="{{types[typeIndex].key === 'package'}}" type="number" placeholder="可核销几次（如 10 次体验卡填 10，不填=单次）" value="{{totalTimes}}" data-k="totalTimes" bindinput="onInput" />
+  <input class="ipt" type="digit" placeholder="满多少元可用（元，可不填）" value="{{minYuan}}" data-k="minYuan" bindinput="onInput" />
+  <input class="ipt" type="number" placeholder="总共发多少张（不填=不限量）" value="{{totalQty}}" data-k="totalQty" bindinput="onInput" />
+  <view class="row gap">
+    <input class="ipt half" type="number" placeholder="每人限领几张" value="{{perUserLimit}}" data-k="perUserLimit" bindinput="onInput" />
+    <input class="ipt half" type="number" placeholder="领取后有效天数" value="{{validDays}}" data-k="validDays" bindinput="onInput" />
+  </view>
+  <view class="btn" bindtap="create">{{creating ? '提交中…' : '创建并开始发放'}}</view>
+</view>
+
+<view class="card coupon-card" wx:for="{{list}}" wx:key="id">
+  <view class="row-between">
+    <view class="t2 t-bold">{{item.title}}</view>
+    <text class="tag {{item.statusClass}}">{{item.statusText}}</text>
+  </view>
+  <view class="t-weak" style="margin-top:8rpx">{{item.typeText}} · 领取后 {{item.validDays}} 天有效 · 每人限领 {{item.perUserLimit}} 张</view>
+  <view class="t-weak" style="margin-top:6rpx">已领 {{item.claimed}} 张 · 已核销 {{item.used}} 次</view>
+</view>
+<view class="empty muted" wx:if="{{!list.length && !loading}}">还没有发券，填上面的表单即可创建</view>

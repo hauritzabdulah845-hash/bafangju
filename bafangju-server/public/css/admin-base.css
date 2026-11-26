@@ -1,0 +1,101 @@
+/* admin-base.css —— 设计变量 / 布局骨架（登录遮罩 / 顶栏 / 侧栏 / 主区） */
+/* ============================================================
+   八方聚管理后台 · 拼多多商家后台设计语言（2026 重构版）
+   顶栏品牌红通栏 / 左侧图标菜单 / 经营看板首页 / Tab 行筛选
+   ============================================================ */
+:root {
+  --bg: #F6F6F6; --card: #ffffff; --line: #EEEEEE; --line2: #F2F3F7;
+  --ink: #26282e; --ink2: #8a8f9c; --ink3: #b4b8c3;
+  --accent: #B02A30; --accent-deep: #8F1F26; --accent-soft: #FAF0F0;
+  --accent-grad: linear-gradient(90deg, #C9525A, #B02A30);
+  --gold: #B7791F; --gold-soft: #FFF7E6;
+  --green: #1f9d63; --green-soft: #E7F7EF;
+  --orange: #E07C24; --orange-soft: #FDF3E7;
+  --danger: #E5484D; --danger-soft: #FDECEC;
+  --blue: #2E6BE6; --blue-soft: #EBF1FE;
+  --radius: 12px; --topbar-h: 52px; --side-w: 208px;
+}
+* { box-sizing: border-box; }
+body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); margin: 0; color: var(--ink); font-size: 13.5px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #d8dae1; border-radius: 4px; }
+
+/* ---------- 登录遮罩 ---------- */
+#loginMask { position: fixed; inset: 0; z-index: 99; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #FFF4F3 0%, #F5DEDC 55%, #FAF0F0 100%); }
+#loginMask .login-card { background: #fff; border-radius: 20px; box-shadow: 0 18px 50px rgba(183, 121, 31, .14);
+  padding: 42px 46px; width: 380px; }
+#loginMask h2 { margin: 0 0 4px; font-size: 21px; display: flex; align-items: center; gap: 10px; }
+#loginMask .muted { margin: 0 0 22px; }
+#loginMask input { width: 100%; margin-bottom: 12px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; outline: none; }
+#loginMask input:focus { border-color: var(--accent); }
+#loginMask button { width: 100%; padding: 11px 0; font-size: 14.5px; }
+/* 眼睛按钮是 <button>，必须显式盖掉上面的通栏规则（width/padding/font-size），否则被拉成整行宽、盖死密码框导致无法输入 */
+#loginMask .eye-btn { width: 36px; height: 36px; padding: 0; font-size: 0; }
+#loginMask .pwd-field input { padding-right: 44px; }
+.logo-mark { width: 24px; height: 24px; border-radius: 8px; background: var(--accent-grad); display: inline-block; flex: none; position: relative; }
+.logo-mark::after { content: ''; position: absolute; left: 9px; top: 5px; width: 6px; height: 14px; border-radius: 2px; background: rgba(255,255,255,.92); }
+
+/* ---------- 顶部品牌红通栏 ---------- */
+.topbar { position: fixed; left: 0; top: 0; right: 0; height: var(--topbar-h); background: var(--accent-grad);
+  display: flex; align-items: center; padding: 0 18px; gap: 18px; z-index: 40; color: #fff; }
+.topbar .t-logo { display: flex; align-items: center; gap: 10px; font-size: 15.5px; font-weight: 600; letter-spacing: .5px; }
+.topbar .t-logo .logo-mark { background: rgba(255,255,255,.92); }
+.topbar .t-logo .logo-mark::after { background: var(--accent); }
+.topbar .t-search { flex: 1; max-width: 420px; position: relative; }
+.topbar .t-search input { width: 100%; height: 32px; border: 0; border-radius: 999px; padding: 0 16px 0 36px; font-size: 12.5px;
+  background: rgba(255,255,255,.94); outline: none; color: var(--ink); }
+.topbar .t-search svg { position: absolute; left: 12px; top: 8px; opacity: .55; }
+.topbar .t-right { margin-left: auto; display: flex; align-items: center; gap: 14px; font-size: 12.5px; }
+.topbar .t-right .who { opacity: .92; }
+.topbar .t-right a { color: #fff; text-decoration: none; cursor: pointer; opacity: .85; padding: 4px 8px; border-radius: 8px; }
+.topbar .t-right a:hover { opacity: 1; background: rgba(255,255,255,.16); }
+/* 汉堡按钮：仅窄屏显示（P1-6） */
+.topbar .t-burger { display: none; background: transparent; color: #fff; border: 0; padding: 6px; margin: 0; border-radius: 8px; }
+.topbar .t-burger:hover { background: rgba(255,255,255,.16); opacity: 1; }
+.nav-mask { display: none; position: fixed; inset: 0; background: rgba(24,26,32,.42); z-index: 29; }
+
+/* ---------- 左侧图标菜单 ---------- */
+.sidebar { position: fixed; left: 0; top: var(--topbar-h); bottom: 0; width: var(--side-w); background: var(--card);
+  border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 14px 10px; z-index: 30; overflow-y: auto; }
+.nav-group { font-size: 11px; color: var(--ink3); letter-spacing: 2px; padding: 13px 12px 5px; }
+/* 低频菜单分组：默认收起，点标题展开（P0-2） */
+.nav-group.nav-fold { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+.nav-group.nav-fold:hover { color: var(--ink2); }
+.nav-group.nav-fold .nf-arrow { margin-left: auto; font-size: 10px; line-height: 1; transition: transform .15s; }
+.sidebar.nav-collapsed .tab[data-adv] { display: none; }
+.sidebar.nav-collapsed .nav-group.nav-fold .nf-arrow { transform: rotate(-90deg); }
+.tab { display: flex; align-items: center; gap: 9px; color: var(--ink2); padding: 9px 12px; cursor: pointer; font-size: 13.5px;
+  border-radius: 10px; margin: 1px 0; transition: all .15s; position: relative; user-select: none; }
+.tab svg { flex: none; opacity: .75; }
+.tab:hover { color: var(--ink); background: #F5F6FA; }
+.tab.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.tab.on svg { opacity: 1; }
+.tab.on::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 2px; background: var(--accent); }
+.nav-badge { margin-left: auto; min-width: 18px; height: 18px; border-radius: 9px; padding: 0 5px; background: var(--accent);
+  color: #fff; font-size: 11px; line-height: 18px; text-align: center; font-weight: 500; }
+.nav-badge.zero { display: none; }
+.sidebar-foot { margin-top: auto; font-size: 11px; color: var(--ink3); padding: 10px 12px 0; border-top: 1px solid var(--line2); }
+/* 备案信息（公安联网备案 / ICP）—— 未配置时容器为空并隐藏 */
+.filing-bar { margin-top: 8px; font-size: 11px; line-height: 1.7; color: var(--ink3); display: flex; flex-direction: column; gap: 2px; }
+.filing-bar:empty { display: none; }
+.filing-bar a { color: inherit; text-decoration: none; }
+.filing-bar a:hover { color: var(--accent); text-decoration: underline; }
+
+/* ---------- 主区 ---------- */
+.main { margin-left: var(--side-w); margin-top: var(--topbar-h); padding: 20px 24px 48px; }
+.page-h { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+.page-h h2 { font-size: 19px; margin: 0; font-weight: 600; }
+.page-h .ph-sub { font-size: 12px; color: var(--ink2); margin-top: 4px; }
+
+
+/* ---------- 密码可见切换（眼睛）：后台登录页 ---------- */
+.pwd-field { position: relative; }
+.pwd-field input { padding-right: 44px; }
+.eye-btn {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border: 0; background: transparent; padding: 0; cursor: pointer;
+  background-repeat: no-repeat; background-size: 22px 22px; background-position: center;
+}
+.eye-btn { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23666666'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M2.5%2012s3.2-6%209.5-6c2%200%203.7.6%205.1%201.5M21.5%2012s-3.2%206-9.5%206c-2%200-3.7-.6-5.1-1.5'/%3E%3Cpath%20d='M4%204l16%2016'/%3E%3C/svg%3E"); }
+.eye-btn.on { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23666666'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M2.5%2012s3.2-6%209.5-6%209.5%206%209.5%206-3.2%206-9.5%206-9.5-6-9.5-6Z'/%3E%3Ccircle%20cx='12'%20cy='12'%20r='2.6'/%3E%3C/svg%3E"); }

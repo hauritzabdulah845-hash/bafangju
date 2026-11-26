@@ -1,0 +1,21 @@
+@import '../../merchant-base.wxss';
+
+/* 自定义 tabBar 为 fixed 定位，不自动占位，需自行留出底部高度（116rpx + 安全区） */
+page { padding-bottom: calc(124rpx + env(safe-area-inset-bottom)); box-sizing: border-box; }
+
+.sum-row { display: flex; justify-content: space-between; padding: 10rpx 0; }
+.month-pick { font-size: 24rpx; color: #B02A30; background: #FFF5F4; border-radius: 999rpx; padding: 6rpx 18rpx; }
+.bill { display: flex; justify-content: space-between; align-items: center; padding: 18rpx 0; border-bottom: 1rpx solid #f0f0f0; }
+.bill:last-child { border-bottom: none; }
+.bill-main { flex: 1; min-width: 0; }
+.bill-title { font-size: 26rpx; color: #222; }
+.bill-right { text-align: right; }
+.bill-right .tag { margin-top: 6rpx; }
+.empty { text-align: center; padding: 60rpx 0; }
+
+/* 免费模式：明示平台不收费，避免商家把"核销记录"误读成"欠费" */
+.free-badge {
+  display: inline-block; margin-top: 12rpx;
+  background: #E8F5E9; color: #1B7A3D; font-size: 26rpx; font-weight: 600;
+  border-radius: 999rpx; padding: 8rpx 22rpx;
+}

@@ -1,0 +1,183 @@
+<!-- 首页 · 对齐 UI 全案 v4（redesign-20261102/home.html）
+     结构：枣红头部（定位/搜索/铃铛一行 + 通栏 banner，连成一个红区）
+           → 营销条（沙金券条，咬合红区下沿）→ 金刚区
+           → 复购进度卡（大价格 + 阶梯 chip + 说明 + 去复购）
+           → 附近商家（横图卡）→ 为你推荐（两列大图瀑布卡）→ 合规说明 -->
+<view class="home">
+
+  <!-- 枣红头部：定位 + 搜索 + 消息（一行式，底部 20rpx 圆角与设计稿一致） -->
+  <view class="home-head {{slides.length ? 'has-hero' : ''}}">
+    <view class="hdr-row">
+      <view class="loc" bindtap="pickLocation">
+        <text class="loc-name">{{locName}}</text>
+        <view class="loc-arrow"></view>
+      </view>
+      <view class="search-box">
+        <view class="search-icon"></view>
+        <input class="search-input" placeholder="{{searchPh}}" placeholder-class="search-ph" value="{{keyword}}" bindinput="onSearch" confirm-type="search" />
+        <text class="search-clear" wx:if="{{keyword}}" bindtap="clearSearch">取消</text>
+      </view>
+      <view class="head-bell" bindtap="goMessages">
+        <view class="bell-dot" wx:if="{{unreadMsg > 0}}">{{unreadMsg > 99 ? '99+' : unreadMsg}}</view>
+      </view>
+    </view>
+    <!-- 活动轮播：商家广告 + 运营帧（设计稿无此模块，业务保留为付费广告位）
+         放进头部内部 = 红区只出现一次：搜索行 → banner → 券条咬合红区下沿。
+         若把 banner 单列成卡放在券条下方，首屏会出现「红-金-红」三明治。 -->
+    <view class="hero" wx:if="{{slides.length}}">
+      <swiper class="hero-swiper" autoplay="{{slides.length > 1}}" circular="{{slides.length > 1}}"
+              interval="4500" duration="450" bindchange="onSlideChange">
+        <swiper-item wx:for="{{slides}}" wx:key="key">
+          <view class="slide" bindtap="onSlideTap" data-index="{{index}}">
+            <image wx:if="{{item.image}}" class="slide-img" src="{{item.image}}" mode="aspectFill" />
+            <view wx:else class="slide-bg tone-{{item.tone || 4}}"></view>
+            <view wx:if="{{item.emoji}}" class="slide-emoji">{{item.emoji}}</view>
+            <view wx:if="{{item.sub || item.btn}}" class="slide-shade"></view>
+            <view wx:elif="{{item.image && item.title}}" class="slide-shade shade-bottom"></view>
+            <view class="slide-body" wx:if="{{item.title}}">
+              <view class="slide-title">{{item.title}}</view>
+              <view class="slide-tags">
+                <view class="slide-sub" wx:if="{{item.sub}}">{{item.sub}}</view>
+                <view class="slide-btn" wx:if="{{item.btn}}">{{item.btn}} ›</view>
+              </view>
+            </view>
+            <view class="slide-from" wx:if="{{item.merchantName}}">{{item.merchantName}}</view>
+          </view>
+        </swiper-item>
+      </swiper>
+      <view class="s-dots" wx:if="{{slides.length > 1}}">
+        <view class="s-dot {{slideIndex === index ? 'on' : ''}}" wx:for="{{slides}}" wx:key="key"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 营销条：浅金券条，负 margin 咬合头部，页面唯一暖色块。
+       仅对「还没有购买进度」的新用户展示（讲机制、引到阶梯优惠页）；
+       已有进度的用户由下方复购进度卡承接，两者不同时出现，避免首屏同一机制讲三遍。 -->
+  <view class="promo" wx:if="{{!progressCard}}" bindtap="goReturns">
+    <view class="promo-txt">
+      <view class="promo-t">优惠进度进行中</view>
+      <view class="promo-s">越买越省 · 最后几单最多便宜 40%</view>
+    </view>
+    <view class="promo-link">查看我的优惠进度 ›</view>
+  </view>
+
+  <view class="wrap">
+
+    <!-- 金刚区：通栏白底，浅品牌底圆 + 品牌色图标（设计稿 .cat 风格） -->
+    <view class="kk-card" wx:if="{{kingkong.length}}">
+      <view class="kk-grid">
+        <view class="kk-item" wx:for="{{kingkong}}" wx:key="id" data-id="{{item.id}}" bindtap="goKingkong">
+          <view class="kk-icon bg-{{item.bg}} {{item.iconImg ? '' : 'ic-' + item.ic}}">
+            <image wx:if="{{item.iconImg}}" class="kk-img" src="{{item.iconImg}}" mode="aspectFit" />
+          </view>
+          <view class="kk-name">{{item.name}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 复购进度卡：大价格 + 阶梯 chip（设计稿核心卡） -->
+    <view class="card repro" wx:if="{{progressCard}}">
+      <view class="row-between">
+        <view class="repro-title">我的优惠进度<text class="badge-gray">{{progressCard.catName}}</text></view>
+        <view class="t-weak" bindtap="goReturns">全部进度 ›</view>
+      </view>
+
+      <view class="price-row">
+        <view>
+          <view class="price-label">下一单实付</view>
+          <view class="price-main">
+            <text class="cur">¥</text>
+            <text class="val num">{{progressCard.nextPayYuan}}</text>
+            <text class="price-was num">¥{{progressCard.priceYuan}}</text>
+          </view>
+        </view>
+        <view class="saved" wx:if="{{progressCard.savedYuan}}">已省 <text class="num sv">¥{{progressCard.savedYuan}}</text></view>
+      </view>
+
+      <!-- 阶梯 chip：done 已走 / now 当前 / next 未来 / goal 尾段让利 -->
+      <view class="steps">
+        <block wx:for="{{progressCard.steps}}" wx:key="i">
+          <view class="step-gap" wx:if="{{item.gap}}">⋯</view>
+          <view class="step {{item.state}}" wx:else>
+            <text class="k">{{item.k}}</text>
+            <text class="v num">{{item.v}}</text>
+          </view>
+        </block>
+      </view>
+
+      <view class="repro-foot">
+        <view class="foot-txt">
+          <view>{{progressCard.hint}}</view>
+          <view class="foot-sub">这一轮买完后恢复原价</view>
+        </view>
+        <view class="btn-primary btn-sm" bindtap="goGrid">再去买</view>
+      </view>
+    </view>
+
+    <!-- 为你推荐：两列大图瀑布卡（对标主流电商买菜版式：大图驱动决策）；
+         id 供金刚区/进度卡滚动定位 -->
+    <view class="sec-block" id="goods-sec">
+      <view class="sec-head">
+        <view class="sec-h2">{{activeCatName ? activeCatName + ' · 为你推荐' : '为你推荐'}}</view>
+        <view class="t-weak" wx:if="{{activeCat}}" bindtap="clearCat">看全部 ›</view>
+      </view>
+
+      <view class="goods-grid">
+        <view class="card goods" wx:for="{{products}}" wx:key="id" data-id="{{item.id}}" bindtap="goProduct">
+          <view class="g-visual">
+            <image wx:if="{{item.img}}" class="g-img" src="{{item.img}}" mode="aspectFill" lazy-load="true" />
+            <view wx:else class="g-ph tone-{{item.tone || 1}}">{{item.name}}</view>
+            <view class="g-tag" wx:if="{{item.myStep > 1}}">已买到第 {{item.myStep}} 单</view>
+          </view>
+          <view class="g-info">
+            <view class="g-name">{{item.name}}</view>
+            <view class="g-meta">已拼 {{item.soldText}} · 越往后越便宜</view>
+            <view class="g-buy">
+              <view class="g-price">
+                <text class="cur">¥</text>
+                <text class="val num">{{item.priceInt}}</text>
+                <text class="dec num" wx:if="{{item.priceDec}}">.{{item.priceDec}}</text>
+                <text class="price-was num">¥{{item.priceYuan}}</text>
+              </view>
+              <view class="g-btn" catchtap="goProduct" data-id="{{item.id}}" aria-label="立即购买">
+                <view class="g-btn-cart"></view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="muted empty" wx:if="{{!products.length}}">
+        <view>{{loadError ? '暂时无法连接服务器，请稍后重试' : (keyword ? '没有找到相关商品' : '该类目暂无在售商品')}}</view>
+        <view class="diag-btn" wx:if="{{loadError && devMode}}" bindtap="diagnose">点此诊断网络（开发调试）</view>
+      </view>
+      <view class="pull" wx:if="{{products.length}}">上拉 · 发现更多好物</view>
+    </view>
+
+    <!-- 附近商家：横滑一行紧凑卡，放在商品流之后。
+         冷启动阶段 5km 内商家密度低，不再抢占首屏商品流上方的黄金位置；
+         横滑一行既保留到店领券入口，又不把商品流挤出视口。 -->
+    <view class="sec-block" wx:if="{{nearby.length}}">
+      <view class="sec-head">
+        <view class="sec-h2">附近商家 · 联盟门店</view>
+        <view class="t-weak" bindtap="goMerchants">查看全部 ›</view>
+      </view>
+      <scroll-view class="m-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="card merchant m-h" wx:for="{{nearby}}" wx:key="id" data-id="{{item.id}}" bindtap="goMerchantDetail">
+          <view class="m-avatar"><image class="m-avatar-img" src="{{item.icon}}" mode="aspectFit" /></view>
+          <view class="m-info">
+            <view class="m-name">{{item.name}}</view>
+            <view class="m-meta">{{item.distanceText}} · {{item.couponCount}} 张券可领</view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 底部合规说明 -->
+    <view class="notice" style="margin:8rpx 24rpx 24rpx"><text wx:if="{{ct['home.notice']}}">{{ct['home.notice']}}</text><text wx:else>阶梯优惠按你自己的购买进度累计，规则透明可查，详见购买页与订单页。</text></view>
+
+    <view style="height: 32rpx;"></view>
+
+  </view>
+</view>

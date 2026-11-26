@@ -1,0 +1,100 @@
+/* 附近商家 · 拼多多配色重设计 */
+
+/* 页面底色跟随全局 --page-bg，不再单独声明 */
+.page { min-height: 100vh; }
+
+/* 列表页头部：白底 + 橙描边搜索（参考图列表页同款） */
+.m-head {
+  background: #FFFFFF;
+  padding: 16rpx 24rpx 24rpx;
+}
+.loc-row { display: flex; align-items: center; justify-content: space-between; height: 56rpx; }
+.loc { display: flex; align-items: center; }
+.loc-name { font-size: 30rpx; font-weight: 600; color: #3F3E3E; }
+.loc-arrow { width: 0; height: 0; border-left: 8rpx solid transparent; border-right: 8rpx solid transparent; border-top: 10rpx solid #666666; margin-left: 8rpx; }
+.head-count { font-size: 28rpx; color: #666666; }
+
+.search-box {
+  background: #FFFFFF; border: 3rpx solid #B02A30; border-radius: 999rpx;
+  display: flex; align-items: center; padding: 12rpx 24rpx;
+}
+.search-icon {
+  width: 28rpx; height: 28rpx; margin-right: 14rpx; flex-shrink: 0;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2214%22%20cy%3D%2214%22%20r%3D%228%22%2F%3E%3Cpath%20d%3D%22M20%2020l7%207%22%20stroke-width%3D%222.6%22%2F%3E%3Cpath%20d%3D%22M11%2012a4%204%200%200%201%203-3%22%20stroke%3D%22%23C89B5A%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / contain;
+}
+.search-input { flex: 1; font-size: 28rpx; color: #3F3E3E; }
+.search-ph { color: #C9525A; }
+.search-clear { font-size: 28rpx; color: #666666; padding: 0 6rpx; }
+
+/* 筛选条：范围 + 排序（两行式） */
+.filters {
+  background: #FFFFFF; margin: 20rpx 24rpx 0; border-radius: 20rpx;
+  padding: 20rpx 24rpx;
+}
+.f-row { display: flex; align-items: center; }
+.f-row + .f-row { margin-top: 18rpx; }
+.f-label { font-size: 28rpx; color: #666666; width: 76rpx; flex-shrink: 0; }
+.r-opts { display: flex; flex: 1; }
+.r-opt {
+  font-size: 28rpx; color: #666666; background: #F2F2F2;
+  border-radius: 28rpx; padding: 8rpx 26rpx; margin-right: 16rpx;
+}
+.r-opt.on { color: #8F1F26; background: #FAF0F0; font-weight: 500; }
+.sorts { display: flex; flex: 1; }
+.sort { font-size: 28rpx; color: #666666; margin-right: 40rpx; }
+.sort.on { color: #8F1F26; font-weight: 600; }
+
+/* 商家卡 */
+.list { padding: 24rpx 24rpx 0; }
+.m-card {
+  background: #FFFFFF; border-radius: 20rpx; padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+.m-top { display: flex; align-items: center; }
+.m-avatar {
+  width: 96rpx; height: 96rpx; border-radius: 20rpx; flex-shrink: 0;
+  background: #FAECEC; display: flex; align-items: center; justify-content: center; font-size: 50rpx;
+}
+.m-avatar-img { width: 86%; height: 86%; }
+/* 门头照缩略图：铺满方形槽位，保持卡片视觉重心 */
+.m-avatar-img.fill { width: 100%; height: 100%; border-radius: 20rpx; }
+.m-info { flex: 1; margin-left: 20rpx; }
+.m-name { font-size: 30rpx; font-weight: 600; color: #3F3E3E; }
+.m-sub { display: flex; align-items: center; margin-top: 10rpx; }
+.m-cat {
+  font-size: 24rpx; color: #8F1F26; background: #FAF0F0;
+  border-radius: 6rpx; padding: 3rpx 12rpx; margin-right: 14rpx;
+}
+.m-dist { font-size: 28rpx; color: #8F1F26; font-weight: 600; font-family: "DIN Alternate", "Helvetica Neue", sans-serif; }
+.m-addr {
+  font-size: 28rpx; color: #666666; margin-top: 16rpx; line-height: 1.5;
+  overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+}
+
+/* 最优券条：浅橙底 + 橙色面额 */
+.m-coupon {
+  margin-top: 16rpx; background: #FAF0F0; border: 1rpx solid #F0D2D0;
+  border-radius: 12rpx; padding: 14rpx 18rpx;
+  display: flex; align-items: center;
+}
+.m-coupon-tag {
+  background: linear-gradient(90deg, #C9525A, #B02A30); color: #FFFFFF;
+  font-size: 24rpx; border-radius: 6rpx; padding: 2rpx 10rpx; margin-right: 14rpx; flex-shrink: 0;
+}
+.m-coupon-title { font-size: 28rpx; color: #3F3E3E; font-weight: 500; }
+.m-coupon-val { font-size: 28rpx; color: #8F1F26; font-weight: 700; margin-left: 10rpx; }
+.m-coupon-min { font-size: 24rpx; color: #666666; margin-left: 12rpx; }
+
+.m-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 18rpx; }
+.m-meta { font-size: 28rpx; color: #666666; }
+.m-go { font-size: 28rpx; color: #8F1F26; font-weight: 500; }
+
+/* 空态 / 错误态 */
+.empty { text-align: center; padding: 80rpx 48rpx; }
+.empty-icon { font-size: 76rpx; margin-bottom: 20rpx; }
+.empty-icon-img { width: 120rpx; height: 120rpx; opacity: 0.45; }
+.empty-hint { font-size: 28rpx; color: #666666; margin: 12rpx 0 24rpx; }
+.notice { font-size: 28rpx; color: #666666; line-height: 1.7; }
+
+/* 地址定位图标（红金体系） */
+.addr-pin { display: inline-block; width: 24rpx; height: 24rpx; margin-right: 6rpx; vertical-align: -4rpx; background: center / contain no-repeat url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2032%2032'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23C2410C'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D%22M16%204a9%209%200%200%201%209%209c0%206.5-9%2015-9%2015S7%2019.5%207%2013a9%209%200%200%201%209-9z%22%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'13'%20r%3D'3'%20stroke%3D'%23C89B5A'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); }

@@ -1,0 +1,71 @@
+/* 自定义 tabBar 为 fixed 定位，不自动占位，需自行留出底部高度（116rpx + 安全区） */
+page { padding-bottom: calc(124rpx + env(safe-area-inset-bottom)); box-sizing: border-box; }
+
+/* 我的返还 · 枣红体系（对应设计稿 return.html） */
+
+.returns { min-height: 100vh; padding-bottom: 40rpx; }
+.wrap { padding: 0; }
+
+/* 头部：金额为唯一视觉锤（白字压品牌底，6.52:1） */
+.grad-header { padding: 40rpx 32rpx 44rpx; }
+.gh-label-wh { font-size: 24rpx; color: rgba(255,255,255,.80); text-align: center; }
+.gh-price { display: flex; align-items: baseline; justify-content: center; margin-top: 10rpx; }
+.gh-cur { font-size: 28rpx; color: #FFFFFF; font-weight: 700; margin-right: 4rpx; }
+.gh-num-w {
+  font-size: 68rpx; color: #FFFFFF; font-weight: 700; line-height: 1.05;
+  font-family: "DIN Alternate", "Helvetica Neue", sans-serif;
+}
+.gh-sub-wh {
+  font-size: 22rpx; color: rgba(255,255,255,.72); line-height: 1.5;
+  margin-top: 12rpx; text-align: center; padding: 0 8rpx;
+}
+
+/* ---------- 当前周期卡 ---------- */
+
+/* 步数徽章：浅品牌底 + 深枣红字（7.0:1 以上，小字也稳） */
+.cyc-badge {
+  font-size: 22rpx; color: #8F1F26; background: #FAF0F0;
+  border-radius: 8rpx; padding: 6rpx 14rpx; white-space: nowrap;
+}
+
+.price-row {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-top: 20rpx;
+}
+.p-label { font-size: 22rpx; color: #999999; }
+.p-main { display: flex; align-items: baseline; margin-top: 4rpx; }
+.p-cur { font-size: 30rpx; font-weight: 700; color: #8F1F26; margin-right: 2rpx; }
+.p-val {
+  font-size: 56rpx; font-weight: 700; color: #B02A30; line-height: 1.05;
+  font-family: "DIN Alternate", "Helvetica Neue", sans-serif;
+}
+.p-was {
+  font-size: 22rpx; color: #999999; text-decoration: line-through;
+  margin-left: 12rpx;
+}
+.p-saved { font-size: 22rpx; color: #999999; }
+.p-saved .num { color: #B02A30; font-weight: 700; }
+/* 全价段：右侧给一句中性说明，避免价格行左重右轻 */
+.p-full { color: #BBBBBB; }
+
+.cyc-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 20rpx; padding-top: 20rpx; border-top: 1rpx solid #EEEEEE;
+}
+.foot-txt { flex: 1; font-size: 22rpx; color: #666666; line-height: 1.5; }
+.foot-sub { color: #999999; }
+
+/* ---------- 各类目进度行 ---------- */
+.crow { padding: 20rpx 0; border-bottom: 1rpx solid #F4F4F4; }
+.crow:first-child { padding-top: 16rpx; }
+.crow:last-child { border-bottom: none; padding-bottom: 0; }
+
+.crow-top { display: flex; align-items: center; justify-content: space-between; }
+.crow-nm { font-size: 26rpx; color: #1A1A1A; font-weight: 500; }
+.crow-next { font-size: 24rpx; color: #B02A30; font-weight: 600; }
+.crow-go { font-size: 24rpx; color: #B02A30; }
+
+.crow-bar { display: flex; align-items: center; gap: 16rpx; margin-top: 12rpx; }
+.crow-bar .progress { flex: 1; }
+.crow-step { font-size: 22rpx; color: #999999; white-space: nowrap; }

@@ -1,0 +1,32 @@
+<!-- 消息中心 · 拼多多配色（规范板推断：红头 + 消息卡流 + 未读红点）
+     数据：GET /api/messages {messages, unread}；进入页面即全部已读 -->
+<view class="msgs">
+
+  <!-- 红色头部 -->
+  <view class="msgs-head">
+    <view class="row-between">
+      <view class="t1 t-white">消息中心</view>
+      <view class="head-action" bindtap="markRead" wx:if="{{unread > 0}}">全部已读</view>
+    </view>
+    <view class="head-sub">平台通知、订单与收益到账提醒</view>
+  </view>
+
+  <!-- 消息卡流 -->
+  <view class="msg-list">
+    <view class="card msg-card {{item.read ? '' : 'unread'}}" wx:for="{{msgs}}" wx:key="id">
+      <view class="msg-icon"></view>
+      <view class="msg-body">
+        <view class="row-between">
+          <view class="t2 t-bold msg-title">{{item.title}}</view>
+          <view class="dot" wx:if="{{!item.read}}"></view>
+        </view>
+        <view class="t3 msg-text">{{item.body}}</view>
+        <view class="t-weak msg-time">{{item.timeText}}</view>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{!msgs.length && !loading}}">
+      <view class="empty-icon"></view>
+      <view class="t3">暂无消息</view>
+    </view>
+  </view>
+</view>

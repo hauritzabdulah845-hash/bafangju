@@ -1,0 +1,45 @@
+<view class="card">
+  <view class="sum-row"><text>收款微信</text>
+    <view wx:if="{{receiver && receiver.bound}}"><text class="muted">{{receiver.name}} {{receiver.openidMasked}}</text> <text class="tag accent">已绑定</text></view>
+    <view wx:else><text class="tag gray">未绑定</text> <text class="btn-mini" bindtap="bindReceiver">绑定收款微信</text></view>
+  </view>
+  <view class="muted" wx:if="{{receiver && receiver.bound}}">提现会直接转到这个微信的零钱；要换收款微信，重新绑定即可。</view>
+  <view class="muted" wx:else>提现前要先绑定收款微信，钱会转到这个微信的零钱。</view>
+</view>
+
+<view class="card">
+  <view class="sum-row"><text>可申请余额</text><text class="amount">¥{{balanceYuan}}</text></view>
+  <block wx:if="{{withdrawEnabled}}">
+    <input class="wd-input" type="digit" placeholder="提现金额（元）" value="{{amount}}" bindinput="onAmount" />
+    <view class="btn" bindtap="apply">申请提现</view>
+    <view class="muted" style="margin-top:16rpx;" wx:if="{{limits}}">限额：单笔最多 ¥{{limits.perTxnYuan}}，单日累计最多 ¥{{limits.dailyYuan}}，最低提现 ¥{{limits.minYuan}}。超过单笔上限会自动分成几笔发放；当天额度用完后，剩余部分顺延到第二天。</view>
+  </block>
+  <view wx:else>
+    <view class="tag gray">提现功能未开通</view>
+    <view class="muted" style="margin-top:12rpx;">{{downNote}}</view>
+  </view>
+</view>
+
+<view class="card">
+  <view class="sec-title">提现记录</view>
+  <view class="wd-item" wx:for="{{requests}}" wx:key="id">
+    <view>
+      <view>¥{{item.yuan}} · {{item.text}}</view>
+      <view class="muted">{{item.timeText}}</view>
+    </view>
+    <view class="tag accent" wx:if="{{item.status === 'issuing' || item.status === 'approved'}}">待发放 ¥{{item.remainYuan}}</view>
+  </view>
+  <view class="empty muted" wx:if="{{!requests.length}}">暂无提现申请</view>
+</view>
+
+<view class="card">
+  <view class="sec-title">转账明细</view>
+  <view class="wd-item" wx:for="{{transfers}}" wx:key="id">
+    <view>
+      <view>¥{{item.yuan}} · {{item.text}}</view>
+      <view class="muted">流水号 {{item.transferNo}} · {{item.timeText}}</view>
+    </view>
+    <view class="btn-mini" wx:if="{{item.status === 'transferred_pending_confirm'}}" bindtap="confirm" data-id="{{item.id}}">确认收款</view>
+  </view>
+  <view class="empty muted" wx:if="{{!transfers.length}}">暂无转账记录</view>
+</view>

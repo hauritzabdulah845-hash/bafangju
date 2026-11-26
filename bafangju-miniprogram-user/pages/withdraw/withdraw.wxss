@@ -1,0 +1,13 @@
+.ipt { border: 1rpx solid #eee; border-radius: 12rpx; padding: 18rpx 24rpx; margin: 20rpx 0; font-size: 30rpx; }
+.sum-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx; }
+.amount { font-size: 46rpx; font-weight: bold; color: #8F1F26; }
+.row { display: flex; justify-content: space-between; align-items: center; padding: 14rpx 0; border-bottom: 1rpx solid #f2f2f2; font-size: 30rpx; }
+.tag { color: #8F1F26; font-size: 28rpx; }
+.tag.ok { color: #067F43; }
+.link { color: #8F1F26; margin-left: 16rpx; }
+
+/* 记录条目：主行（金额 + 状态）+ 次行（时间），时间用弱化小字 */
+.rec-item { padding: 14rpx 0; border-bottom: 1rpx solid #f2f2f2; }
+.rec-item:last-child { border-bottom: none; }
+.rec-item .row { padding: 0; border-bottom: none; }
+.rec-time { font-size: 24rpx; color: #666666; margin-top: 6rpx; }

@@ -1,0 +1,39 @@
+<view class="page">
+  <!-- 品牌渐变视觉带：只承载状态图标，文字下移到上浮白卡以保证 AA 对比度 -->
+  <view class="hero {{order.status === 'pending_pay' ? 'hero-pending' : ''}}">
+    <view class="hero-icon"><view class="hi {{order.status === 'pending_pay' ? 'hi-clock' : 'hi-check'}}"></view></view>
+  </view>
+
+  <!-- 状态卡：上浮覆盖渐变带底部，黑字白底（#3F3E3E 约 9.9:1） -->
+  <view class="card hero-card">
+    <view class="hero-title">{{statusText}}</view>
+    <view class="hero-sub" wx:if="{{order}}">第 {{order.step}} 单 · 本单实付 ¥{{paidYuan}}</view>
+  </view>
+
+  <view class="card" wx:if="{{product}}">
+    <view class="row-between">
+      <text class="t1">{{product.name}}</text>
+      <text class="muted">进度 {{progressText}}</text>
+    </view>
+    <view class="muted small">阶梯优惠价：前几单按标价，最后 4 单依次便宜 10%/20%/30%/40%；与商品详情、下单页算法一致。</view>
+
+    <view class="next" wx:if="{{order.status !== 'pending_pay' && order.status !== 'refunded' && !cycleCompleted}}">
+      <text class="next-label">再买 1 单实付</text>
+      <text class="next-price">¥{{nextPayYuan}}</text>
+      <text class="next-step">第 {{nextStep}} 单</text>
+    </view>
+
+    <view class="free-tip" wx:if="{{cycleCompleted}}">🎉 这一轮买完了，获得 1 个分红排队号；下一单开始新一轮</view>
+  </view>
+
+  <view class="err" wx:if="{{err}}">{{err}}</view>
+
+  <view class="actions">
+    <view class="btn-primary" wx:if="{{order.status === 'pending_pay'}}" bindtap="payNow">继续支付</view>
+    <view class="btn-primary" wx:elif="{{order.status !== 'refunded'}}" bindtap="buyAgain">再买 1 单</view>
+    <view class="btn-ghost" bindtap="goOrders">查看订单</view>
+    <view class="btn-ghost" bindtap="goHome">返回首页</view>
+  </view>
+
+  <view class="foot muted">优惠已内嵌于售价，不承诺返现、不承诺保本。</view>
+</view>

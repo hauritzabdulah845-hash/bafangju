@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>八方聚平台 · 管理后台</title>
+<link rel="stylesheet" href="css/admin-base.css">
+<link rel="stylesheet" href="css/admin-components.css">
+<link rel="stylesheet" href="css/admin-responsive.css">
+</head>
+<body>
+
+<!-- 登录遮罩 -->
+<div id="loginMask">
+  <div class="login-card">
+    <h2><span class="logo-mark" style="width:26px;height:26px;border-radius:8px;"></span>八方聚管理后台</h2>
+    <p class="muted">共享平台 · 运营控制台 ｜ 请使用管理员账号登录</p>
+    <input id="loginUser" placeholder="管理员账号">
+    <div class="pwd-field">
+      <input id="loginPass" type="password" placeholder="密码" onkeydown="if(event.key==='Enter')doLogin()">
+      <button type="button" class="eye-btn" onclick="togglePassEye(this)" aria-label="显示密码"></button>
+    </div>
+    <button onclick="doLogin()">登 录</button>
+    <p id="loginErr" class="warn" style="margin:10px 0 0;min-height:18px;"></p>
+  </div>
+</div>
+
+<div id="topbar" style="display:none;">
+
+<!-- 顶部品牌红通栏 -->
+<header class="topbar">
+  <button class="t-burger" id="navBurger" aria-label="打开导航菜单" aria-expanded="false">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <div class="t-logo"><span class="logo-mark"></span>八方聚管理后台</div>
+  <div class="t-search">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#26282e" stroke-width="1.6"><circle cx="7" cy="7" r="4.6"/><path d="M10.6 10.6 14 14"/></svg>
+    <input id="globalSearch" placeholder="搜索当前页内容（订单按商品名 / 商品按名称）">
+  </div>
+  <div class="t-right">
+    <span class="who" id="whoami"></span>
+    <a onclick="openChangePwd()">修改密码</a>
+    <a onclick="doLogout()">退出登录</a>
+  </div>
+</header>
+
+<!-- 窄屏侧栏遮罩 -->
+<div id="navMask" class="nav-mask" onclick="toggleNav(false)"></div>
+
+<!-- 侧边导航 -->
+<aside class="sidebar">
+  <div class="nav-group">总览</div>
+  <div class="tab on" data-pane="overview" data-title="经营看板" data-sub="平台实时经营数据与待办处理">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="5.4" height="5.4" rx="1.2"/><rect x="9.1" y="1.5" width="5.4" height="5.4" rx="1.2"/><rect x="1.5" y="9.1" width="5.4" height="5.4" rx="1.2"/><rect x="9.1" y="9.1" width="5.4" height="5.4" rx="1.2"/></svg>
+    经营看板
+  </div>
+  <div class="nav-group">日常运营</div>
+  <div class="tab" data-pane="orders" data-title="订单管理" data-sub="发货 / 到店核销 / 售后处理">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.5 1.8h9l1.2 2.4H2.3L3.5 1.8z"/><path d="M3.2 4.2v9.3a1 1 0 0 0 1 1h7.6a1 1 0 0 0 1-1V4.2"/><path d="M6.4 7.4h3.2M6.4 10h3.2"/></svg>
+    订单管理
+  </div>
+  <div class="tab" data-pane="catalog" data-title="商品管理" data-sub="类目让利配置 / 商品上下架 / 上架前算账">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.8 4.6h10.4l-1 8.2a1 1 0 0 1-1 .9H4.8a1 1 0 0 1-1-.9l-1-8.2z"/><path d="M5.8 4.6 8 1.6l2.2 3"/></svg>
+    商品管理<span class="nav-badge zero" id="badge-catalog">0</span>
+  </div>
+  <div class="tab" data-pane="merchants" data-title="商家管理" data-sub="入驻审核 / 创建商家账号 / 联盟核销单与结算">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.2 5.4 4 2.4h8l1.8 3"/><path d="M2.6 5.4v8.2a1 1 0 0 0 1 1h8.8a1 1 0 0 0 1-1V5.4"/><path d="M6.2 5.4v-3h3.6v3"/><path d="M6.2 9.4h3.6"/></svg>
+    商家管理<span class="nav-badge zero" id="badge-merchants">0</span>
+  </div>
+  <div class="tab" data-pane="content" data-title="内容与运营" data-sub="首页运营位 / 文案配置（改内容不用发版）">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.4 2.6h11.2v8.4H8.6L5 14.2v-3.2H2.4z"/><path d="M5 6h6M5 8.4h4"/></svg>
+    内容与运营
+  </div>
+  <div class="tab" data-pane="adCenter" data-title="广告中心" data-sub="视频广告激励（按 IP 计费） / 轮播广告位售卖 / 任务奖励配置">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3.5" width="12" height="9" rx="1.5"/><path d="M6.8 6.2l3.4 1.8-3.4 1.8z" fill="currentColor" stroke="none"/><path d="M2 14.5h12" stroke-dasharray="1.6 1.4"/></svg>
+    广告中心<span class="nav-badge zero" id="badge-ads">0</span>
+  </div>
+  <div class="tab" data-pane="withdraw" data-title="提现审核" data-sub="提现单审核 / 转账明细 / 补登记收款人">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.8" y="3.6" width="12.4" height="9.4" rx="2"/><circle cx="8" cy="8.3" r="2.1"/><path d="M4 3.6v1.4M12 11v1.4"/></svg>
+    提现审核<span class="nav-badge zero" id="badge-withdraw">0</span>
+  </div>
+  <div class="nav-group">资金与分红</div>
+  <div class="tab" data-pane="queue" data-title="分红排队" data-sub="按完成轮次的先后排队发钱，和人数、贡献值无关">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.6 3.4h10.8M2.6 8h10.8M2.6 12.6h7"/><circle cx="13" cy="12.6" r="1.6"/></svg>
+    分红排队
+  </div>
+  <div class="nav-group nav-fold" id="advNavGroup" onclick="toggleAdvNav()" aria-expanded="false" title="展开低频配置菜单">高级配置<span class="nf-arrow">▾</span></div>
+  <div class="tab" data-adv="1" data-pane="reserve" data-title="储备金账户" data-sub="只存平台真实利润（交易服务费 / 广告收益）">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6.8" width="12" height="7.4" rx="1.6"/><path d="M4.4 6.8V4.6a3.6 3.6 0 0 1 7.2 0v2.2"/><circle cx="8" cy="10.5" r="1.3"/></svg>
+    储备金账户
+  </div>
+  <div class="tab" data-adv="1" data-pane="jobs" data-title="每日自动任务" data-sub="每天自动结算 / 手动补执行 / 季度分红（敏感）">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.4V8l2.6 1.8"/></svg>
+    每日自动任务
+  </div>
+  <div class="tab" data-adv="1" data-pane="switches" data-title="功能开关" data-sub="开关改动全部留记录，可追查">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.8" y="4.4" width="12.4" height="7.2" rx="3.6"/><circle cx="5.4" cy="8" r="2"/><path d="M10.4 6.4v3.2"/></svg>
+    功能开关
+  </div>
+  <div class="tab" data-adv="1" data-pane="risk" data-title="风控中心" data-sub="黑名单 / 用户申诉 / 重复免单预警（历史）">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.8 13.4 4v4.2c0 3-2.2 5.2-5.4 6-3.2-.8-5.4-3-5.4-6V4L8 1.8z"/><path d="M5.8 8.2l1.6 1.6 3-3.4"/></svg>
+    风控中心
+  </div>
+  <div class="tab" data-adv="1" data-pane="messages" data-title="消息管理" data-sub="系统公告群发 / 站内消息（V3.19）">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6.4a4 4 0 0 1 8 0c0 2.8 1 3.8 1.6 4.2H2.4C3 10.2 4 9.2 4 6.4z"/><path d="M6.6 13.2a1.8 1.8 0 0 0 2.8 0"/></svg>
+    消息管理
+  </div>
+  <div class="tab" data-adv="1" data-pane="settings" data-title="系统设置" data-sub="等级门槛 / 规则版本（V3.20）">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.8v1.8M8 12.4v1.8M1.8 8h1.8M12.4 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M12.4 3.6l-1.3 1.3M4.9 11.1l-1.3 1.3"/></svg>
+    系统设置
+  </div>
+  <div class="tab" data-adv="1" data-pane="audit" data-title="操作日志" data-sub="敏感操作全部留痕，只加不改">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.2 1.8H4a1.4 1.4 0 0 0-1.4 1.4v9.6A1.4 1.4 0 0 0 4 14.2h8a1.4 1.4 0 0 0 1.4-1.4V5.6L9.2 1.8z"/><path d="M9 2v4h4"/><path d="M5.6 8.6h4.8M5.6 11.4h3.2"/></svg>
+    操作日志
+  </div>
+  <div class="tab" data-adv="1" data-pane="users" data-title="账号与权限" data-sub="创建平台方管理员账号 / 按模块授权 / 停用与重置密码（仅总账号可见）">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5.4" r="2.6"/><path d="M1.8 13.4c0-2.2 1.9-3.6 4.2-3.6s4.2 1.4 4.2 3.6"/><circle cx="12" cy="6.2" r="2"/><path d="M14.2 13.4c0-1.6-1-2.7-2.6-3"/></svg>
+    账号与权限
+  </div>
+  <div class="sidebar-foot">
+    <div>V3.3 合规版 ｜ 数据全部真实聚合</div>
+    <div class="filing-bar" data-filing></div>
+  </div>
+</aside>
+
+<div class="main">
+<div class="page-h">
+  <div><h2 id="pageTitle">经营看板</h2><div class="ph-sub" id="pageSub">平台实时经营数据与待办处理</div></div>
+  <div class="muted" id="refreshHint"></div>
+</div>
+
+<!-- ============ 经营看板 ============ -->
+<div class="pane on" id="pane-overview">
+  <div class="kpis" id="kpis"></div>
+  <div class="card">
+    <h3>待处理事项 <span class="h3-extra" id="fulfillUpdated"></span></h3>
+    <div class="todo-grid" id="todoGrid"></div>
+  </div>
+  <div class="card">
+    <h3>近 7 日经营趋势 <span class="h3-extra">柱 = 实付金额（¥）｜ 线 = 有效订单数（含历史免单）</span></h3>
+    <div id="trendChart"><div class="empty"><div class="e-icon">📊</div>加载中…</div></div>
+  </div>
+  <div class="kpis" id="fundCards" style="grid-template-columns:repeat(3,1fr)"></div>
+  <div class="card">
+    <h3>系统开关状态 <span class="h3-extra">变更请前往「高级配置 - 功能开关」，改动全部留记录</span></h3>
+    <div class="sw-chips" id="swChips"></div>
+  </div>
+  <div class="card">
+    <h3>合规提示（只读）</h3>
+    <ul class="rule-list">
+      <li>钱全部按"分"记账；佣金走平台收益账户结算，<b>不使用微信分账</b>（微信有 30% 上限）。</li>
+      <li>以前的老免单订单不走微信支付（单独记账、单独对账；新规则下已不再产生）。</li>
+      <li>提现为平台转账到微信：单笔最多 500 元、单人单日最多 2000 元，需用户确认收款，超时退回重发。</li>
+      <li>贡献值只用来算活跃度和公示参考价值，<b>不能换现金、不能转让</b>；唯一兑现通道是季度分红。</li>
+      <li>审核期降级开关开启时，用户端自动隐藏分红/团队入口（后台记账照常）。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 订单管理 ============ -->
+<div class="pane" id="pane-orders">
+  <div class="tabrow" id="orderTabs">
+    <div class="tr-item on" data-f="all">全部<b id="oc-all"></b></div>
+    <div class="tr-item" data-f="pending_pay">待付款<b id="oc-pending_pay"></b></div>
+    <div class="tr-item" data-f="toship">待发货<b id="oc-toship"></b></div>
+    <div class="tr-item" data-f="toverify">待核销<b id="oc-toverify"></b></div>
+    <div class="tr-item" data-f="shipped">已发货<b id="oc-shipped"></b></div>
+    <div class="tr-item" data-f="done">已完成<b id="oc-done"></b></div>
+    <div class="tr-item" data-f="aftersale">退款 · 售后<b id="oc-aftersale"></b></div>
+    <div class="tr-item" data-f="refund_anomaly">退款异常<b id="oc-refund_anomaly"></b></div>
+    <div class="tr-tools">
+      <select id="orderFilter"><option value="">全部类型</option><option value="WX_PAY">微信支付</option><option value="FREE">免单订单（历史）</option></select>
+      <input id="orderKeyword" placeholder="商品名 / 订单号" style="width:170px">
+      <button class="sm" onclick="loadOrders()">查询</button>
+    </div>
+  </div>
+  <div id="refundAlertBar" class="card" style="display:none;border-left:4px solid var(--danger);padding:10px 14px;margin-bottom:10px;font-size:13px"></div>
+  <div class="card">
+    <table id="orders"><thead><tr><th>商品</th><th>类型</th><th>状态</th><th>标价</th><th>实付</th><th>第几单</th><th>发货/核销</th><th style="width:200px">操作</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<!-- ============ 商品管理 ============ -->
+<div class="pane" id="pane-catalog">
+  <div class="tabrow">
+    <div class="tr-item on" data-f="on_sale">在售中<b id="pc-on"></b></div>
+    <div class="tr-item" data-f="off_sale">已下架<b id="pc-off"></b></div>
+    <div class="tr-tools">
+      <input id="prodKeyword" placeholder="商品名称" style="width:170px">
+      <button class="sm" onclick="loadCatalog()">查询</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>类目管理 <span class="h3-extra">r = 该类目让利率，决定原价单数 n=⌊1/r⌋+1（一轮共 n+4 单，最后 4 单便宜 10%~40%）；改 r 是敏感定价操作，全程留痕</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">类目名称</div><input id="catName" placeholder="如 生鲜粮油" style="width:150px"></div>
+      <div class="field"><div class="f-label">让利率 r（0.01~0.99）</div><input id="catR" type="number" step="0.01" min="0.01" max="0.99" placeholder="如 0.2" style="width:120px"></div>
+      <div class="field"><div class="f-label">图标 emoji（已停用）</div><input id="catIcon" placeholder="留空即可" style="width:150px" title="小程序与官网已统一使用内置线性图标，此字段仅为历史数据兼容，建议留空"></div>
+      <button class="sm" onclick="createCategory()">新增类目</button>
+      <span id="catResult" class="muted"></span>
+    </div>
+    <table id="cats" style="margin-top:12px;"><thead><tr><th>ID</th><th>名称</th><th>让利率 r</th><th>原价单数 n</th><th>操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>商品审核（商家提交） <span class="h3-extra">商家上传/修改的商品在这里审核；通过前务必点「算账」确认平台留存 ≥ 0，驳回须写明原因（商家可见，可改后重提）</span></h3>
+    <button class="sm" onclick="loadCatalog()">刷新</button>
+    <table id="prodPending" style="margin-top:10px;"><thead><tr><th>提交时间</th><th>商家</th><th>商品</th><th>类目</th><th>标价</th><th>成本</th><th>配送</th><th>操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>商品管理 <span class="h3-extra">价格单位为分；改价遵循「成交快照不追溯」；下架仅禁新下单</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">所属类目</div><select id="prodCat"></select></div>
+      <div class="field"><div class="f-label">商品名称</div><input id="prodName" placeholder="如 五常大米 5kg" style="width:160px"></div>
+      <div class="field"><div class="f-label">标价（分）</div><input id="prodPrice" type="number" placeholder="如 9900" style="width:110px"></div>
+      <div class="field"><div class="f-label">成本（分）</div><input id="prodCost" type="number" placeholder="含供货与物流" style="width:110px"></div>
+      <div class="field"><div class="f-label">税费+通道费率</div><input id="prodTaxRate" type="number" step="0.01" min="0" max="0.5" placeholder="默认 0.06" style="width:130px"></div>
+      <div class="field"><div class="f-label">运营成本（分/单）</div><input id="prodOpCost" type="number" placeholder="如 50" style="width:120px"></div>
+      <div class="field"><div class="f-label">配送方式</div><select id="prodDelivery"><option value="express">快递到家（需收货地址）</option><option value="store">到店自提/核销</option></select></div>
+      <div class="field"><div class="f-label">归属商家</div><select id="prodMerchant"><option value="">平台自营</option></select></div>
+      <div class="field"><div class="f-label">图片路径（选填）</div><input id="prodImg" placeholder="/img/products/p_xx.png" style="width:240px"></div>
+      <button class="sm" onclick="createProduct()">上架</button>
+      <span id="prodResult" class="muted"></span>
+    </div>
+    <table id="prods" style="margin-top:12px;"><thead><tr><th>商品</th><th>类目</th><th>商家</th><th>标价</th><th>定价参数</th><th>配送</th><th>状态</th><th style="width:260px">操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>上架前算账（整周期） <span class="h3-extra">上架 / 改价前必看：平台留存必须 ≥ 0，否则这定价会亏本</span></h3>
+    <div id="econPreview" class="hint-live">点商品行的「算账」，预览这个商品一整轮的可分配收益、佣金基数和平台留存。<b>留存为负，说明成本或让利率 r 配得不合理。</b></div>
+  </div>
+</div>
+
+<!-- ============ 商家管理 ============ -->
+<div class="pane" id="pane-merchants">
+  <div class="card">
+    <h3>入驻资质审核 <span class="h3-extra">商家在小程序提交 → 人工审核 → 通过后自动创建账号与初始密码（登录入口：「八方聚」小程序 我的 → 商家服务）</span></h3>
+    <button class="sm" onclick="loadEntryApps()">刷新申请列表</button>
+    <table id="entryApps" style="margin-top:10px;"><thead><tr><th>时间</th><th>名称/联系人</th><th>类目</th><th>地址</th><th>证照</th><th>状态</th><th style="width:170px">操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>创建商家账号 <span class="h3-extra">同时创建登录账号与初始密码，均仅展示一次</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">商家名称</div><input id="mchName" placeholder="营业执照全称" style="width:170px"></div>
+      <div class="field"><div class="f-label">联系人 / 电话</div><input id="mchContact" placeholder="如 张三 138xxxx" style="width:150px"></div>
+      <div class="field"><div class="f-label">登录账号</div><input id="mchUsername" placeholder="默认同名称" style="width:190px"></div>
+      <div class="field"><div class="f-label">初始密码</div><input id="mchPassword" placeholder="留空自动生成" style="width:200px"></div>
+      <button class="sm" onclick="createMerchant()">创建</button>
+      <span id="mchCreateResult" class="muted"></span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>商家列表 <span class="h3-extra">停用后登录与既有 token 立即失效；收款 / 券数 / 坐标等完整资料点「详情」查看</span></h3>
+    <button class="sm" onclick="loadMerchants()">刷新</button>
+    <table id="merchants" style="margin-top:10px;"><thead><tr><th>名称</th><th>登录账号</th><th>联系人</th><th>状态</th><th>余额</th><th>挂账（欠款）</th><th style="width:230px">操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>商家结算 <span class="h3-extra">按商家查看当月已赚 / 冻结 / 广告花费 / 提现（口径见接口说明）</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">商家 ID</div><input id="settleMerchantId" placeholder="从商家列表复制" style="width:160px"></div>
+      <button class="sm" onclick="loadSettlement()">查询结算</button>
+    </div>
+    <div id="settleResult" class="hint-live">输入商家 ID 后点「查询结算」，这里显示该商家当月已赚 / 冻结 / 广告花费 / 提现明细</div>
+  </div>
+  <div class="card">
+    <h3>联盟商家核销单 <span class="h3-extra">券 / 次卡核销收服务费；联盟业务的收入不进商品分红池</span></h3>
+    <p class="muted" style="margin:0 0 8px">券服务费 3%（满减/折扣券）、核销服务费 5%（次卡/服务），按核销金额计提；佣金分配：平台 10% / 团队 10% / 直接邀请人 70% / 间接邀请人 10%。</p>
+    <button class="sm" onclick="loadAlliance()">刷新</button>
+    <span id="allianceSummary" class="muted" style="margin-left:10px"></span>
+    <table id="alliance" style="margin-top:10px;"><thead><tr><th>时间</th><th>商家</th><th>券</th><th>消费额</th><th>券服务费</th><th>核销服务费</th><th>分佣基数</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>联盟服务费应收台账 <span class="h3-extra">核销即挂账；确认收款后才计入平台收入并划入储备专户，同时解冻联盟分佣</span></h3>
+    <p class="muted" style="margin:0 0 8px">商家线下收顾客货款，平台只收服务费。填商家 ID 与月份查询应缴账单；线下收到款后在此确认，账实才会一致。</p>
+    <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <input id="feeMerchantId" placeholder="商家 ID（留空=全部）" style="width:180px">
+      <input id="feeMonth" placeholder="月份 2026-11（留空=全部）" style="width:170px">
+      <button class="sm" onclick="loadFeeBills()">查询账单</button>
+      <button class="sm" onclick="payFeeMonth()">该商家当月全部标记已收</button>
+    </div>
+    <span id="feeSummary" class="muted" style="display:block;margin:10px 0"></span>
+    <table id="feeBills"><thead><tr><th>挂账时间</th><th>商家</th><th>券</th><th>消费总额</th><th>应缴服务费</th><th>状态</th><th>操作</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<!-- ============ 广告中心（视频激励 / 轮播广告位 / 任务奖励） ============ -->
+<div class="pane" id="pane-adCenter">
+  <div class="tabrow" id="adCenterTabs">
+    <div class="tr-item on" data-zone="video">视频广告激励</div>
+    <div class="tr-item" data-zone="slot">轮播广告位</div>
+    <div class="tr-item" data-zone="task">任务奖励配置</div>
+  </div>
+
+  <div class="ad-zone on" data-zone="video">
+  <p class="zone-sub">按 IP 计费 · 用户完整看完视频得贡献值（不可提现）· 用户端「赚实惠」页展现</p>
+  <div class="card">
+    <h3>新建视频广告计划 <span class="h3-extra">商家录总预算 + 单 IP 费用，系统自动算：所需 IP 数 = 预算 ÷ 单 IP 费用；完播可得贡献值 = 单 IP 费用 × 分成比例（贡献值只算活跃度，不能提现）</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">商家</div><select id="advMerchant" style="width:170px"></select></div>
+      <div class="field"><div class="f-label">广告标题</div><input id="advTitle" placeholder="如：鲜稻之家 · 新米上市" style="width:190px"></div>
+      <div class="field"><div class="f-label">广告视频（MP4 · ≤24MB）</div>
+        <button class="sm plain" onclick="pickAdvVideo()">选择视频上传</button>
+        <input type="file" id="advVideoFile" accept="video/mp4,video/quicktime,.mp4,.mov" style="display:none" onchange="uploadAdvVideo(this)">
+      </div>
+      <div class="field"><div class="f-label">视频路径</div><input id="advVideo" placeholder="上传后自动填入" style="width:200px"></div>
+      <div class="field"><div class="f-label">封面图</div>
+        <button class="sm plain" onclick="pickAdvCover()">上传封面</button>
+        <input type="file" id="advCoverFile" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="uploadAdvCover(this)">
+      </div>
+      <div class="field"><div class="f-label">封面路径</div><input id="advCover" placeholder="选填，上传后自动填入" style="width:200px"></div>
+      <div class="field"><div class="f-label">时长（秒）</div><input id="advDur" type="number" min="5" max="600" value="30" style="width:80px"></div>
+      <div class="field"><div class="f-label">跳转商品（选填）</div><select id="advProduct" style="width:190px"><option value="">不跳转</option></select></div>
+      <div class="field"><div class="f-label">总预算（元）</div><input id="advBudget" type="number" min="1" step="0.01" style="width:110px"></div>
+      <div class="field"><div class="f-label">单 IP 费用（元）</div><input id="advCharge" type="number" min="0.1" step="0.01" style="width:110px"></div>
+      <div class="field"><div class="f-label">每日上限（份）</div><input id="advCap" type="number" min="1" value="500" style="width:90px"></div>
+      <button class="sm" onclick="createAdVideo()">创建计划（待审核）</button>
+    </div>
+    <div id="advMediaPreview" class="hint-live">上传视频后自动读取时长并生成预览；封面建议 16:9，未上传时用户端显示默认占位</div>
+    <div id="advPricing" class="hint-live">填写总预算与单 IP 费用后，这里实时显示：所需 IP 数 / 用户单次奖励 / 预计奖励支出 / 平台留存</div>
+  </div>
+  <div id="advEditBox" class="card" style="display:none">
+    <h3>修改素材并重新提交 <span class="h3-extra">仅「待审核 / 已驳回」可改；驳回计划保存后自动回到待审核队列</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">广告标题</div><input id="edTitle" style="width:190px"></div>
+      <div class="field"><div class="f-label">视频路径</div><input id="edVideo" style="width:200px"></div>
+      <div class="field"><div class="f-label">封面路径</div><input id="edCover" style="width:200px"></div>
+      <div class="field"><div class="f-label">时长（秒）</div><input id="edDur" type="number" min="5" max="600" style="width:80px"></div>
+      <div class="field"><div class="f-label">跳转商品</div><select id="edProduct" style="width:190px"></select></div>
+      <button class="sm" onclick="saveAdvMaterial()">保存并重提审</button>
+      <button class="sm ghost" onclick="closeAdvEdit()">取消</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>广告计划列表 <span class="h3-extra">已完成 IP 数点满即自动「已抢完」；点满 = 预算消耗完，平台零垫资</span></h3>
+    <button class="sm" onclick="loadAdVideos()">刷新</button>
+    <table id="adVideos" style="margin-top:10px;"><thead><tr><th>广告</th><th>商家/跳转</th><th>投放参数</th><th>进度 · 预算</th><th>状态</th><th style="width:200px">操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>广告效果看板 <span class="h3-extra">曝光 → 点击 → 完播 → 跳商品 → 下单；用户端自动埋点，可按商家筛选并导出对账单</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">商家筛选</div><select id="advStatMerchant" onchange="loadAdStats()" style="width:170px"><option value="">全部商家</option></select></div>
+      <button class="sm" onclick="loadAdStats()">刷新</button>
+      <button class="sm ghost" onclick="exportAdStats()">导出 CSV</button>
+    </div>
+    <div id="advStatTotal" class="stat-strip">加载中…</div>
+    <table id="advStatTable" style="margin-top:10px;"><thead><tr><th>广告 / 商家</th><th>曝光</th><th>点击</th><th>点击率</th><th>完播</th><th>完播率</th><th>跳商品</th><th>下单</th><th>下单金额</th><th>预算消耗</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" id="advQuotaCard">
+    <h3>商家广告额度 <span class="h3-extra">仅总账号可发放：商家线下付款后登记额度，商家端自行分配到计划，不接在线支付</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">商家</div><select id="quotaMerchant" style="width:170px"></select></div>
+      <div class="field"><div class="f-label">发放额度（元）</div><input id="quotaYuan" type="number" min="1" step="0.01" style="width:110px"></div>
+      <div class="field"><div class="f-label">备注（收款凭证）</div><input id="quotaNote" placeholder="如：转账流水号" style="width:200px"></div>
+      <button class="sm" onclick="grantAdQuota()">发放额度</button>
+      <button class="sm plain" onclick="loadAdQuotas()">刷新</button>
+      <span id="quotaResult" class="muted"></span>
+    </div>
+    <table id="adQuotas" style="margin-top:10px;"><thead><tr><th>商家</th><th>累计发放</th><th>已消耗</th><th>冻结中</th><th>可用额度</th><th>计划数</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>广告结算单 <span class="h3-extra">结算后未消耗预算自动退回商家可用额度；线下退款完成后点「标记已退」</span></h3>
+    <button class="sm" onclick="loadAdSettlements()">刷新</button>
+    <table id="adSettlements" style="margin-top:10px;"><thead><tr><th>计划</th><th>商家</th><th>预算</th><th>已消耗</th><th>应退</th><th>结算时间</th><th>状态</th><th>操作</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  </div>
+
+  <div class="ad-zone" data-zone="slot">
+  <p class="zone-sub">商家付费展示 · 用户端首页轮播图 · 按投放期售卖</p>
+  <div class="card">
+    <h3>广告位管理 <span class="h3-extra">按位置售卖，按投放天数计价</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">广告位名称</div><input id="slotName" placeholder="如 首页 Banner A" style="width:180px"></div>
+      <div class="field"><div class="f-label">展示位置</div><select id="slotPos"></select></div>
+      <div class="field"><div class="f-label">最短投放天数</div><input id="slotMinDays" type="number" placeholder="7" value="7" style="width:120px"></div>
+      <div class="field"><div class="f-label">每期价格（元）</div><input id="slotFee" type="number" placeholder="如 300" style="width:130px"></div>
+      <button class="sm" onclick="createSlot()">创建</button>
+      <span id="slotResult" class="muted"></span>
+    </div>
+    <table id="adSlotList" style="margin-top:12px;"><thead><tr><th>ID</th><th>名称</th><th>位置</th><th>最短投放</th><th>每期价格</th><th>状态</th><th>当前投放</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" id="slotBookCard">
+    <h3>代商家投放 <span class="h3-extra">商家线下打款后，先在「视频广告激励」页发放额度，再由此代上广告；创建即上线并冻结额度</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">商家</div><select id="slotBookMerchant" onchange="slotBookMerchantChanged()" style="width:160px"></select></div>
+      <div class="field"><div class="f-label">可投广告位</div><select id="slotBookSlot" onchange="slotBookSlotChanged()" style="width:180px"></select></div>
+      <div class="field"><div class="f-label">投放天数</div><input id="slotBookDays" type="number" min="1" step="1" oninput="previewSlotBooking()" style="width:90px"></div>
+      <div class="field"><div class="f-label">广告标题</div><input id="slotBookTitle" placeholder="至少 2 字" style="width:180px"></div>
+      <div class="field"><div class="f-label">广告图片</div><button class="sm plain" onclick="pickSlotBookImage()">上传素材</button><input id="slotBookImageFile" type="file" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="uploadSlotBookImage(this)"></div>
+      <div class="field"><div class="f-label">图片路径</div><input id="slotBookImage" placeholder="上传后自动填入" readonly style="width:180px"></div>
+      <div class="field"><div class="f-label">跳转类型</div><select id="slotBookTargetType" onchange="slotBookTargetChanged()"><option value="none">不跳转</option><option value="merchant">商家主页</option><option value="product">商家商品</option></select></div>
+      <div class="field" id="slotBookProductField" style="display:none"><div class="f-label">跳转商品</div><select id="slotBookProduct" style="width:180px"></select></div>
+      <button class="sm" id="slotBookSubmit" onclick="submitSlotBooking()" disabled>确认代投并上线</button>
+    </div>
+    <div id="slotBookQuota" class="hint-live">正在读取商家额度…</div>
+    <div id="slotBookPricing" class="hint-live">选择广告位与天数后预览费用；实际费用由服务端计算，提交时不传费用。</div>
+    <div id="slotBookImagePreview" class="muted"></div>
+  </div>
+  <div class="card">
+    <h3>历史投放审核（仅旧商家自助订单） <span class="h3-extra">平台代投创建即上线，不进入待审核队列；此处仅处理改造前遗留的商家自助投放</span></h3>
+    <table id="adPending" style="margin-top:4px;"><thead><tr><th>ID</th><th>商家</th><th>广告位</th><th>标题</th><th>素材</th><th>天数</th><th>费用</th><th>操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>投放中与效果 <span class="h3-extra" id="adSummary"></span></h3>
+    <table id="adActive"><thead><tr><th>商家</th><th>广告位</th><th>标题</th><th>投放期</th><th>曝光</th><th>点击</th><th>点击率</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  </div>
+
+  <div class="ad-zone" data-zone="task">
+  <p class="zone-sub">贡献值 · 只用来算活跃度，不能换现金</p>
+  <div class="card">
+    <h3>任务奖励配置 <span class="h3-extra">签到 / 浏览 / 广告 / 分享的贡献值发放标准</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">签到（贡献值）</div><input id="trSign" type="number" min="0" style="width:80px"></div>
+      <div class="field"><div class="f-label">浏览（贡献值）</div><input id="trBrowse" type="number" min="0" style="width:80px"></div>
+      <div class="field"><div class="f-label">广告（贡献值）</div><input id="trAd" type="number" min="0" style="width:80px"></div>
+      <div class="field"><div class="f-label">分享（贡献值）</div><input id="trShare" type="number" min="0" style="width:80px"></div>
+      <div class="field"><div class="f-label">连击天数</div><input id="trDays" type="number" min="1" max="365" style="width:90px"></div>
+      <div class="field"><div class="f-label">连击奖励</div><input id="trBonus" type="number" min="0" style="width:90px"></div>
+      <label class="switch-item" style="align-self:flex-end;padding-bottom:7px"><input id="trAdEnabled" type="checkbox"> 开启广告任务（微信广告功能开通后）</label>
+      <button class="sm" onclick="saveTaskConfig()">保存</button>
+      <span id="trResult" class="muted"></span>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ============ 提现审核 ============ -->
+<div class="pane" id="pane-withdraw">
+  <div class="card">
+    <h3>提现审核 <span class="h3-extra">审核通过后按单笔/单日限额分多笔发放；收款人没绑定微信（openid）的转账会失败，补登记后重试</span></h3>
+    <button class="sm" onclick="loadWithdraws()">刷新</button>
+    <table id="withdraws" style="margin-top:10px;"><thead><tr><th>ID</th><th>用户/商家</th><th>金额</th><th>状态</th><th>还没发完</th><th>申请时间</th><th>收款微信</th><th>操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>转账明细（逐笔） <span class="h3-extra">含失败笔；补登记收款人后可重试</span></h3>
+    <button class="sm" onclick="loadTransfers()">刷新明细</button>
+    <button class="sm ghost" onclick="retryTransfers()">重试全部失败笔</button>
+    <table id="transfers" style="margin-top:10px;"><thead><tr><th>ID</th><th>提现单</th><th>用户/商家</th><th>金额</th><th>状态</th><th>收款人</th><th>发放日</th><th>失败原因</th><th>操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>补登记收款人 openid（微信标识） <span class="h3-extra">临时通道；正式环境由用户登录小程序时自动绑定</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">用户 / 商家 ID</div><input id="bindUser" placeholder="从提现单复制" style="width:160px"></div>
+      <div class="field"><div class="f-label">openid（微信标识）</div><input id="bindOpenid" placeholder="o 开头的字符串" style="width:260px"></div>
+      <div class="field"><div class="f-label">收款人姓名（选填）</div><input id="bindName" placeholder="用于转账核名校验" style="width:160px"></div>
+      <button class="sm" onclick="bindReceiver()">绑定 / 换绑</button>
+      <span id="bindResult" class="muted"></span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>历史奖励提现（已停止新增发放） <span class="h3-extra">存量余额兑付；满 ¥100 才可申请 / 已实名。线上流程分两步：初审通过（不动资金）→ 具备「财务复核」权限的第二位管理员复核打款；未挂接真实通道时拒绝打款。存量单可走「登记线下打款 → 第二位管理员复核」。</span></h3>
+    <div id="rwSwitchNotice" class="muted" style="display:none;margin-bottom:10px;padding:8px 10px;border:1px solid #E6C9A8;background:#FFF8EE;border-radius:6px;color:#8A5A2B"></div>
+    <button class="sm" onclick="loadRewardWithdrawals()">刷新</button>
+    <table id="rewardWithdrawals" style="margin-top:10px;"><thead><tr><th>ID</th><th>用户</th><th>实名</th><th>税前金额</th><th>代扣个税</th><th>实付</th><th>状态</th><th>申请时间</th><th>操作</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<!-- ============ 分红队位 ============ -->
+<div class="pane" id="pane-queue">
+  <div class="card">
+    <h3>分红排队号 <span class="h3-extra">按完成轮次的先后排队；人数和贡献值不影响排队顺序</span></h3>
+    <table id="slots"><thead><tr><th>ID</th><th>用户</th><th>状态</th><th>获得时间</th><th>发放/跳过日期</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<!-- ============ 储备专户 ============ -->
+<div class="pane" id="pane-reserve">
+  <div class="card">
+    <h3>储备金存入 <span class="h3-extra">只接受白名单来源（平台真实收益）</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">资金来源（白名单）</div>
+        <select id="resSource">
+          <option value="trade_service_fee">交易服务费</option>
+          <option value="ad_revenue">广告收益</option>
+          <option value="other_approved">其他（经审核批准）</option>
+        </select></div>
+      <div class="field"><div class="f-label">金额（元）</div><input id="resFen" type="number" placeholder="如 1000" style="width:140px"></div>
+      <button class="sm" onclick="deposit()">划入</button>
+      <span id="resBalance" class="muted"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 跑批任务 ============ -->
+<div class="pane" id="pane-jobs">
+  <div class="card">
+    <h3>每日自动任务 <span class="h3-extra">服务器每天自动执行，这里可以手动补执行</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">执行日期</div><input id="jobDate" type="date"></div>
+      <button class="sm" onclick="runActivity()">① 统计昨日活跃用户</button>
+      <button class="sm" onclick="runDividend()">② 每日排队分红</button>
+      <button class="sm" onclick="runExpire()">③ 转账超时退回重发</button>
+      <button class="sm" onclick="runIssueQueued()">④ 补发推迟的提现</button>
+      <button class="sm" onclick="runSettle()">⑤ 到期佣金解冻（转余额）</button>
+      <span id="jobResult" class="muted"></span>
+    </div>
+    <p class="muted">每天自动顺序：① 统计昨日活跃 → ② 排队分红（一次事务完成，按昨日活跃数据）→ ③ 超时转账退回 → ④ 补发推迟的提现。</p>
+  </div>
+  <div class="card">
+    <h3>季度分红 <span class="h3-extra">储备金账户 ×60% 为当季可分的钱；需满足 3 个标准，按 业绩60% / 活跃25% / 广告贡献15% 分配</span></h3>
+    <p class="muted" style="margin:0 0 8px">资格核算与发放是敏感操作，全程留痕；同一季度重复点不会重复发。建议财务与法务共同在场操作。</p>
+    <div class="frow">
+      <div class="field"><div class="f-label">季度标识</div><input id="quarterLabel" placeholder="如 2026Q4" style="width:160px"></div>
+      <button class="sm" onclick="runQuarterAssess()">① 资格核算</button>
+      <button class="sm" onclick="runQuarterPayoutAuto()">② 自动口径发放</button>
+      <button class="sm plain" onclick="fillCurrentQuarter()">填当前季度</button>
+      <span id="quarterResult" class="muted"></span>
+    </div>
+    <div id="quarterDetail" class="muted" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <h3>团队长辅导分红池 <span class="h3-extra">按辅导贡献分配；池余额来自平台留存划入</span></h3>
+    <button class="sm plain" onclick="loadLeaderPool()">刷新</button>
+    <div id="leaderPoolSummary" class="muted" style="margin:8px 0"></div>
+    <table id="leaderPoolTable"><thead><tr><th>团队长</th><th>辅导贡献</th></tr></thead><tbody></tbody></table>
+    <div class="frow">
+      <div class="field"><div class="f-label">批次标识（重复执行不重复发）</div><input id="leaderBatchKey" placeholder="默认取今天日期" style="width:220px"></div>
+      <button class="sm" onclick="runLeaderDividend()">执行分配</button>
+      <span id="leaderResult" class="muted"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 合规开关 ============ -->
+<div class="pane" id="pane-switches">
+  <div class="card">
+    <h3>功能开关 <span class="h3-extra">改动全部留记录</span></h3>
+    <div id="switches"></div>
+  </div>
+  <div class="card">
+    <h3>提现通道 <span class="h3-extra">默认关闭：与广告奖励提现同一合规口径，首期不开放线上提现（商户入驻满 90 天后再评估）</span></h3>
+    <label class="switch-item"><input type="checkbox" id="swWithdraw" onchange="setWithdraw(this.checked)"> withdrawEnabled（商家/推广提现总开关）</label>
+  </div>
+</div>
+
+<!-- ============ 风控中心 ============ -->
+<div class="pane" id="pane-risk">
+  <div class="card">
+    <h3>黑名单 <span class="h3-extra">登录 / 下单拦截</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">用户 ID</div><input id="blUser" placeholder="要拉黑的 ID" style="width:130px"></div>
+      <div class="field"><div class="f-label">拉黑原因</div><input id="blReason" placeholder="将进入操作日志" style="width:160px"></div>
+      <button class="sm" onclick="addBlacklist()">拉黑</button>
+      <button class="sm ghost" onclick="removeBlacklist()">解封</button>
+      <button class="sm plain" onclick="loadRisk()">刷新</button>
+    </div>
+    <table id="blacklist"><thead><tr><th>用户ID</th><th>原因</th><th>时间</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>用户申诉</h3>
+    <button class="sm plain" onclick="loadAppeals()">刷新</button>
+    <table id="appeals" style="margin-top:10px;"><thead><tr><th>ID</th><th>用户</th><th>类型</th><th>内容</th><th>状态</th><th>操作</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h3>风险预警 <span class="h3-extra">重复免单识别（针对历史老免单订单，新规则下已不再产生），只标记不自动处理</span></h3>
+    <button class="sm" onclick="runRiskScan()">扫描（近30天≥3单历史免单）</button>
+    <table id="alerts" style="margin-top:10px;"><thead><tr><th>时间</th><th>用户</th><th>免单数</th><th>类型</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<!-- ============ 内容与运营 ============ -->
+<div class="pane" id="pane-content">
+  <div class="card">
+    <h3>首页轮播 · 平台运营帧 <span class="h3-extra">商家付费广告在前，这些帧兜底；改这里不用发版</span></h3>
+    <p class="muted" style="margin:0 0 8px">运营帧显示在用户端首页轮播。排序靠上的先播；停用后不展示。图片可上传，也可直接填站内路径（如 /img/products/p_oil.png）。</p>
+    <button class="sm" onclick="openOpsEditor()">+ 新增运营帧</button>
+    <button class="sm plain" onclick="loadContent()" style="margin-left:8px">刷新</button>
+    <span id="opsHint" class="muted" style="margin-left:8px"></span>
+    <table id="opsTable" style="margin-top:10px"><thead><tr><th style="width:52px">#</th><th>标题</th><th>配置</th><th>视觉</th><th>状态</th><th style="width:260px">操作</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="card" id="opsEditorCard" style="display:none">
+    <h3 id="opsEditorTitle">新增运营帧</h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">标题（≤24 字）</div><input id="opsTitle" maxlength="24" placeholder="如：买得越多 付得越少" style="width:220px"></div>
+      <div class="field"><div class="f-label">副标题（≤40 字）</div><input id="opsSub" maxlength="40" placeholder="如：全品类阶梯好物 · 最后 4 单便宜 10%~40%" style="width:280px"></div>
+      <div class="field"><div class="f-label">按钮文案（≤12 字）</div><input id="opsBtn" maxlength="12" placeholder="如：查看我的优惠进度" style="width:190px"></div>
+    </div>
+    <div class="frow" style="margin-top:10px">
+      <div class="field"><div class="f-label">跳转目标</div><select id="opsAction"></select></div>
+      <div class="field"><div class="f-label">配色档位</div><select id="opsTone"><option value="1">1 暖橙</option><option value="2">2 深橙</option><option value="3">3 橙红</option></select></div>
+      <div class="field"><div class="f-label">图标 emoji（装饰）</div><input id="opsEmoji" maxlength="4" placeholder="有配图时留空" style="width:150px" title="轮播运营帧的大图装饰位；系统功能图标统一为线性 SVG，此处仅用于内容插画"></div>
+      <div class="field"><div class="f-label">状态</div><select id="opsEnabled"><option value="true">启用</option><option value="false">停用</option></select></div>
+    </div>
+    <div class="frow" style="margin-top:10px">
+      <div class="field" style="flex:2"><div class="f-label">配图（/img/ 或 /uploads/ 站内路径）</div>
+        <input id="opsImage" placeholder="/img/products/p_oil.png" style="width:320px">
+      </div>
+      <button class="sm plain" onclick="openOpsFile()">上传图片</button>
+      <input type="file" id="opsFile" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="uploadOpsImage(this)">
+    </div>
+    <div id="opsPreview" class="hint-live">填写后这里实时预览用户端首页轮播效果</div>
+    <div class="frow" style="margin-top:10px">
+      <button class="sm" onclick="saveOpsSlide()">保存</button>
+      <button class="sm ghost" onclick="closeOpsEditor()">取消</button>
+      <span id="opsResult" class="muted"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>文案配置 <span class="h3-extra">规则 / 协议 / 合规声明；留空即用小程序内置文案</span></h3>
+    <p class="muted" style="margin:0 0 8px">此前这些文案写死在小程序包里，改一个字就要发版。在这里改完，用户端下次进入即生效；「恢复内置」可随时回退到包内原文。</p>
+    <button class="sm plain" onclick="loadContent()">刷新</button>
+    <span id="ctHint" class="muted" style="margin-left:8px"></span>
+    <div id="ctList" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card" id="ctEditorCard" style="display:none">
+    <h3 id="ctEditorTitle">编辑文案</h3>
+    <div class="muted" id="ctKeyHint" style="margin-bottom:6px"></div>
+    <textarea id="ctBody" style="width:100%;height:240px" oninput="updateCtCount()"></textarea>
+    <div class="muted" id="ctCount" style="margin:6px 0"></div>
+    <button class="sm" onclick="saveContentText()">保存</button>
+    <button class="sm ghost" onclick="closeCtEditor()" style="margin-left:8px">取消</button>
+    <span id="ctResult" class="muted" style="margin-left:8px"></span>
+  </div>
+</div>
+
+<!-- ============ 消息管理 ============ -->
+<div class="pane" id="pane-messages">
+  <div class="card">
+    <h3>系统公告 <span class="h3-extra">站内消息兜底；用户端「消息中心」可见</span></h3>
+    <p class="muted" style="margin:0 0 8px">不填用户 ID 即全量发送；标题 ≤60 字、内容 ≤500 字，全部留审计。</p>
+    <div class="frow">
+      <div class="field" style="flex:1;min-width:280px"><div class="f-label">公告标题（≤60 字）</div><input id="msgTitle" placeholder="如：平台公告 · 十月分红已发放" style="width:100%"></div>
+    </div>
+    <div class="field" style="margin-top:10px"><div class="f-label">公告正文（≤500 字）</div><textarea id="msgBody" placeholder="正文内容，发送后用户端「消息中心」可见" style="width:100%;height:90px"></textarea></div>
+    <div class="field" style="margin-top:10px"><div class="f-label">指定用户 ID（逗号分隔，留空 = 全量发送）</div><input id="msgUsers" placeholder="如 1001,1002,1003" style="width:100%"></div>
+    <div class="frow" style="margin-top:12px">
+      <button class="sm" onclick="sendBroadcast()">发送公告</button>
+      <span id="msgResult" class="muted"></span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>最近站内消息 <span class="h3-extra">最近 100 条</span></h3>
+    <button class="sm plain" onclick="loadMessages()">刷新</button>
+    <table id="msgTable" style="margin-top:10px;"><thead><tr><th>时间</th><th>用户</th><th>类型</th><th>标题</th><th>状态</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<!-- ============ 系统设置 ============ -->
+<div class="pane" id="pane-settings">
+  <div class="card">
+    <h3>等级门槛配置 <span class="h3-extra">有效人数；等级只作权益资格，不计酬、不进分红公式</span></h3>
+    <p class="muted" style="margin:0 0 8px">门槛须逐级递增。有效人数 = 团队（直接邀请+间接邀请）中「真实买过且过了退货期、无退款、非黑名单、近 30 天活跃」的去重用户。</p>
+    <table id="levelTable"><thead><tr><th>等级</th><th>名称</th><th>有效人数门槛</th><th>权益</th></tr></thead><tbody></tbody></table>
+    <button class="sm" onclick="saveLevelConfig()" style="margin-top:8px">保存等级门槛</button>
+    <span id="levelResult" class="muted"></span>
+  </div>
+  <div class="card">
+    <h3>规则版本管理 <span class="h3-extra">改版后用户需重新确认，历史确认留档保留</span></h3>
+    <p class="muted" style="margin:0 0 8px">当前版本：<b id="rulesVersionNow">-</b> ｜ 更新时间：<span id="rulesUpdatedAt">-</span> ｜ 已确认用户数：<b id="rulesConfirmations">0</b></p>
+    <div class="frow">
+      <div class="field"><div class="f-label">新版本号（YYYY-MM-DD）</div><input id="rulesNewVersion" placeholder="如 2026-11-09" style="width:200px"></div>
+      <button class="sm" onclick="saveRulesVersion()">切换版本</button>
+      <span id="rulesResult" class="muted"></span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>小程序码配置 <span class="h3-extra">推广中心「我的邀请码」生成真实小程序码</span></h3>
+    <p class="muted" style="margin:0 0 8px">在微信公众平台 → 开发管理 → 开发设置 获取 AppID 与 AppSecret 填入。配置后用户扫描邀请码进入首页即自动绑定邀请关系（scene=邀请码）。未配置时展示占位码。</p>
+    <div class="frow">
+      <div class="field"><div class="f-label">AppID（wx 开头）</div><input id="wxmpAppid" placeholder="wxa8811b4cc88f9857" style="width:260px"></div>
+      <div class="field"><div class="f-label">AppSecret（仅展示一次，注意保存）</div><input id="wxmpSecret" type="password" placeholder="微信公众平台获取" style="width:300px"></div>
+      <button class="sm" onclick="saveWxmpConfig()">保存配置</button>
+      <button class="sm plain" onclick="testWxmpConfig()">测试生成</button>
+    </div>
+    <p class="muted" style="margin:8px 0 0">当前状态：<b id="wxmpStatus">-</b> ｜ 来源：<span id="wxmpSource">-</span></p>
+    <div id="wxmpPreview" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- ============ 审计日志 ============ -->
+<div class="pane" id="pane-audit">
+  <div class="card">
+    <h3>操作日志 <span class="h3-extra">只加不改 · 敏感操作全部留痕</span></h3>
+    <div class="tabrow" id="auditTabs">
+      <div class="tr-item on" data-f="all">全部<b id="ac-all"></b></div>
+      <div class="tr-item" data-f="alert">⚠ 只看异常<b id="ac-alert"></b></div>
+      <div class="tr-item" data-f="pay">支付资金<b id="ac-pay"></b></div>
+      <div class="tr-item" data-f="order">订单履约<b id="ac-order"></b></div>
+      <div class="tr-item" data-f="config">开关配置<b id="ac-config"></b></div>
+      <div class="tr-item" data-f="job">每日任务<b id="ac-job"></b></div>
+      <div class="tr-item" data-f="account">账号管理<b id="ac-account"></b></div>
+      <div class="tr-item" data-f="user">用户行为<b id="ac-user"></b></div>
+      <div class="tr-item" data-f="upload">上传安全<b id="ac-upload"></b></div>
+      <div class="tr-tools">
+        <select id="auditRange">
+          <option value="">全部时间</option>
+          <option value="1">最近 24 小时</option>
+          <option value="7">最近 7 天</option>
+          <option value="30">最近 30 天</option>
+        </select>
+        <input id="auditActor" placeholder="操作者" style="width:100px">
+        <input id="auditKeyword" placeholder="关键词 / 订单号" style="width:150px">
+        <button class="sm" onclick="renderAudit()">查询</button>
+      </div>
+    </div>
+    <table id="audit"><thead><tr><th style="width:110px">时间</th><th style="width:120px">操作者</th><th style="width:76px">级别</th><th style="width:170px">动作</th><th>详情</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<!-- ============ 账号与权限（仅总账号可见） ============ -->
+<div class="pane" id="pane-users">
+  <div class="card">
+    <h3>两级账号体系 <span class="h3-extra">总账号不可被停用 / 不可被改权限</span></h3>
+    <p class="muted" style="margin:0">交付后由平台方人员对接后台运营：给他们建<b>独立的管理员账号</b>，谁登录谁负责，操作日志里能看到具体是谁。子管理员不能创建或修改任何账号，只有总账号能管理本页。</p>
+    <div class="hint-live">建议授权口径：日常运营只勾「运营」组（订单 / 商品 / 商家 / 广告中心 / 内容）；「资金」与「安全」组默认不勾——提现打款、季度分红、功能开关这类敏感操作留在总账号或平台方核心负责人手里。</div>
+  </div>
+  <div class="card">
+    <h3>新建管理员账号 <span class="h3-extra">密码需大于 10 位且同时含字母与数字；建号后请通过安全渠道转交</span></h3>
+    <div class="frow">
+      <div class="field"><div class="f-label">登录账号</div><input id="auName" placeholder="字母开头，3~20 位，如 yunying01" style="width:220px"></div>
+      <div class="field"><div class="f-label">初始密码</div><input id="auPass" type="password" placeholder="&gt;10 位，含字母与数字" style="width:240px"></div>
+      <div class="field"><div class="f-label">备注（谁在用）</div><input id="auNote" placeholder="如：平台方运营 张三" style="width:200px"></div>
+      <button class="sm" onclick="createAdminUser()">创建账号</button>
+      <span id="auCreateResult" class="muted"></span>
+    </div>
+    <div style="margin-top:14px">
+      <div class="f-label" style="font-size:11px;color:var(--ink2);margin-bottom:6px">模块权限（不勾 = 该模块菜单不可见，接口也会拒绝）</div>
+      <div id="auPermChecks" class="perm-checks"><span class="muted">加载中…</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>管理员列表 <span class="h3-extra">点权限标签可即时增减授权；停用后该账号下一次请求立即失效</span></h3>
+    <button class="sm" onclick="loadAdminUsers()">刷新</button>
+    <table id="adminUsers" style="margin-top:10px;"><thead><tr><th>账号</th><th>权限</th><th>状态</th><th>最近登录</th><th>创建</th><th style="width:240px">操作</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /topbar -->
+
+<!-- 修改密码弹窗 -->
+<div id="pwdModal" class="modal-mask" style="display:none;">
+  <div class="modal">
+    <h3>修改管理员密码</h3>
+    <input id="pwdOld" type="password" placeholder="当前密码">
+    <input id="pwdNew" type="password" placeholder="新密码（&gt;10 位，含字母与数字）">
+    <input id="pwdNew2" type="password" placeholder="确认新密码">
+    <p class="m-err" id="pwdErr"></p>
+    <div class="m-btns">
+      <button class="plain" onclick="closeChangePwd()">取消</button>
+      <button onclick="doChangePwd()">确认修改</button>
+    </div>
+    <p class="muted" style="margin:12px 0 0">修改成功后所有会话失效，需重新登录。</p>
+  </div>
+</div>
+
+<!-- 凭据展示弹窗（密码 / token）：可复制，不使用原生 alert -->
+<div id="secretModal" class="modal-mask" style="display:none;">
+  <div class="modal" style="width:460px;">
+    <h3 id="secretTitle">凭据信息</h3>
+    <p class="muted" style="margin:-8px 0 14px;">以下内容仅本次展示，请及时复制并通过安全渠道转交，关闭后无法再次查看。</p>
+    <div id="secretBody"></div>
+    <div class="m-btns">
+      <button class="plain" onclick="closeSecretModal()">关闭</button>
+      <button onclick="copySecret()">复制全部</button>
+    </div>
+  </div>
+</div>
+
+<!-- 右侧详情抽屉（商家列表瘦身后承载完整资料） -->
+<div id="merchantDrawer" class="drawer-mask" onclick="closeDrawer('merchantDrawer',event)">
+  <div class="drawer">
+    <div class="drawer-h">
+      <h3 id="mdTitle">商家详情</h3>
+      <button class="sm plain" onclick="closeDrawer('merchantDrawer')">关闭</button>
+    </div>
+    <div class="drawer-body" id="mdBody"></div>
+  </div>
+</div>
+
+<!-- 商品详情抽屉（商品表瘦身后承接改价/归属等低频操作） -->
+<div id="productDrawer" class="drawer-mask" onclick="closeDrawer('productDrawer',event)">
+  <div class="drawer">
+    <div class="drawer-h">
+      <h3 id="pdTitle">商品详情</h3>
+      <button class="sm plain" onclick="closeDrawer('productDrawer')">关闭</button>
+    </div>
+    <div class="drawer-body" id="pdBody"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="js/filing-badge.js"></script>
+<script src="js/admin-core.js"></script>
+<script src="js/trend-chart.js"></script>
+<script src="js/admin-overview.js"></script>
+<script src="js/admin-orders.js"></script>
+<script src="js/admin-catalog.js"></script>
+<script src="js/admin-merchants.js"></script>
+<script src="js/admin-ads.js"></script>
+<script src="js/admin-adreward.js"></script>
+<script src="js/admin-withdraw.js"></script>
+<script src="js/admin-queue.js"></script>
+<script src="js/admin-governance.js"></script>
+<script src="js/admin-messages.js"></script>
+<script src="js/admin-content.js"></script>
+<script src="js/admin-settings.js"></script>
+<script src="js/admin-audit.js"></script>
+<script src="js/admin-users.js"></script>
+<script src="js/admin-init.js"></script>
+</body>
+</html>

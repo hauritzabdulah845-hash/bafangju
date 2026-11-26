@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "券核销",
+  "usingComponents": {
+    "mtab": "/subpkg-merchant/components/mtab/mtab"
+  }
+}

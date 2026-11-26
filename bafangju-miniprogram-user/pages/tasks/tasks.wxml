@@ -1,0 +1,115 @@
+<!-- 任务中心 · 拼多多配色重设计（对应 Ardot 屏幕-任务中心 5:105）
+     结构：渐变头部（近 30 天贡献值摘要）→ 每日任务卡 → 活跃进度卡 → 奖励金卡 → 合规说明
+     数据：/api/tasks/today、/api/user/contribution/30d、/api/user/promotion/profile（奖励金=推广可提现余额） -->
+<view class="tasks">
+
+  <!-- 渐变带：只承载图标，文字移到下方上浮白卡 -->
+  <view class="grad-header">
+    <view class="hero-icon"><view class="hi hi-clipboard"></view></view>
+  </view>
+
+  <!-- 上浮状态卡：贡献值 + 进度条 -->
+  <view class="card hero-card" bindtap="goDividend" hover-class="none">
+    <view class="gh-label">近 30 天贡献值（活跃度）</view>
+    <view style="display:flex;align-items:baseline;justify-content:center;margin-top:8rpx">
+      <text class="gh-num">{{contrib.weight30d || 0}}</text>
+      <text class="gh-sub" style="margin-left:12rpx;margin-top:0">/ {{contrib.target || 80}} 达标</text>
+    </view>
+    <view class="gh-progress">
+      <view class="gh-progress-fill" style="width:{{contribPct}}%"></view>
+    </view>
+    <view class="gh-sub" style="margin-top:12rpx">{{contrib.reached ? '已达活跃标准 · 算进季度分红的活跃度' : '再做任务累计满 ' + (contrib.target || 80) + ' 即达活跃标准'}}</view>
+  </view>
+
+  <view style="padding:0 24rpx 40rpx;margin-top:0">
+
+    <!-- 每日任务卡 -->
+    <view class="card" style="margin-top:0">
+      <view class="row-between">
+        <view class="t1">每日任务</view>
+        <view class="t-weak">今日已完成 {{doneCount}} 项</view>
+      </view>
+
+      <!-- 每日签到 -->
+      <view class="task-row">
+        <view class="task-icon ti-check"></view>
+        <view class="task-info">
+          <view class="t2 t-bold">每日签到</view>
+          <view class="t-weak">+{{rewards.sign_in || 10}} 贡献值；每月签到不低于 22 天算活跃</view>
+        </view>
+        <view class="task-btn {{signedToday ? 'tb-gray' : 'tb-red'}}" bindtap="signIn">{{signedToday ? '已签到' : '签到'}}</view>
+      </view>
+
+      <view class="divider"></view>
+
+      <!-- 浏览商品 -->
+      <view class="task-row">
+        <view class="task-icon ti-red"></view>
+        <view class="task-info">
+          <view class="t2 t-bold">浏览商品 15 秒</view>
+          <view class="t-weak">每商品每日 +{{rewards.browse || 5}} 贡献值（已逛 {{browseDone}} 个）</view>
+        </view>
+        <view class="task-btn tb-red" bindtap="goBrowse">{{browseDone > 0 ? '继续逛' : '去完成'}}</view>
+      </view>
+
+      <view class="divider"></view>
+
+      <!-- 完成复购 -->
+      <view class="task-row">
+        <view class="task-icon ti-orange"></view>
+        <view class="task-info">
+          <view class="t2 t-bold">再买一单</view>
+          <view class="t-weak">任一商品下单支付，自动累计该类商品的进度</view>
+        </view>
+        <view class="task-btn tb-red" bindtap="goHome">去买</view>
+      </view>
+
+      <view class="divider"></view>
+
+      <!-- 邀请好友 -->
+      <view class="task-row">
+        <view class="task-icon ti-gold"></view>
+        <view class="task-info">
+          <view class="t2 t-bold">邀请好友注册</view>
+          <view class="t-weak">好友首次下单，过了退货期计入你的收益</view>
+        </view>
+        <view class="task-btn tb-gold" bindtap="goPromotion">去邀请</view>
+      </view>
+
+    </view>
+
+    <!-- 活跃进度卡 -->
+    <view class="card" wx:if="{{contrib}}">
+      <view class="row-between">
+        <view class="t1">30 天活跃进度</view>
+        <view class="tag {{contrib.reached ? 'tag-green' : 'tag-orange'}}">{{contrib.reached ? '已达标' : '差 ' + (contrib.target - contrib.weight30d) + ' 贡献值'}}</view>
+      </view>
+      <view class="progress" style="margin-top:20rpx">
+        <view class="progress-fill {{contrib.reached ? 'green' : ''}}" style="width:{{contribPct}}%"></view>
+      </view>
+      <view class="t-weak" style="margin-top:16rpx">{{contrib.reached ? '已达活跃标准，本季度算进活跃度（占 25%）' : '未达 80 贡献值活跃标准，继续做每日任务即可'}}</view>
+      <!-- 连续签到：独立底色块 + 小标签，与上方「活跃门槛 80 贡献值」在视觉上分块隔离（两个 80 含义不同，避免混淆） -->
+      <view class="streak-box" wx:if="{{streak}}">
+        <view class="streak-head">
+          <text class="streak-label">连续签到</text>
+          <text class="streak-target">{{streak.target}} 天 · 奖励 {{streak.reward}} 贡献值</text>
+        </view>
+        <view class="t-weak streak-sub">当前已签 {{streak.days}} 天{{streak.awardedAt ? '，奖励已发放' : ''}}</view>
+      </view>
+    </view>
+
+    <!-- 奖励金卡：推广可提现余额（真实数据） -->
+    <view class="card">
+      <view class="row-between">
+        <view class="t1">我的奖励金</view>
+        <view class="t3 t-accent" bindtap="goWithdraw">{{withdrawEnabled ? '去提现 ›' : '提现未开放'}}</view>
+      </view>
+      <view class="row" style="align-items:baseline;margin-top:12rpx">
+        <text class="price-symbol">¥</text><text class="price-num">{{rewardYuan}}</text>
+      </view>
+      <view class="t-weak" style="margin-top:12rpx">邀请好友下单、过退货期后按平台规则发放；提现通道开放后可申请提现（需实名并确认收款）</view>
+    </view>
+
+    <view class="notice">{{ct['tasks.note'] || '贡献值只用来算活跃度，不能换现金、不能提现、不能转让；奖励金以站内通知和到账记录为准，不构成兑付承诺。'}}</view>
+  </view>
+</view>

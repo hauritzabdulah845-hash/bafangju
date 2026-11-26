@@ -1,0 +1,29 @@
+/* admin-responsive.css —— 响应式适配（宽表格横向滚动 + 首尾列吸附 / 侧栏转抽屉） */
+@media (max-width: 1100px) { .kpis { grid-template-columns: repeat(2, 1fr); } .todo-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ---------- 窄屏适配（P1-6）：侧栏转抽屉 + 宽表格横向滚动 ---------- */
+@media (max-width: 900px) {
+  .topbar { padding: 0 12px; gap: 10px; }
+  .topbar .t-burger { display: inline-flex; align-items: center; }
+  .topbar .t-logo { font-size: 14px; }
+  .topbar .t-search { max-width: none; }
+  .topbar .t-right .who { display: none; }
+  .sidebar { transform: translateX(-100%); transition: transform .22s ease; width: 240px; box-shadow: 0 0 24px rgba(0,0,0,.16); }
+  body.nav-open .sidebar { transform: translateX(0); }
+  body.nav-open .nav-mask { display: block; }
+  .main { margin-left: 0; padding: 14px 12px 40px; }
+  .card { padding: 14px 12px; }
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .todo-grid { grid-template-columns: repeat(2, 1fr); }
+  .modal { width: auto; max-width: 92vw; }
+  /* 宽表格：容器横向滚动，首列与操作列吸附 */
+  .card { overflow-x: auto; }
+  .card > h3 { position: sticky; left: 0; }
+  table { min-width: 720px; }
+  th:first-child, td:first-child { position: sticky; left: 0; background: var(--card); z-index: 1; }
+  th:first-child { background: #FAFAFC; z-index: 2; }
+  th:last-child, td:last-child { position: sticky; right: 0; background: var(--card); z-index: 1; box-shadow: -6px 0 8px -8px rgba(0,0,0,.22); }
+  th:last-child { background: #FAFAFC; z-index: 2; }
+  tbody tr:hover td { background: #FAFBFF; }
+  tbody tr:hover td:first-child, tbody tr:hover td:last-child { background: #FAFBFF; }
+}

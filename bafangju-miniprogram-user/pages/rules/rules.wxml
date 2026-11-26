@@ -1,0 +1,22 @@
+<!-- 规则说明 · 拼多多配色（规范板推断：红头 + 编号条款卡）
+     文案为合规定稿，修改须走法务流程；版本号与内容确认稿保持一致 -->
+<view class="rules">
+
+  <!-- 红色头部 -->
+  <view class="rules-head">
+    <view class="t1 t-white">规则说明</view>
+    <view class="head-sub">{{ct['rules.header'] || '版本 V3.3 · 阶梯优惠与分红机制'}}</view>
+  </view>
+
+  <!-- 条款卡流 -->
+  <view class="rule-list">
+    <view class="card rule-card" wx:for="{{rules}}" wx:key="no">
+      <view class="row" style="align-items:flex-start">
+        <view class="rule-no">{{item.no}}</view>
+        <view class="rule-text">{{item.text}}</view>
+      </view>
+    </view>
+
+    <view class="notice">{{ct['rules.footer'] || '本规则自公示之日起生效；平台保留在法律法规允许范围内对规则进行解释与修订的权利，重大调整将提前公示。'}}</view>
+  </view>
+</view>

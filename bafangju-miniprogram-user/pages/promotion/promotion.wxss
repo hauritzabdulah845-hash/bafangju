@@ -1,0 +1,45 @@
+/* 推广返利 · 拼多多配色重设计（对应 Ardot 屏幕-推广返利 5:197） */
+
+/* 页面根容器：与「我的分红」页保持一致的高度与底部留白 */
+.promo { min-height: 100vh; padding-bottom: 40rpx; }
+
+/* 渐变带内的图标 */
+.grad-header .hero-icon {
+  width: 88rpx; height: 88rpx; line-height: 88rpx; margin: 0 auto;
+  border-radius: 50%; background: rgba(255,255,255,.22);
+  font-size: 48rpx; color: #FFFFFF;
+}
+
+/* 小程序码：整卡居中大码（200rpx 太小，放大到 300rpx 便于好友扫描与保存到相册识别） */
+.qr-box { display: flex; flex-direction: column; align-items: center; }
+.qr {
+  width: 300rpx; height: 300rpx; border-radius: 20rpx; background: #FFFFFF;
+  border: 1rpx solid #EEEEEE; box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+.qr-dev { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #FAFAFA; }
+.qr-dev-num { font-size: 56rpx; font-weight: 700; color: #3F3E3E; letter-spacing: 2rpx; font-family: "DIN Alternate", "Helvetica Neue", sans-serif; }
+.qr-dev-tip { font-size: 24rpx; color: #BBBBBB; margin-top: 10rpx; }
+.qr-loading { background: #FAFAFA; display: flex; align-items: center; justify-content: center; }
+.qr-load-text { font-size: 24rpx; color: #BBBBBB; }
+.qr-tip { font-size: 24rpx; color: #999999; margin-top: 14rpx; text-align: center; line-height: 1.5; padding: 0 12rpx; }
+
+.invite-info { flex: 1; margin-left: 24rpx; }
+.invite-code-row { display: flex; align-items: baseline; justify-content: center; margin: 16rpx 0; }
+.invite-code { font-size: 42rpx; font-weight: 700; color: #8F1F26; margin-left: 12rpx; letter-spacing: 2rpx; font-family: "DIN Alternate", "Helvetica Neue", sans-serif; }
+
+/* 操作区：保存码 + 分享 并排（flex-basis 归零 + min-width:0 保证严格等宽） */
+.qr-actions { display: flex; gap: 16rpx; margin-top: 20rpx; }
+.qr-actions > view, .qr-actions > button { flex: 1 1 0; min-width: 0; margin-top: 0; }
+
+/* 分享按钮：去边框样式，与主按钮区分 */
+.share-btn {
+  background: #FAF0F0; color: #8F1F26; font-size: 28rpx; font-weight: 500;
+  border-radius: 40rpx; padding: 16rpx 0; text-align: center; margin-top: 16rpx; line-height: 1.4;
+}
+.share-btn::after { border: none; }
+
+/* 三栏统计 */
+.stat-row { display: flex; margin-top: 8rpx; }
+.stat { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+.stat + .stat { border-left: 1rpx solid #EEEEEE; padding-left: 28rpx; }
+.stat-num { font-size: 42rpx; font-weight: 700; color: #3F3E3E; font-family: "DIN Alternate", "Helvetica Neue", sans-serif; line-height: 1.2; }

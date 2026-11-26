@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>八方聚商家端</title>
+<link rel="stylesheet" href="/css/merchant.css">
+</head>
+<body>
+
+<!-- ============ 登录层 ============ -->
+<div id="loginView" class="login-view" style="display:none">
+  <div class="login-hero">
+    <div class="login-logo">八</div>
+    <div class="login-title">八方聚商家端</div>
+    <div class="login-sub">核销 · 商品 · 订单 · 收益，一站管理</div>
+  </div>
+  <div class="login-card">
+    <input id="loginUser" class="inp" type="text" placeholder="商家账号" autocomplete="username">
+    <div class="pwd-field">
+      <input id="loginPass" class="inp" type="password" placeholder="密码" autocomplete="current-password">
+      <button type="button" class="eye-btn" onclick="togglePassEye(this)" aria-label="显示密码"></button>
+    </div>
+    <div id="loginErr" class="login-err"></div>
+    <button id="loginBtn" class="btn-primary btn-block" onclick="doLogin()">登 录</button>
+    <div class="login-tip">还没有账号？在「八方聚」小程序（我的 → 商家服务 → 商家入驻申请）自助提交，或联系平台运营</div>
+    <div class="filing-h5" data-filing></div>
+  </div>
+</div>
+
+<!-- ============ 主框架 ============ -->
+<div id="mainView" style="display:none">
+  <div class="page-head">
+    <div class="ph-title" id="pageTitle">工作台</div>
+    <div class="ph-merchant" id="headMerchant"></div>
+  </div>
+
+  <div class="page-body" id="pageBody">
+    <div class="pane" id="pane-home"></div>
+    <div class="pane" id="pane-verify"></div>
+    <div class="pane" id="pane-products"></div>
+    <div class="pane" id="pane-orders"></div>
+    <div class="pane" id="pane-me"></div>
+    <!-- 子页（收益/提现/优惠券/广告位/改密码）共用容器，顶部带返回 -->
+    <div class="pane pane-sub" id="pane-sub"></div>
+  </div>
+
+  <div class="tabbar" id="tabbar">
+    <div class="tab" data-tab="home" onclick="switchTab('home')"><div class="tab-ic ic-work"></div><div class="tab-tx">工作台</div></div>
+    <div class="tab" data-tab="verify" onclick="switchTab('verify')"><div class="tab-ic ic-verify"></div><div class="tab-tx">核销</div></div>
+    <div class="tab" data-tab="products" onclick="switchTab('products')"><div class="tab-ic ic-box"></div><div class="tab-tx">商品</div></div>
+    <div class="tab" data-tab="orders" onclick="switchTab('orders')"><div class="tab-ic ic-orders"></div><div class="tab-tx">订单</div></div>
+    <div class="tab" data-tab="me" onclick="switchTab('me')"><div class="tab-ic ic-user"></div><div class="tab-tx">我的</div></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="/js/filing-badge.js"></script>
+<script src="/js/merchant-core.js"></script>
+<script src="/js/merchant-pages.js"></script>
+</body>
+</html>

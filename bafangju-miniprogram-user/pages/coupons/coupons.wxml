@@ -1,0 +1,45 @@
+<!-- 我的券（用户端）：可领取 / 我的券；我的券出示 8 位核销码到店核销 -->
+<view class="cp">
+
+  <view class="tabs">
+    <view class="tab {{tab === 'available' ? 'on' : ''}}" data-key="available" bindtap="switchTab">可领取</view>
+    <view class="tab {{tab === 'mine' ? 'on' : ''}}" data-key="mine" bindtap="switchTab">我的券</view>
+  </view>
+
+  <view class="wrap" wx:if="{{tab === 'available'}}">
+    <view class="coupon" wx:for="{{available}}" wx:key="id">
+      <view class="coupon-val">{{item.valueText}}</view>
+      <view class="coupon-main">
+        <view class="coupon-head">
+          <view class="t2 t-bold">{{item.title}}</view>
+          <view class="btn-primary btn-sm {{item.claimable ? '' : 'disabled'}}" bindtap="claim" data-id="{{item.id}}">{{item.claimable ? '领取' : '已领'}}</view>
+        </view>
+        <view class="t-weak">{{item.merchantName}} · {{item.minText}}</view>
+        <view class="coupon-foot">有效期 {{item.validDays}} 天 · 剩余 {{item.remain === null ? '不限' : item.remain}} 张</view>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{!available.length && !loading}}">暂无可领取的券</view>
+  </view>
+
+  <view class="wrap" wx:else>
+    <view class="coupon" wx:for="{{mine}}" wx:key="id">
+      <view class="coupon-val">{{item.valueText}}</view>
+      <view class="coupon-main">
+        <view class="coupon-head">
+          <view class="t2 t-bold">{{item.coupon.title}}</view>
+          <text class="tag {{item.status === 'unused' ? 'tag-green' : 'tag-gray'}}">{{item.statusText}}</text>
+        </view>
+        <view class="t-weak">{{item.merchantName}}<text wx:if="{{item.timesText}}" class="times-left"> · {{item.timesText}}</text></view>
+        <view wx:if="{{item.status === 'unused' || item.status === 'using'}}" class="code" bindtap="copyCode" data-code="{{item.code}}">
+          消费码 <text class="code-num">{{item.code}}</text> · 到店出示，点击复制
+        </view>
+        <view class="store-row" wx:if="{{(item.status === 'unused' || item.status === 'using') && item.merchantAddress}}">
+          <text class="store-addr">{{item.merchantAddress}}</text>
+          <text class="store-nav" bindtap="goStore" data-lat="{{item.merchantLat}}" data-lng="{{item.merchantLng}}" data-name="{{item.merchantName}}" data-address="{{item.merchantAddress}}">导航 ›</text>
+        </view>
+        <view class="coupon-foot" wx:if="{{item.expireText}}">有效期至 {{item.expireText}}</view>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{!mine.length && !loading}}">还没有领券，去「可领取」看看</view>
+  </view>
+</view>

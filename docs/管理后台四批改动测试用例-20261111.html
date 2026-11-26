@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>八方聚管理后台 · 四批改动测试用例</title>
+<style>
+  :root {
+    --bg: #F6F6F6; --card: #fff; --line: #ECECEC; --line2: #F3F4F8;
+    --ink: #26282e; --ink2: #6d7280; --ink3: #9aa0ad;
+    --accent: #B02A30; --accent-soft: #FAF0F0;
+    --green: #1f9d63; --green-soft: #E7F7EF;
+    --orange: #E07C24; --orange-soft: #FDF3E7;
+    --red: #E5484D; --red-soft: #FDECEC;
+    --blue: #2E6BE6; --blue-soft: #EBF1FE;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px 30px 60px;
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+    background: var(--bg); color: var(--ink); font-size: 13.5px; line-height: 1.65;
+  }
+  .doc-h { max-width: 1400px; margin: 0 auto 18px; }
+  .doc-h .brand { display: flex; align-items: center; gap: 12px; }
+  .doc-h .mark {
+    width: 26px; height: 26px; border-radius: 8px; flex: none;
+    background: linear-gradient(90deg, #C9525A, #B02A30); position: relative;
+  }
+  .doc-h .mark::after {
+    content: ''; position: absolute; left: 10px; top: 6px; width: 6px; height: 14px;
+    border-radius: 2px; background: rgba(255,255,255,.92);
+  }
+  h1 { font-size: 21px; margin: 0; font-weight: 600; letter-spacing: .3px; }
+  .doc-h .meta { margin-top: 6px; color: var(--ink2); font-size: 12.5px; padding-left: 38px; }
+
+  .panel { max-width: 1400px; margin: 0 auto 16px; background: var(--card);
+    border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
+  .panel h2 { font-size: 14.5px; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+  .panel h2::before { content: ''; width: 3px; height: 14px; border-radius: 2px; background: var(--accent); }
+  .panel p { margin: 4px 0; color: var(--ink2); font-size: 12.5px; }
+  .panel code { background: #F4F5F9; border-radius: 5px; padding: 1px 6px; font-size: 12px;
+    font-family: Consolas, Monaco, monospace; color: var(--accent); }
+
+  /* 工具栏 */
+  .toolbar { position: sticky; top: 0; z-index: 20; max-width: 1400px; margin: 0 auto 14px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: rgba(246,246,246,.96); backdrop-filter: blur(6px);
+    border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+  .toolbar input[type=search] { width: 260px; padding: 7px 12px; border: 1px solid var(--line);
+    border-radius: 9px; font-size: 12.5px; outline: none; font-family: inherit; background: #fff; }
+  .toolbar input[type=search]:focus { border-color: var(--accent); }
+  .seg { display: flex; background: #F1F2F6; border-radius: 9px; padding: 3px; gap: 3px; }
+  .seg button { border: 0; background: transparent; color: var(--ink2); font-size: 12.5px;
+    padding: 5px 12px; border-radius: 7px; cursor: pointer; font-family: inherit; }
+  .seg button.on { background: #fff; color: var(--accent); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .toolbar .spacer { margin-left: auto; }
+  .stat { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--ink2); }
+  .stat b { color: var(--ink); font-size: 14px; }
+  .stat .s-ok b { color: var(--green); } .stat .s-fail b { color: var(--red); }
+  .btn-reset { border: 1px solid var(--line); background: #fff; color: var(--ink2);
+    padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-family: inherit; }
+  .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
+  .progress { width: 120px; height: 6px; background: #EDEEF3; border-radius: 3px; overflow: hidden; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--green); transition: width .25s; }
+
+  /* 分组 */
+  .group { max-width: 1400px; margin: 0 auto 18px; background: var(--card);
+    border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .group-h { display: flex; align-items: baseline; gap: 10px; padding: 13px 18px;
+    border-bottom: 1px solid var(--line); background: #FCFCFD; }
+  .group-h h3 { margin: 0; font-size: 14.5px; font-weight: 600; }
+  .group-h .cnt { font-size: 12px; color: var(--ink3); }
+
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12.8px; }
+  th { background: #FAFAFC; color: var(--ink2); font-weight: 500; font-size: 12px;
+    text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--line2); vertical-align: top; word-break: break-word; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: #FAFBFF; }
+  col.c-id { width: 92px; } col.c-lv { width: 58px; } col.c-pre { width: 19%; }
+  col.c-step { width: 28%; } col.c-v { width: 118px; }
+
+  .id { font-family: Consolas, Monaco, monospace; font-size: 11.5px; color: var(--ink2); white-space: nowrap; }
+  .lv { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .lv.p0 { background: var(--red-soft); color: var(--red); }
+  .lv.p1 { background: var(--orange-soft); color: var(--orange); }
+  .lv.p2 { background: var(--blue-soft); color: var(--blue); }
+  .lv.p3 { background: #F1F2F6; color: var(--ink2); }
+
+  .v-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+  .v-btns button { border: 1px solid var(--line); background: #fff; color: var(--ink3);
+    font-size: 11px; padding: 2px 7px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+  .v-btns button:hover { border-color: #cfd3dc; color: var(--ink2); }
+  tr.pass .v-btns button[data-v="pass"] { background: var(--green-soft); border-color: #BFE7D3; color: var(--green); font-weight: 600; }
+  tr.fail .v-btns button[data-v="fail"] { background: var(--red-soft); border-color: #F5C7C8; color: var(--red); font-weight: 600; }
+  tr.block .v-btns button[data-v="block"] { background: var(--orange-soft); border-color: #F2DCBF; color: var(--orange); font-weight: 600; }
+  tr.fail td:first-child { box-shadow: inset 3px 0 0 var(--red); }
+  .hidden { display: none !important; }
+
+  .legend { max-width: 1400px; margin: 0 auto 16px; font-size: 12px; color: var(--ink3); }
+  .legend span { margin-right: 16px; }
+
+  .doc-f { max-width: 1400px; margin: 22px auto 0; font-size: 12.5px; color: var(--ink2); }
+  .doc-f ol { margin: 6px 0 0; padding-left: 20px; }
+
+  @media print {
+    @page { size: A4 landscape; margin: 10mm; }
+    body { background: #fff; padding: 0; font-size: 10.5px; }
+    .toolbar, .no-print { display: none !important; }
+    .group, .panel { border: 1px solid #ddd; break-inside: auto; margin-bottom: 8px; }
+    .group-h { background: #f7f7f7; padding: 6px 8px; break-after: avoid; }
+    table { font-size: 9.5px; }
+    th, td { padding: 4px 6px; }
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; }
+    .v-btns { display: none; }
+    .v-print { display: block !important; height: 14px; border-bottom: 1px solid #bbb; }
+    .lv { border: 1px solid #999; }
+  }
+  .v-print { display: none; }
+</style>
+</head>
+<body>
+
+<header class="doc-h">
+  <div class="brand"><span class="mark"></span><h1>八方聚管理后台 · 四批改动测试用例</h1></div>
+  <div class="meta">v1.0 ｜ 2026-11-11 ｜ 覆盖 P0 / P1 / P2 / P3 四批改动 + 关联接口 + 小程序回归 ｜ 共 <b id="totalMeta">83</b> 条</div>
+</header>
+
+<section class="panel no-print">
+  <h2>执行说明</h2>
+  <p>1. 先在服务器部署并执行 <code>npm test</code>，全绿后再开始页面验收。</p>
+  <p>2. 每行右侧点「通过 / 不通过 / 阻塞」记录结论，结果自动保存在本机浏览器，刷新不丢；换电脑需重新记录。</p>
+  <p>3. 点顶栏搜索框可按编号、步骤、预期结果过滤；也可只看「待测」或「不通过」。</p>
+  <p>4. 点「打印 / 导出 PDF」用 A4 横向出纸质单，结论列会变成手写横线。</p>
+  <p>5. 不通过必须附截图 + Console 报错 + 复现步骤，便于开发定位。</p>
+</section>
+
+<div class="toolbar no-print">
+  <input type="search" id="q" placeholder="搜索编号 / 步骤 / 预期结果…">
+  <div class="seg" id="statusFilter">
+    <button class="on" data-s="all">全部</button>
+    <button data-s="todo">待测</button>
+    <button data-s="fail">不通过</button>
+    <button data-s="pass">已通过</button>
+  </div>
+  <div class="seg" id="groupFilter">
+    <button class="on" data-g="all">全部分组</button>
+    <button data-g="P0">P0</button>
+    <button data-g="P1">P1</button>
+    <button data-g="P2">P2</button>
+    <button data-g="P3">P3</button>
+    <button data-g="REG">回归</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="stat">
+    <span>共 <b id="sTotal">0</b></span>
+    <span class="s-ok">通过 <b id="sPass">0</b></span>
+    <span class="s-fail">不通过 <b id="sFail">0</b></span>
+    <span>待测 <b id="sTodo">0</b></span>
+    <div class="progress"><i id="sBar"></i></div>
+  </div>
+  <button class="btn-reset" id="btnReset">重置勾选</button>
+  <button class="btn-reset" onclick="window.print()">打印 / 导出 PDF</button>
+</div>
+
+<section class="panel">
+  <h2>一、测试环境与准备</h2>
+  <p><b>后台地址</b>：<code>https://&lt;服务器域名&gt;/admin.html</code>　｜　<b>浏览器</b>：Chrome / Edge 最新版 + 1 台 1366×768 笔记本</p>
+  <p><b>账号 A</b>：总账号 <code>super</code>（全部权限）　｜　<b>账号 B</b>：子管理员，仅勾选「商品管理 + 订单管理」</p>
+  <p><b>小程序</b>：用户端、商家端体验版各 1 个，用于首页运营帧与「赚实惠」页回归</p>
+  <p><b>部署与自动测试</b>：<code>cd bafangju-server &amp;&amp; npm test &amp;&amp; pm2 restart bafangju</code>，预期全绿（含 <code>test/ops-content.test.js</code> 违规词回归）</p>
+  <p><b>数据准备</b>：待审商品 ≥1、待审入驻 ≥1、待审提现 ≥1、广告计划草稿与投放中各 1、含「返利」的运营帧文案 1 条、可清空的空数据环境</p>
+</section>
+
+<div id="groups"></div>
+
+<footer class="doc-f">
+  <b>通过标准</b>
+  <ol>
+    <li>P0 用例 100% 通过；P1 通过率 ≥ 95%；无「致命 / 严重」缺陷。</li>
+    <li><code>npm test</code> 全绿（含违规词回归用例）。</li>
+    <li>违规词前后端双层拦截均验证通过（TC-P0-08 ~ TC-P0-11）。</li>
+    <li>16 个菜单均可正常进入，无空白页、Console 无红色报错。</li>
+  </ol>
+  <p style="margin-top:12px"><b>不在本次范围</b>：后端资金记账/分账算法正确性、微信真实打款联调、小程序端 UI 视觉改版、性能压测。</p>
+</footer>
+
+<script>
+const CASES = [
+  // ============ P0 ============
+  { id:'TC-P0-01', pre:'账号 A 登录后台，存在 ≥1 个待审商品', step:'打开「经营看板」，查看「待处理事项」第一格', exp:'第一格为「待审商品」，数字 = 待审商品实际条数；数字 &gt; 0 时数字变红、底部显示「去审核 ›」' },
+  { id:'TC-P0-02', pre:'同上', step:'观察左侧「商品管理」菜单右侧角标', exp:'角标数字 = 待审商品条数；为 0 时角标完全隐藏（不显示 0）' },
+  { id:'TC-P0-03', pre:'账号 B（无商品权限）登录', step:'打开「经营看板」，查看「待审商品」格', exp:'显示 0，不报错、不出现空白格；Console 无红色报错（403 已被 catch 兜底）' },
+  { id:'TC-P0-04', pre:'账号 A，存在待审商品', step:'点击「待审商品」格子', exp:'正确跳转到「商品管理」页，标题为「商品管理」，非空白页' },
+  { id:'TC-P0-05', pre:'账号 A，存在待审广告', step:'点击看板「待审广告」格子', exp:'跳转到「广告中心」页（回归原 pane:\'ads\' 导致点击无响应的缺陷），且默认显示「视频广告激励」域' },
+  { id:'TC-P0-06', pre:'账号 A', step:'进入「广告中心 → 视频广告激励」，查看广告计划表「投放参数」列', exp:'完播奖励显示为「N 点」（贡献值口径），不得出现「¥」「元」「现金」等表述' },
+  { id:'TC-P0-07', pre:'账号 A', step:'打开广告创建/编辑表单，修改单 IP 费用，观察实时计费预览与保存后 Toast', exp:'预览与 Toast 均为「贡献值 / 点」口径，不出现金额提现表述' },
+  { id:'TC-P0-08', pre:'账号 A', step:'内容与运营 → 新增运营帧，标题填「限时返利」，点保存', exp:'前端拦截：提示「文案含违规词「返利」，首页不允许出现返利/提现类表述，请修改后再保存」，弹层不关闭，Network 无 POST 请求' },
+  { id:'TC-P0-09', pre:'账号 A', step:'副标题填「日结到账」，其余正常，点保存', exp:'同样被拦截，提示含「日结」；数据未提交' },
+  { id:'TC-P0-10', pre:'已登录，拿到管理员 token', step:'用 Postman/curl 绕过前端直接调 POST /api/admin/ops-slides，title 含「返现」', exp:'返回 4xx，error 形如「标题含违规词「返现」，首页不允许出现返利/提现类表述」；数据未落库' },
+  { id:'TC-P0-11', pre:'—', step:'违规词清单 8 个词逐个提交：返利 / 返现 / 提现 / 躺赚 / 日结 / 稳赚 / 包赚 / 赚钱', exp:'8 个词全部被拦截，前后端提示口径一致' },
+  { id:'TC-P0-12', pre:'正常数据', step:'打开经营看板「待处理事项」', exp:'卡片为 4 列布局（1440 宽下同一行 4 个），无 6 列挤压、无文字换行错位' },
+
+  // ============ P1 ============
+  { id:'TC-P1-01', pre:'账号 A 首次登录（新会话）', step:'观察左侧菜单', exp:'常显 8 项：经营看板、订单管理、商品管理、商家管理、内容与运营、广告中心、提现审核、分红排队；「高级配置」为分组标题且默认收起，其下 8 项不可见' },
+  { id:'TC-P1-02', pre:'同上', step:'点击「高级配置」标题', exp:'展开 8 项：储备金账户、每日自动任务、功能开关、风控中心、消息管理、系统设置、操作日志、账号与权限；右侧箭头由 ▾ 变为向上' },
+  { id:'TC-P1-03', pre:'已展开', step:'再次点击「高级配置」', exp:'收起，箭头恢复；页面不跳转、不刷新' },
+  { id:'TC-P1-04', pre:'已展开', step:'进入「系统设置」后按 F5 刷新', exp:'仍保持展开（sessionStorage 记忆）；新开标签页访问则恢复默认收起' },
+  { id:'TC-P1-05', pre:'菜单处于收起状态', step:'从看板待办点进「高级配置」内的页面（如「每日自动任务」），或执行 gotoPane(\'settings\')', exp:'自动展开「高级配置」并高亮当前页，用户能看见自己在哪个菜单' },
+  { id:'TC-P1-06', pre:'账号 B（仅商品 + 订单权限）', step:'展开「高级配置」', exp:'组内无权限项全部不可见；若组内一项权限都没有，则「高级配置」标题整体隐藏' },
+  { id:'TC-P1-07', pre:'—', step:'查看看板「系统开关状态」卡片说明文案', exp:'显示「变更请前往「高级配置 - 功能开关」」，不再出现已废弃的「安全与合规」字样' },
+  { id:'TC-P1-08', pre:'账号 A', step:'进入「广告中心」', exp:'顶部出现 3 个页内 tab：视频广告激励 / 轮播广告位 / 任务奖励配置；默认选中「视频广告激励」，其余两域内容不显示' },
+  { id:'TC-P1-09', pre:'同上', step:'依次点击 3 个 tab', exp:'每次只显示对应域内容，tab 下划线跟随切换；不出现两域同时显示或整页空白' },
+  { id:'TC-P1-10', pre:'切到「任务奖励配置」后', step:'切到别的菜单，再点侧栏「广告中心」', exp:'重新进入时回到「视频广告激励」，不停留在上次的配置页' },
+  { id:'TC-P1-11', pre:'账号 A', step:'在「广告中心」页面向下滚动', exp:'页内 3 个 tab 吸顶，不被内容盖住、不随页面滚走' },
+  { id:'TC-P1-12', pre:'账号 A', step:'查看「提现审核」页底部，再看「广告中心」页', exp:'「提现审核」页存在「历史奖励提现（已停止新增发放）」卡片；「广告中心」页内不再出现该现金卡片' },
+  { id:'TC-P1-13', pre:'账号 A，商家 ≥3 家', step:'进入「商家管理 → 商家列表」', exp:'表头恰好 7 列：名称（下方小字 ID）/ 登录账号 / 联系人 / 状态 / 余额 / 挂账（欠款）/ 操作；1440 宽下无横向滚动条' },
+  { id:'TC-P1-14', pre:'同上', step:'点击任一行「详情」', exp:'右侧滑出抽屉，标题为商家名；展示商家 ID、登录账号、联系人、状态、余额、冻结中、挂账、收款微信、券数、广告投放、门店坐标、最近登录' },
+  { id:'TC-P1-15', pre:'抽屉已打开', step:'点击抽屉内「停用商家」并确认', exp:'表格状态变「已停用」，且抽屉内状态同步更新、按钮变「启用商家」，无需关闭重开' },
+  { id:'TC-P1-16', pre:'抽屉已打开', step:'点击抽屉内「重置密码」', exp:'弹出一次性新密码弹层；关闭后表格与抽屉数据保持一致' },
+  { id:'TC-P1-17', pre:'抽屉已打开', step:'点击抽屉内「重置 token」', exp:'弹层显示新 token；旧 token 访问商家端接口应 401（有条件时验证）' },
+  { id:'TC-P1-18', pre:'抽屉已打开', step:'先点遮罩空白处；再打开后点抽屉内部任意空白处', exp:'点遮罩关闭；点抽屉内部不关闭（不误触）' },
+  { id:'TC-P1-19', pre:'抽屉已打开', step:'点右上「关闭」按钮', exp:'抽屉关闭，无残留遮罩、页面可正常点击侧栏' },
+  { id:'TC-P1-20', pre:'测试库无商家', step:'打开「商家管理 → 商家列表」', exp:'表格显示图标 + 「暂无商家」，不是一片空白；表头仍保留' },
+  { id:'TC-P1-21', pre:'无类目数据', step:'打开「商品管理 → 类目」', exp:'显示「还没有类目，先在上方新增一个」' },
+  { id:'TC-P1-22', pre:'等级接口异常或无数据', step:'打开「系统设置 → 等级门槛」', exp:'显示「等级配置暂未加载，稍后重试」，不出现白块' },
+
+  // ============ P2 ============
+  { id:'TC-P2-01', pre:'商品 ≥3 个（在售 / 已下架各 1）', step:'打开「商品管理」商品表', exp:'表头 8 列：商品 / 类目 / 商家 / 标价 / 定价参数 / 配送 / 状态 / 操作；商品名下方显示 ID' },
+  { id:'TC-P2-02', pre:'同上', step:'检查「定价参数」列', exp:'形如「成本 ¥39.90 · 税率 0.06 · 运营 50 · r=0.2 · n=5」，五要素齐全且不换行错位' },
+  { id:'TC-P2-03', pre:'同上', step:'点击某商品「详情」', exp:'抽屉显示商品 ID、类目、归属商家（自营标绿）、标价、成本、税率、运营成本/单、让利率 r、原价单数 n、配送方式、状态、图片路径；底部有算账/改价/改归属/上下架' },
+  { id:'TC-P2-04', pre:'抽屉已打开', step:'点「改价/成本」，修改标价并保存', exp:'保存成功后表格标价与抽屉标价同时更新，无需手动刷新' },
+  { id:'TC-P2-05', pre:'抽屉已打开', step:'点「改归属商家」，输入目标商家 ID 并保存', exp:'表格「商家」列与抽屉「归属商家」同步更新' },
+  { id:'TC-P2-06', pre:'抽屉已打开', step:'点「算账」', exp:'弹出经济模型预览（原价单数 n、让利率 r、留存等），数值与定价参数列一致' },
+  { id:'TC-P2-07', pre:'抽屉已打开，商品在售', step:'点「下架」', exp:'该商品从「在售中」tab 消失，出现在「已下架」tab；抽屉内状态同步' },
+  { id:'TC-P2-08', pre:'商品列表可筛选', step:'搜索不存在的关键词', exp:'显示「暂无商品」' },
+  { id:'TC-P2-09', pre:'商品数据为 0 条', step:'打开商品页', exp:'显示「暂无商品」，表头保留' },
+  { id:'TC-P2-10', pre:'有 ≥2 条入驻申请', step:'打开「商家管理 → 入驻申请」', exp:'表头 7 列：时间 / 名称·联系人 / 类目 / 地址 / 证照 / 状态 / 操作；名称下方灰字显示「联系人 · 电话」' },
+  { id:'TC-P2-11', pre:'某申请地址长度 &gt; 26 字', step:'观察地址列并鼠标悬停', exp:'列内截断为 26 字 + 省略号；hover 显示完整地址；后接「已选点 / 未选点」tag' },
+  { id:'TC-P2-12', pre:'申请带营业执照与门头照', step:'点「照」「头」两个按钮', exp:'均能打开带鉴权的图片查看；不带 token 直接访问 URL 应 401/403' },
+  { id:'TC-P2-13', pre:'存在待审核申请', step:'点「通过」', exp:'状态变「已通过」，操作列显示审核结果与生成的商家 ID；商家列表出现该商家' },
+  { id:'TC-P2-14', pre:'存在待审核申请', step:'点「驳回」并填写原因', exp:'状态变「已驳回」，操作列显示驳回原因' },
+  { id:'TC-P2-15', pre:'无入驻申请', step:'打开该表', exp:'显示「暂无申请」' },
+  { id:'TC-P2-16', pre:'有草稿 + 投放中广告各 1', step:'进入「广告中心 → 视频广告激励」', exp:'表头 6 列：广告 / 商家·跳转 / 投放参数 / 进度·预算 / 状态 / 操作' },
+  { id:'TC-P2-17', pre:'同上', step:'检查「投放参数」列', exp:'显示「每IP ¥x · 完播 N 点 · 目标 M（约 K 天投完）」；贡献值口径为「点」，不是金额' },
+  { id:'TC-P2-18', pre:'投放中广告', step:'检查「进度 · 预算」列', exp:'进度条宽度 = 已完成 IP / 目标 IP；下方显示「已耗 ¥x · 剩余 ¥y」，剩余金额为主色强调' },
+  { id:'TC-P2-19', pre:'草稿状态广告', step:'点「通过」/「驳回」', exp:'通过后状态变「投放中」；驳回后变「已驳回」，可「改素材」重新提交' },
+  { id:'TC-P2-20', pre:'投放中广告', step:'点「下架」', exp:'状态变「已下架」，进度条不再增长（有实时数据时观察）' },
+  { id:'TC-P2-21', pre:'投放中 / 已售罄广告', step:'点「结算」', exp:'生成广告结算单，出现在「广告结算单」表；未消耗预算退回商家可用额度' },
+  { id:'TC-P2-22', pre:'无广告计划', step:'打开该表', exp:'显示「暂无广告计划，先在上方上传视频并创建」' },
+  { id:'TC-P2-23', pre:'商家抽屉打开', step:'点商家抽屉遮罩', exp:'只关闭商家抽屉，商品抽屉不受影响' },
+  { id:'TC-P2-24', pre:'商品抽屉打开', step:'点商品抽屉遮罩', exp:'只关闭商品抽屉；Console 无 closeDrawer is not defined 报错' },
+  { id:'TC-P2-25', pre:'两个抽屉都关着', step:'检查页面', exp:'无遮罩残留、页面未锁定滚动、侧栏可正常点击' },
+
+  // ============ P3 ============
+  { id:'TC-P3-01', pre:'订单 ≥30 条', step:'打开「订单管理」，向下滚动列表', exp:'状态 tab 行（全部/待付款/待发货…）始终贴在顶栏红色通栏下方，不随内容滚走；内容不会从 tab 背后透出' },
+  { id:'TC-P3-02', pre:'同上', step:'滚动到列表中部后点击「待发货」tab', exp:'能正常切换筛选，tab 位置不跳动、不出现双 tab 重叠' },
+  { id:'TC-P3-03', pre:'商品 ≥30 条', step:'打开「商品管理」，向下滚动', exp:'「在售中 / 已下架」tab 同样吸顶' },
+  { id:'TC-P3-04', pre:'广告计划 ≥10 条', step:'在「视频广告激励」域内向下滚动并切换域', exp:'三域 tab 吸顶；切换域后仍吸顶' },
+  { id:'TC-P3-05', pre:'运营帧 ≥10 条', step:'打开运营帧列表并快速滚动', exp:'标题/tab 区吸顶正常，无明显抖动（快速滚动允许轻微重绘）' },
+  { id:'TC-P3-06', pre:'有运营帧数据', step:'查看运营帧表格表头', exp:'恰好 6 列：# / 标题 / 配置 / 视觉 / 状态 / 操作' },
+  { id:'TC-P3-07', pre:'运营帧 ≥3 条', step:'点第 2 行「↑」', exp:'与上一行交换顺序，序号同步重排；小程序首页刷新后顺序一致' },
+  { id:'TC-P3-08', pre:'运营帧 ≥3 条', step:'点最后一行「↓」', exp:'位置不变（或按钮禁用），不报错' },
+  { id:'TC-P3-09', pre:'存在售后的订单', step:'查看订单表「状态」列', exp:'状态 tag 下方多一行售后 tag（如「售后申请中」）；无售后订单只显示一个状态 tag' },
+  { id:'TC-P3-10', pre:'存在售后申请单', step:'点击订单 tab「退款 · 售后」', exp:'能筛出该订单，条数与 tab 角标一致' },
+  { id:'TC-P3-11', pre:'同上', step:'在「退款 · 售后」tab 点「受理」/「驳回」', exp:'状态正确流转，售后 tag 更新，列表按筛选规则刷新' },
+  { id:'TC-P3-12', pre:'有 &gt;32 字的长申诉', step:'打开「风控中心 → 用户申诉」', exp:'内容截断为 32 字 + 省略号，行高恢复正常；hover 显示完整内容' },
+  { id:'TC-P3-13', pre:'申诉状态为待处理', step:'点「受理」/「驳回」', exp:'状态 tag 变为已受理/已驳回，操作列显示备注' },
+  { id:'TC-P3-14', pre:'分辨率 1440×900', step:'打开订单页并滚动至表格底部', exp:'吸顶 tab 与表格、卡片无遮挡错位；操作列按钮不被裁切' },
+
+  // ============ REG ============
+  { id:'TC-REG-01', pre:'Chrome', step:'1366×768 下逐页浏览：看板 / 订单 / 商品 / 商家 / 广告中心', exp:'无横向滚动条；表格不撑破卡片；折叠的低频菜单不影响日常 6 项' },
+  { id:'TC-REG-02', pre:'Chrome', step:'1920×1080 下浏览同样的页面', exp:'布局留白正常，KPI 4 列、待办 4 列不拉变形' },
+  { id:'TC-REG-03', pre:'窗口宽 ≤900px', step:'点左上汉堡按钮', exp:'侧栏以抽屉形式滑出，遮罩可点击关闭；「高级配置」折叠仍生效；点任意菜单后抽屉自动收起' },
+  { id:'TC-REG-04', pre:'账号 B', step:'直接调 gotoPane 或改 hash 访问无权限模块', exp:'前端提示「当前账号没有该模块的权限」，不渲染内容；接口返回 403' },
+  { id:'TC-REG-05', pre:'小程序用户端', step:'打开首页', exp:'运营帧按后台排序展示；文案为合规表述（无返利/提现类词）' },
+  { id:'TC-REG-06', pre:'小程序用户端', step:'进入「赚实惠」页', exp:'广告奖励显示为贡献值（点），不出现现金奖励话术' },
+  { id:'TC-REG-07', pre:'商家端', step:'提交商品 / 查看广告数据', exp:'不受后台表结构改造影响，数据与后台展示一致' },
+  { id:'TC-REG-08', pre:'全程', step:'打开 DevTools Console，遍历 16 个菜单', exp:'无红色报错；无 404（3 个 CSS + 17 个 JS 全部 200）' },
+  { id:'TC-REG-09', pre:'模拟断网或接口 500', step:'刷新经营看板', exp:'页面不白屏，KPI 显示兜底值（0 / -），有失败 Toast' },
+  { id:'TC-REG-10', pre:'键盘操作', step:'用 Tab 键遍历侧栏', exp:'焦点可见、顺序合理（未做无障碍优化则记为已知问题）' }
+];
+
+const GROUP_TITLE = {
+  P0: 'P0 第一批 · 缺陷修复与合规整改',
+  P1: 'P1 第二批 · 侧栏折叠 / 广告中心三域 / 商家表瘦身',
+  P2: 'P2 第三批 · 宽表瘦身与详情抽屉',
+  P3: 'P3 第四批 · 高频页交互',
+  REG: '兼容性与回归'
+};
+const ORDER = ['P0', 'P1', 'P2', 'P3', 'REG'];
+const KEY = 'bfj_testcase_20261111';
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { state = {}; }
+let filterStatus = 'all';
+let filterGroup = 'all';
+let keyword = '';
+
+const groupOf = (id) => id.split('-')[1];
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+
+function render() {
+  const wrap = document.getElementById('groups');
+  wrap.innerHTML = ORDER.map((g) => {
+    const rows = CASES.filter((c) => groupOf(c.id) === g);
+    const body = rows.map((c) => {
+      const v = state[c.id] || '';
+      return `<tr class="c-row ${v}" data-id="${c.id}" data-group="${g}">
+        <td><span class="id">${c.id}</span></td>
+        <td><span class="lv ${g.toLowerCase() === 'reg' ? 'p3' : g.toLowerCase()}">${g}</span></td>
+        <td>${c.pre}</td>
+        <td>${c.step}</td>
+        <td>${c.exp}</td>
+        <td>
+          <div class="v-btns">
+            <button data-v="pass">通过</button>
+            <button data-v="fail">不通过</button>
+            <button data-v="block">阻塞</button>
+          </div>
+          <div class="v-print"></div>
+        </td>
+      </tr>`;
+    }).join('');
+    return `<section class="group" data-group="${g}">
+      <div class="group-h"><h3>${GROUP_TITLE[g]}</h3><span class="cnt">${rows.length} 条</span></div>
+      <table>
+        <colgroup><col class="c-id"><col class="c-lv"><col class="c-pre"><col class="c-step"><col><col class="c-v"></colgroup>
+        <thead><tr><th>编号</th><th>级别</th><th>前置条件</th><th>操作步骤</th><th>预期结果</th><th>结论</th></tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    </section>`;
+  }).join('');
+  applyFilter();
+  updateStats();
+}
+
+function applyFilter() {
+  document.querySelectorAll('.c-row').forEach((tr) => {
+    const id = tr.dataset.id;
+    const g = tr.dataset.group;
+    const v = state[id] || '';
+    const kw = keyword.toLowerCase();
+    const text = tr.innerText.toLowerCase();
+    let ok = true;
+    if (filterGroup !== 'all' && g !== filterGroup) ok = false;
+    if (ok && filterStatus === 'todo' && v) ok = false;
+    if (ok && filterStatus === 'fail' && v !== 'fail') ok = false;
+    if (ok && filterStatus === 'pass' && v !== 'pass') ok = false;
+    if (ok && kw && !text.includes(kw)) ok = false;
+    tr.classList.toggle('hidden', !ok);
+  });
+  document.querySelectorAll('.group').forEach((sec) => {
+    const visible = [...sec.querySelectorAll('.c-row')].some((tr) => !tr.classList.contains('hidden'));
+    sec.classList.toggle('hidden', !visible);
+  });
+}
+
+function updateStats() {
+  const total = CASES.length;
+  const pass = CASES.filter((c) => state[c.id] === 'pass').length;
+  const fail = CASES.filter((c) => state[c.id] === 'fail').length;
+  const block = CASES.filter((c) => state[c.id] === 'block').length;
+  document.getElementById('sTotal').textContent = total;
+  document.getElementById('sPass').textContent = pass;
+  document.getElementById('sFail').textContent = fail;
+  document.getElementById('sTodo').textContent = total - pass - fail - block;
+  document.getElementById('sBar').style.width = Math.round((pass / total) * 100) + '%';
+  document.getElementById('totalMeta').textContent = total;
+}
+
+document.getElementById('groups').addEventListener('click', (e) => {
+  const btn = e.target.closest('.v-btns button');
+  if (!btn) return;
+  const tr = btn.closest('tr');
+  const id = tr.dataset.id;
+  const val = btn.dataset.v;
+  if (state[id] === val) delete state[id]; else state[id] = val;
+  tr.classList.remove('pass', 'fail', 'block');
+  if (state[id]) tr.classList.add(state[id]);
+  save();
+  updateStats();
+  applyFilter();
+});
+
+document.getElementById('q').addEventListener('input', (e) => {
+  keyword = e.target.value.trim();
+  applyFilter();
+});
+
+document.getElementById('statusFilter').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  filterStatus = b.dataset.s;
+  [...e.currentTarget.children].forEach((x) => x.classList.toggle('on', x === b));
+  applyFilter();
+});
+
+document.getElementById('groupFilter').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  filterGroup = b.dataset.g;
+  [...e.currentTarget.children].forEach((x) => x.classList.toggle('on', x === b));
+  applyFilter();
+});
+
+document.getElementById('btnReset').addEventListener('click', () => {
+  if (!confirm('清空本机记录的全部测试结论？')) return;
+  state = {};
+  save();
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

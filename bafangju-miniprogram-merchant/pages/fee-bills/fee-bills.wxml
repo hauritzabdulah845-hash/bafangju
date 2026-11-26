@@ -1,0 +1,41 @@
+<view class="card">
+  <view class="row-between">
+    <view class="t1">{{feeEnabled ? '服务费账单' : '核销对账'}}</view>
+    <picker mode="date" fields="month" value="{{month}}" bindchange="onMonth">
+      <view class="month-pick">{{month}} ▾</view>
+    </picker>
+  </view>
+
+  <!-- 收费模式：显示应缴/已缴 -->
+  <block wx:if="{{feeEnabled}}">
+    <view class="sum-row"><text>本月待缴</text><text class="amount">¥{{summary.dueYuan || '0.00'}}（{{summary.dueCount || 0}} 笔）</text></view>
+    <view class="sum-row"><text>本月已缴</text><text>¥{{summary.paidYuan || '0.00'}}（{{summary.paidCount || 0}} 笔）</text></view>
+    <view class="muted" style="margin-top:12rpx;line-height:1.7">顾客的消费款由您线下直接收取，平台不经手货款。核销券后平台按消费总额（券前）计提服务费，按自然月汇总结算，收款后账单标记为「已缴」。</view>
+  </block>
+
+  <!-- 免费模式（默认）：只做核销对账，平台一分不收 -->
+  <block wx:else>
+    <view class="free-badge">平台不收取任何服务费</view>
+    <view class="muted" style="margin-top:12rpx;line-height:1.7">顾客的消费款由您线下直接收取，平台不经手货款、也不向您收取服务费。本页仅记录当月券核销明细，便于您自己核对到店消费。</view>
+    <view class="sum-row" style="margin-top:12rpx"><text>本月核销</text><text>{{summary.totalCount || 0}} 笔</text></view>
+    <view class="sum-row"><text>核销消费额</text><text>{{monthAmountText || '¥0.00'}}</text></view>
+  </block>
+</view>
+
+<view class="card">
+  <view class="bill" wx:for="{{list}}" wx:key="id">
+    <view class="bill-main">
+      <view class="bill-title">{{item.couponTitle || '联盟券'}}<text wx:if="{{feeEnabled}}"> · 消费 ¥{{item.amountYuan}}</text></view>
+      <view class="muted">
+        {{item.timeText}}
+        <text wx:if="{{feeEnabled && item.shortageFen > 0}}"> · 少收 ¥{{item.shortageYuan}}</text>
+        <text wx:if="{{!feeEnabled}}"> · 优惠 ¥{{item.discountYuan}} · 顾客实付 ¥{{item.payableYuan}}</text>
+      </view>
+    </view>
+    <view class="bill-right">
+      <view class="amount">{{item.feeText}}</view>
+      <view class="tag {{item.status === 'paid' ? 'green' : 'gold'}}" wx:if="{{feeEnabled}}">{{item.statusText}}</view>
+    </view>
+  </view>
+  <view class="empty muted" wx:if="{{!list.length && !loading}}">{{feeEnabled ? '本月暂无服务费账单' : '本月暂无核销记录'}}</view>
+</view>

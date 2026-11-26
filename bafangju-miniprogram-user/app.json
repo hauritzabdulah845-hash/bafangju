@@ -1,0 +1,105 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/ads/ads",
+    "pages/product/product",
+    "pages/pay-result/pay-result",
+    "pages/rebuy/rebuy",
+    "pages/orders/orders",
+    "pages/returns/returns",
+    "pages/dividend/dividend",
+    "pages/messages/messages",
+    "pages/tasks/tasks",
+    "pages/profile/profile",
+    "pages/rules/rules",
+    "pages/promotion/promotion",
+    "pages/team/team",
+    "pages/withdraw/withdraw",
+    "pages/address/address",
+    "pages/coupons/coupons",
+    "pages/merchants/merchants",
+    "pages/merchant-detail/merchant-detail",
+    "pages/agreement/agreement",
+    "pages/ad-watch/ad-watch",
+    "pages/cash/cash"
+  ],
+  "subPackages": [
+    {
+      "root": "subpkg-merchant",
+      "pages": [
+        "pages/login/login",
+        "pages/index/index",
+        "pages/orders/orders",
+        "pages/verify/verify",
+        "pages/earnings/earnings",
+        "pages/profile/profile",
+        "pages/coupons/coupons",
+        "pages/products/products",
+        "pages/ads/ads",
+        "pages/ad-videos/ad-videos",
+        "pages/withdraw/withdraw",
+        "pages/fee-bills/fee-bills",
+        "pages/shop/shop",
+        "pages/entry/entry",
+        "pages/agreement/agreement",
+        "pages/password/password"
+      ]
+    }
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "八方聚",
+    "backgroundColor": "#F6F6F6"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#666666",
+    "selectedColor": "#B02A30",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/tabbar/home-off.png",
+        "selectedIconPath": "assets/tabbar/home-on.png"
+      },
+      {
+        "pagePath": "pages/orders/orders",
+        "text": "订单",
+        "iconPath": "assets/tabbar/orders-off.png",
+        "selectedIconPath": "assets/tabbar/orders-on.png"
+      },
+      {
+        "pagePath": "pages/ads/ads",
+        "text": "赚实惠",
+        "iconPath": "assets/tabbar/ads-off.png",
+        "selectedIconPath": "assets/tabbar/ads-on.png"
+      },
+      {
+        "pagePath": "pages/returns/returns",
+        "text": "阶梯优惠",
+        "iconPath": "assets/tabbar/returns-off.png",
+        "selectedIconPath": "assets/tabbar/returns-on.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/tabbar/profile-off.png",
+        "selectedIconPath": "assets/tabbar/profile-on.png"
+      }
+    ],
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white"
+  },
+  "style": "v2",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于选择位置、计算与附近商家的距离，提供就近购物服务"
+    }
+  },
+  "requiredPrivateInfos": [
+    "chooseLocation",
+    "chooseAddress"
+  ],
+  "sitemapLocation": "sitemap.json"
+}

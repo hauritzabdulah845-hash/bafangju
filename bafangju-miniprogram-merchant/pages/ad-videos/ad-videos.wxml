@@ -1,0 +1,68 @@
+<!-- 商家自助视频广告（V4.2 · 额度制） -->
+<view class="av-page">
+
+  <!-- 额度 -->
+  <view class="card">
+    <view class="t1">我的广告额度</view>
+    <view class="q-grid">
+      <view class="q-item"><view class="q-num">¥{{quota.availableYuan}}</view><view class="q-lab">可用额度</view></view>
+      <view class="q-item"><view class="q-num">¥{{quota.frozenYuan}}</view><view class="q-lab">冻结中</view></view>
+      <view class="q-item"><view class="q-num">¥{{quota.usedYuan}}</view><view class="q-lab">已消耗</view></view>
+      <view class="q-item"><view class="q-num">¥{{quota.grantedYuan}}</view><view class="q-lab">累计发放</view></view>
+    </view>
+    <view class="t-weak">额度由平台在收到款项后发放。创建计划会冻结整笔预算，投放结束结算后未用完部分自动退回可用额度。</view>
+  </view>
+
+  <!-- 新建计划 -->
+  <view class="card">
+    <view class="t1">新建视频广告计划</view>
+    <view class="t-weak" style="margin-top:6rpx">用户完整看完视频可得贡献值；提交后由平台审核素材，通过才开始投放。</view>
+    <input class="ipt" placeholder="广告标题（如：新米上市）" value="{{title}}" bindinput="onTitle" />
+    <view class="row gap">
+      <button class="btn-sm" bindtap="chooseVideo">上传视频</button>
+      <button class="btn-sm" bindtap="chooseCover">上传封面</button>
+    </view>
+    <image class="ad-preview" wx:if="{{coverFull}}" src="{{coverFull}}" mode="aspectFill"></image>
+    <view class="t-weak" wx:if="{{videoName}}">{{videoName}} · {{durationS}} 秒</view>
+    <input class="ipt" type="digit" placeholder="总预算（元）" value="{{budgetYuan}}" bindinput="onBudget" />
+    <input class="ipt" type="digit" placeholder="单 IP 费用（元，如 1.00）" value="{{chargeYuan}}" bindinput="onCharge" />
+    <input class="ipt" type="number" placeholder="每日上限（份）" value="{{dailyCap}}" bindinput="onCap" />
+    <picker mode="selector" range="{{productNames}}" value="{{productIndex}}" bindchange="onProduct">
+      <view class="ipt">{{productNames[productIndex]}}</view>
+    </picker>
+    <view class="av-hint">{{pricingText}}</view>
+    <button class="btn-primary" bindtap="submit" disabled="{{submitting}}">提交审核</button>
+  </view>
+
+  <!-- 计划列表 -->
+  <view class="card">
+    <view class="t1">我的广告计划</view>
+    <view class="av-plan" wx:for="{{videos}}" wx:key="videoId">
+      <view class="row-between">
+        <view class="t2 t-bold">{{item.title}}</view>
+        <view class="av-tag {{item.status === 'active' ? 'on' : ''}}">{{item.statusText}}</view>
+      </view>
+      <view class="t-weak">预算 ¥{{item.budgetYuan}} · 已耗 ¥{{item.spentYuan}} · 剩余 ¥{{item.leftYuan}}</view>
+      <view class="av-track"><view class="av-fill" style="width:{{item.ipProgressPercent}}%"></view></view>
+      <view class="t-weak">已完成 {{item.claimedIpCount}}/{{item.targetIpCount}} 个 IP ｜ 曝光 {{item.expose}} · 完播 {{item.complete}} · 带来下单 {{item.orders}}</view>
+      <view class="t-weak" wx:if="{{item.reviewNote}}">审核意见：{{item.reviewNote}}</view>
+      <view class="row gap">
+        <button class="btn-sm" wx:if="{{item.status === 'draft' || item.status === 'rejected'}}" data-id="{{item.videoId}}" bindtap="editMaterial">改标题重提审</button>
+        <button class="btn-sm" wx:if="{{item.status === 'active' || item.status === 'sold_out'}}" data-id="{{item.videoId}}" bindtap="append">追加预算</button>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{!videos.length}}">还没有计划，先在上方上传视频创建一条</view>
+  </view>
+
+  <!-- 结算单 -->
+  <view class="card" wx:if="{{settlements.length}}">
+    <view class="t1">结算单</view>
+    <view class="ad-row" wx:for="{{settlements}}" wx:key="id">
+      <view class="row-between">
+        <view class="ad-name">{{item.dateText}} · 计划 {{item.videoId}}</view>
+        <view class="price">应退 ¥{{item.refundYuan}}</view>
+      </view>
+      <view class="t-weak">预算 ¥{{item.budgetYuan}} · 已消耗 ¥{{item.spentYuan}} · {{item.status === 'refunded' ? '已退款' : '待平台退款'}}</view>
+    </view>
+  </view>
+</view>

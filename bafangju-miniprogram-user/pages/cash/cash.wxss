@@ -1,0 +1,49 @@
+.cash { padding: 24rpx; padding-bottom: 60rpx; }
+.cash-hero {
+  background: linear-gradient(120deg, #C2410C, #A9330B);
+  border-radius: 24rpx; padding: 40rpx 36rpx 34rpx; color: #FFF6EA;
+  box-shadow: 0 12rpx 32rpx rgba(194, 65, 12, .28); text-align: center;
+}
+.ch-label { font-size: 23rpx; opacity: .85; }
+.ch-val { font-size: 76rpx; font-weight: 800; margin: 12rpx 0 4rpx; }
+.ch-sub { font-size: 21rpx; opacity: .8; }
+.ch-meta { font-size: 19rpx; opacity: .7; margin-top: 10rpx; line-height: 1.6; }
+.ch-btn {
+  margin-top: 26rpx; background: linear-gradient(120deg, #E8C982, #C89B5A); color: #5a3a10;
+  font-size: 27rpx; font-weight: 700; border-radius: 40rpx; padding: 20rpx 0; letter-spacing: 1rpx;
+}
+.ch-btn-dis { opacity: .8; }
+.card {
+  background: #fff; border-radius: 20rpx; padding: 28rpx; margin-top: 22rpx;
+  box-shadow: 0 2rpx 10rpx rgba(90, 50, 20, .06);
+}
+.ct { font-size: 29rpx; font-weight: 700; color: #2F2A26; }
+.c-weak { font-size: 22rpx; color: #A09488; line-height: 1.7; }
+.c-input {
+  border: 1rpx solid #EADFD3; border-radius: 14rpx; padding: 20rpx 24rpx;
+  font-size: 27rpx; margin-top: 20rpx; background: #FBF9F6;
+}
+.c-btn {
+  margin-top: 24rpx; background: linear-gradient(120deg, #C2410C, #A9330B); color: #fff;
+  border-radius: 40rpx; text-align: center; padding: 20rpx 0; font-size: 28rpx; font-weight: 700;
+}
+.wd-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 20rpx;
+  padding: 20rpx 0; border-bottom: 1rpx dashed #EFE3D6;
+}
+.wd-row:last-child { border-bottom: 0; padding-bottom: 4rpx; }
+.wd-t { font-size: 26rpx; font-weight: 600; color: #2F2A26; }
+.wd-tax { font-size: 20rpx; color: #A09488; font-weight: 400; }
+.wd-meta { font-size: 20rpx; color: #B3A394; margin-top: 6rpx; word-break: break-all; }
+.wd-status { font-size: 22rpx; font-weight: 700; flex-shrink: 0; }
+.ws-pending_review { color: #C89B5A; }
+.ws-pending_offline { color: #4A6FA5; }
+.ws-paid { color: #2f7a3a; }
+.ws-rejected, .ws-failed { color: #C2410C; }
+.ws-approved { color: #4a6a8a; }
+.wd-delta { font-size: 27rpx; font-weight: 800; color: #C2410C; flex-shrink: 0; }
+.wd-out { color: #8a7a6a; }
+.c-tip { font-size: 20rpx; color: #B3A394; line-height: 1.7; margin-top: 30rpx; text-align: center; }
+.row-between { display: flex; align-items: center; justify-content: space-between; }
+.tag { font-size: 22rpx; border-radius: 10rpx; padding: 6rpx 18rpx; }
+.tag-green { background: #EAF5EA; color: #2f7a3a; }

@@ -1,0 +1,19 @@
+{
+  "name": "bafangju-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "八方聚共享平台后端 - 合规核心引擎（阶梯定价/免单订单/分佣记账/排队分红/储备专户季度分红）",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test",
+    "drill": "node tools/reconcile-drill.js",
+    "check:econ": "node tools/economics-check.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

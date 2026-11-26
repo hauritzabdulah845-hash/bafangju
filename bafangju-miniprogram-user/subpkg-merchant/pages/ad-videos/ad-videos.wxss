@@ -1,0 +1,25 @@
+@import '../../merchant-base.wxss';
+
+/* 商家自助视频广告 V4.2 */
+.av-page { padding-bottom: 40rpx; }
+.q-grid { display: flex; flex-wrap: wrap; gap: 14rpx; margin: 18rpx 0 12rpx; }
+.q-item { flex: 1; min-width: 45%; background: #FFF5F4; border-radius: 12rpx; padding: 18rpx; }
+.q-num { font-size: 32rpx; font-weight: 700; color: #8F1F26; }
+.q-lab { font-size: 22rpx; color: #888888; margin-top: 4rpx; }
+.ipt { background: #FAFAFA; border-radius: 10rpx; padding: 18rpx 20rpx; font-size: 28rpx; margin-top: 14rpx; }
+.ad-preview { width: 100%; height: 200rpx; border-radius: 12rpx; margin-top: 14rpx; background: #F2F2F2; }
+.av-hint { margin: 14rpx 0; padding: 16rpx; border-radius: 10rpx; background: #FFF8EE; color: #8A5A1A; font-size: 24rpx; }
+.btn-sm { padding: 12rpx 24rpx; font-size: 26rpx; border-radius: 12rpx; margin: 14rpx 14rpx 0 0; background: #FAFAFA; }
+.btn-primary { margin-top: 18rpx; background: #B02A30; color: #FFFFFF; font-size: 30rpx; border-radius: 12rpx; }
+.row.gap { gap: 12rpx; flex-wrap: wrap; }
+.av-plan { padding: 20rpx 0; border-bottom: 1rpx solid #F2F3F7; }
+.av-plan:last-child { border-bottom: none; }
+.av-tag { font-size: 22rpx; color: #888888; background: #F2F2F2; border-radius: 8rpx; padding: 4rpx 14rpx; }
+.av-tag.on { color: #FFFFFF; background: #2E8B57; }
+.av-track { height: 10rpx; background: #F1E7DC; border-radius: 5rpx; overflow: hidden; margin: 14rpx 0 8rpx; }
+.av-fill { height: 100%; background: linear-gradient(90deg, #C2410C, #E08A3C); }
+.price { color: #8F1F26; font-size: 28rpx; font-weight: 700; }
+.ad-row { padding: 16rpx 0; border-bottom: 1rpx solid #F2F3F7; }
+.ad-row:last-child { border-bottom: 0; }
+.ad-name { font-weight: 600; font-size: 26rpx; }
+.empty { text-align: center; color: #666666; font-size: 28rpx; padding: 60rpx 0; }

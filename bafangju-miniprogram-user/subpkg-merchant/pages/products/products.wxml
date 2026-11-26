@@ -1,0 +1,39 @@
+<!-- 我的商品（商家端）：上传/修改商品 → 平台审核 → 上架售卖 -->
+<view class="card form-card">
+  <view class="t1" style="margin-bottom:12rpx">{{editingId ? '修改商品' : '上传新商品'}}</view>
+  <view class="t-weak" style="margin-bottom:16rpx">提交后平台会审核商品价格是否合理，通过自动上架；驳回会写明原因，改完可重新提交。修改在售商品会先暂时下架，审核通过后恢复。</view>
+  <picker mode="selector" range="{{categories}}" range-key="name" bindchange="onCat">
+    <view class="picker">选择类目：{{categories.length ? categories[catIndex].name : '加载中…'}} ›</view>
+  </picker>
+  <input class="ipt" placeholder="商品名称（如 农家大米 5kg）" value="{{name}}" data-k="name" bindinput="onInput" />
+  <view class="row gap">
+    <input class="ipt half" type="digit" placeholder="售价（元）" value="{{priceYuan}}" data-k="priceYuan" bindinput="onInput" />
+    <input class="ipt half" type="digit" placeholder="成本价（元，不对外展示）" value="{{costYuan}}" data-k="costYuan" bindinput="onInput" />
+  </view>
+  <picker mode="selector" range="{{deliveryTypes}}" range-key="label" bindchange="onDelivery">
+    <view class="picker">配送方式：{{deliveryTypes[deliveryIndex].label}} ›</view>
+  </picker>
+  <view class="img-row" wx:if="{{imageFull}}">
+    <image class="preview" src="{{imageFull}}" mode="aspectFill" />
+    <view class="img-del" bindtap="clearImage">换一张</view>
+  </view>
+  <view class="btn ghost" wx:else bindtap="chooseImage">{{uploading ? '上传中…' : '＋ 添加商品图片（选填）'}}</view>
+  <view class="btn" bindtap="submit">{{submitting ? '提交中…' : (editingId ? '保存并重新提交审核' : '提交审核')}}</view>
+  <view class="btn plain" wx:if="{{editingId}}" bindtap="cancelEdit">取消修改</view>
+</view>
+
+<view class="card prod-card" wx:for="{{list}}" wx:key="id">
+  <view class="row-between">
+    <view class="row" style="flex:1;align-items:center">
+      <image class="thumb" wx:if="{{item.imageFull}}" src="{{item.imageFull}}" mode="aspectFill" />
+      <view class="t2 t-bold" style="flex:1">{{item.name}}</view>
+    </view>
+    <text class="tag {{item.statusClass}}">{{item.statusText}}</text>
+  </view>
+  <view class="t-weak" style="margin-top:8rpx">{{item.categoryName}} · 售价 ¥{{item.priceYuan}} · {{item.deliveryText}}</view>
+  <view class="reject-note" wx:if="{{item.status === 'rejected' && item.reviewNote}}">驳回原因：{{item.reviewNote}}</view>
+  <view class="row" style="margin-top:12rpx;justify-content:flex-end">
+    <view class="btn sm" bindtap="edit" data-id="{{item.id}}">修改</view>
+  </view>
+</view>
+<view class="empty muted" wx:if="{{!list.length && !loading}}">还没有商品，填上面的表单即可上传</view>

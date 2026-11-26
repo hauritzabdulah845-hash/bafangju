@@ -1,0 +1,23 @@
+<view class="notice">{{ct['team.note'] || '只展示你直接邀请的好友和订单汇总，好友的订单明细对外保密。等级只是权益资格，不代表任何收益承诺。'}}</view>
+
+<view class="card" wx:if="{{level}}">
+  <view class="title">我的等级与有效人数</view>
+  <view class="row">
+    <text class="level-tag">{{level.level}} · {{level.levelName}}</text>
+    <text class="muted">有效人数 {{level.validUsers}} / 团队 {{level.teamSize}} 人</text>
+  </view>
+  <view class="muted" wx:if="{{level.nextLevel}}">
+    距离 {{level.nextLevel}} 还差 {{level.remaining}} 位有效人数（有效人数 = 绑定的好友中，真实买过、过了退货期、近 30 天还活跃的人）
+  </view>
+  <view class="muted" wx:else>已达最高等级</view>
+  <view class="muted" wx:if="{{level.rights.length}}">当前权益：{{level.rights}}</view>
+</view>
+
+<view class="card">
+  <view class="title">我邀请的好友（{{members.length}}）</view>
+  <view class="row" wx:for="{{members}}" wx:key="id">
+    <text>{{item.idx}}. {{item.nickname}}</text>
+    <text class="muted">{{item.orderCount}} 单 · ¥{{item.paidTotalYuan}}</text>
+  </view>
+  <view class="muted" wx:if="{{!members.length && !loading}}">还没有邀请好友；分享邀请码或转发商城给好友，好友注册后就算你的团队成员</view>
+</view>

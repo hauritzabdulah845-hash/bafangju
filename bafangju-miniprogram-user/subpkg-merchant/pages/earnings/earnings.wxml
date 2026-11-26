@@ -1,0 +1,20 @@
+<view class="card">
+  <view class="sum-row"><text>可提现余额</text><text class="amount">¥{{balanceYuan}}</text></view>
+  <view class="sum-row"><text>待结算（售后保障期内）</text><text>¥{{frozenYuan}}</text></view>
+  <view class="sum-row" wx:if="{{debtYuan !== '0.00'}}"><text>欠款（需补齐才能提现）</text><text class="amount">¥{{debtYuan}}</text></view>
+  <view class="muted" style="margin-top:12rpx;">每笔收益先记为「待结算」，等用户售后保障期结束才转为可提现余额；如遇退款，只扣回那一单的收益，不影响其他订单。</view>
+</view>
+
+<view class="card">
+  <view class="flow" wx:for="{{flows}}" wx:key="ts">
+    <view>
+      <view>{{item.text}}</view>
+      <view class="muted">{{item.timeText}}</view>
+    </view>
+    <view class="amount">¥{{item.yuan}}</view>
+  </view>
+  <view class="empty muted" wx:if="{{!flows.length}}">暂无收益流水</view>
+</view>
+
+<!-- 商家工作台底栏（分包组件，非系统 tabBar） -->
+<mtab selected="{{2}}" />

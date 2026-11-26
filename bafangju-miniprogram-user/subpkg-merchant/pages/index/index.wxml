@@ -1,0 +1,119 @@
+<!-- 商家工作台 · 拼多多配色重设计（对应 Ardot 屏幕-商家端工作台 5:307）
+     结构：橙色头部（店名/营业中 + 三项真实统计）→ 快捷入口 → 近 7 日核销趋势 → 待处理 → 平台提示
+     数据：GET /api/merchant/overview（券/核销/广告预订/收益/趋势，全部真实聚合） -->
+<view class="wb">
+
+  <!-- 橙色头部：店铺行 + 统计行 -->
+  <view class="wb-head">
+    <view class="row shop-row">
+      <text class="shop-name">{{merchantName}}</text>
+      <view class="shop-open">营业中</view>
+    </view>
+    <view class="stat-row">
+      <view class="stat-col">
+        <view class="stat-num">{{ov.couponCount}}</view>
+        <view class="stat-label">我的券</view>
+      </view>
+      <view class="stat-sep"></view>
+      <view class="stat-col">
+        <view class="stat-num">{{ov.redeemedCount}}</view>
+        <view class="stat-label">累计核销</view>
+      </view>
+      <view class="stat-sep"></view>
+      <view class="stat-col">
+        <view class="stat-num">{{ov.adBookingCount}}</view>
+        <view class="stat-label">广告订单</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="card quick-card first">
+    <view class="quick-grid">
+      <view class="quick-item" bindtap="go" data-url="/subpkg-merchant/pages/verify/verify">
+        <view class="qi-icon qi-verify"></view>
+        <text class="t3">券核销</text>
+      </view>
+      <view class="quick-item" bindtap="go" data-url="/subpkg-merchant/pages/coupons/coupons">
+        <view class="qi-icon qi-coupon"></view>
+        <text class="t3">我的券</text>
+      </view>
+      <view class="quick-item" bindtap="switchTab" data-url="/subpkg-merchant/pages/earnings/earnings">
+        <view class="qi-icon qi-earn"></view>
+        <text class="t3">收益明细</text>
+      </view>
+      <view class="quick-item" bindtap="go" data-url="/subpkg-merchant/pages/products/products">
+        <view class="qi-icon qi-goods"></view>
+        <text class="t3">我的商品</text>
+      </view>
+      <view class="quick-item" bindtap="go" data-url="/subpkg-merchant/pages/withdraw/withdraw">
+        <view class="qi-icon qi-withdraw"></view>
+        <text class="t3">提现</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 近 7 日核销趋势 -->
+  <view class="card">
+    <view class="row-between">
+      <view class="t1">近 7 日核销</view>
+      <view class="t-weak">单位：张</view>
+    </view>
+    <view class="chart">
+      <view class="bar-col" wx:for="{{ov.trend}}" wx:key="date">
+        <view class="bar-wrap">
+          <view class="bar" style="height:{{item.count > 0 ? (item.count / trendMax * 100) : 3}}%"></view>
+        </view>
+        <text class="bar-label">{{item.date}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 待处理 -->
+  <view class="card">
+    <view class="t1" style="margin-bottom:8rpx">待处理</view>
+    <view class="row-between todo-row" bindtap="go" data-url="/subpkg-merchant/pages/orders/orders">
+      <view class="row">
+        <view class="todo-dot td-accent"></view>
+        <view>
+          <view class="t2">待发货 {{ov.pendingShip || 0}} 单 · 待到店核销 {{ov.pendingVerify || 0}} 单</view>
+          <view class="t-weak">点这里进入订单列表：快递发货 / 到店核销</view>
+        </view>
+      </view>
+      <text class="t-accent t3">去处理 ›</text>
+    </view>
+    <view class="divider"></view>
+    <view class="row-between todo-row" bindtap="go" data-url="/subpkg-merchant/pages/verify/verify">
+      <view class="row">
+        <view class="todo-dot td-accent"></view>
+        <view>
+          <view class="t2">待到店核销的券</view>
+          <view class="t-weak">有效券 {{ov.couponValid}} 张，顾客到店核销后自动记收益</view>
+        </view>
+      </view>
+      <text class="t-accent t3">去处理 ›</text>
+    </view>
+    <view class="divider"></view>
+    <view class="row-between todo-row" bindtap="go" data-url="/subpkg-merchant/pages/earnings/earnings">
+      <view class="row">
+        <view class="todo-dot td-gold"></view>
+        <view>
+          <view class="t2">待结算收益（售后保障期内）</view>
+          <view class="t-weak">¥{{frozenYuan}}，用户售后保障期结束后自动转为可提现</view>
+        </view>
+      </view>
+      <text class="t-accent t3">查看 ›</text>
+    </view>
+  </view>
+
+  <!-- 平台提示（静态合规信息） -->
+  <view class="card notice-card">
+    <view class="row" style="align-items:flex-start">
+      <view class="notice-icon"></view>
+      <view class="t3" style="flex:1">商品价格与收益规则以平台公示为准；广告费由平台单独保管，不计入你的货款收益。详情见「我的 - 规则说明」。</view>
+    </view>
+  </view>
+</view>
+
+<!-- 商家工作台底栏（分包组件，非系统 tabBar） -->
+<mtab selected="{{0}}" />

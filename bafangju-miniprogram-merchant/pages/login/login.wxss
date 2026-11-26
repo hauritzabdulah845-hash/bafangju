@@ -1,0 +1,10 @@
+.login-wrap { padding: 120rpx 60rpx; }
+.login-title { font-size: 46rpx; font-weight: 700; text-align: center; color: #8F1F26; }
+.login-sub { text-align: center; color: #888; margin: 16rpx 0 80rpx; }
+.login-input {
+  background: #fff; border-radius: 12rpx; padding: 24rpx;
+  margin-bottom: 24rpx; border: 1rpx solid #e5e8ee;
+}
+.login-note { text-align: center; margin-top: 48rpx; }
+
+.entry-link { color: #8F1F26; font-size: 28rpx; text-align: center; padding: 20rpx 0 4rpx; }

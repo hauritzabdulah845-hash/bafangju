@@ -1,0 +1,53 @@
+/* 支付结果 · 统一色板 V1.1
+   页面底色跟随全局 --page-bg；卡片 / 标题 / 次要文字均用共享令牌。 */
+.page { min-height: 100vh; padding: 0 0 40rpx; }
+
+/* Hero 品牌渐变带：只承载状态图标，底部留出空间给上浮的状态卡 */
+.hero {
+  padding: 48rpx 32rpx 96rpx;
+  background: linear-gradient(180deg, #C9525A, #B02A30);
+  text-align: center;
+  border-radius: 0 0 32rpx 32rpx;
+}
+.hero-pending { background: linear-gradient(180deg, #8A8A8A, #B0B0B0); }
+.hero-icon {
+  width: 112rpx; height: 112rpx; line-height: 112rpx; margin: 0 auto;
+  border-radius: 50%; background: rgba(255,255,255,.22);
+  font-size: 60rpx; color: #FFFFFF;
+}
+
+/* 状态卡：上浮 64rpx 压在渐变带上，文字改为白底黑字（#3F3E3E ≈ 9.9:1 / #666666 5.74:1，均达 AA） */
+.hero-card {
+  position: relative;
+  margin: -64rpx 24rpx 0;
+  text-align: center;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);
+}
+.hero-title { font-size: 42rpx; font-weight: 600; color: #3F3E3E; }
+.hero-sub { margin-top: 10rpx; font-size: 28rpx; color: #666666; }
+
+.small { margin-top: 10rpx; line-height: 1.6; }
+
+.next { margin-top: 26rpx; padding-top: 24rpx; border-top: 1rpx solid #F0F0F0; display: flex; align-items: baseline; }
+.next-label { font-size: 28rpx; color: #666666; }
+/* 价格色统一为令牌的品牌红 #B02A30（原 #8F1F26 与全站价格色不一致） */
+.next-price { margin-left: 12rpx; font-size: 56rpx; font-weight: 700; color: #B02A30; }
+.next-step { margin-left: 10rpx; font-size: 28rpx; color: #666666; }
+
+.free-tip { margin-top: 22rpx; padding: 18rpx; border-radius: 14rpx; background: #FAF0F0; color: #8F1F26; font-size: 28rpx; }
+
+.actions { margin: 8rpx 24rpx 0; display: flex; flex-direction: column; gap: 18rpx; }
+/* 主按钮回归规范渐变 + 橙色投影（原为纯色 #B02A30） */
+.btn-primary {
+  height: 92rpx; line-height: 92rpx; text-align: center; border-radius: 46rpx;
+  background: linear-gradient(90deg, #C9525A, #B02A30);
+  color: #FFFFFF; font-size: 30rpx; font-weight: 500;
+  box-shadow: 0 6rpx 16rpx rgba(176, 42, 48, 0.22);
+}
+.btn-ghost {
+  height: 88rpx; line-height: 88rpx; text-align: center; border-radius: 44rpx;
+  background: #FFFFFF; color: #666666; font-size: 30rpx; border: 1rpx solid #DDDDDD;
+}
+
+.foot { margin: 30rpx 32rpx 0; text-align: center; line-height: 1.6; }
+.err { margin: 24rpx; color: #C22A2F; text-align: center; font-size: 28rpx; } /* 错误语义用危险色，不用品牌橙（否则与主 CTA 同色无法辨识） */

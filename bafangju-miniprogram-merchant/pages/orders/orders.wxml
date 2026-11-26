@@ -1,0 +1,52 @@
+<!-- 订单处理（商家端）：待处理 / 已完成 / 全部；快递发货、到店核销（V3.5） -->
+<view class="mo">
+
+  <view class="tabs">
+    <view class="tab {{tab === item.key ? 'on' : ''}}" wx:for="{{tabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchTab">{{item.label}}</view>
+  </view>
+
+  <view class="list">
+    <view class="card" wx:for="{{visible}}" wx:key="id">
+      <view class="row-between">
+        <text class="t2 t-bold">{{item.productName || '商品'}} × 1</text>
+        <text class="tag {{item.status === 'done' ? 'green' : 'gold'}}">{{item.statusText}}</text>
+      </view>
+      <view class="t-weak" style="margin-top:8rpx">订单号 {{item.id}} · {{item.typeText}} · {{item.timeText}}</view>
+      <view class="t-weak" style="margin-top:4rpx">顾客实付 ¥{{item.paidYuan}}（商品原价 ¥{{item.priceYuan}}）</view>
+      <view class="t-weak" wx:if="{{item.receiverName}}" style="margin-top:4rpx">收货人 {{item.receiverName}} {{item.receiverPhone}}</view>
+      <view class="t-weak" wx:if="{{item.receiverAddress}}">{{item.receiverRegion}} {{item.receiverAddress}}</view>
+      <view class="t-weak" wx:if="{{item.expressNo}}" style="margin-top:4rpx">已发 {{item.expressCompany}} {{item.expressNo}}</view>
+      <view class="t-weak warn" wx:if="{{item.afterSaleStatus === 'applying'}}" style="margin-top:6rpx">顾客已申请售后，正在等平台处理</view>
+
+      <!-- 快递待发货 -->
+      <block wx:if="{{item.status === 'paid' && item.deliveryType !== 'store'}}">
+        <view class="form" wx:if="{{shipId === item.id}}">
+          <picker mode="selector" range="{{companies}}" bindchange="onCompany">
+            <view class="picker">快递公司：{{shipCompany}} ›</view>
+          </picker>
+          <input class="ipt" placeholder="快递单号" value="{{shipNo}}" bindinput="onNo" />
+          <view class="row gap">
+            <view class="btn btn-sm" bindtap="doShip">确认发货</view>
+            <view class="btn-plain btn-sm" bindtap="cancelForm">取消</view>
+          </view>
+        </view>
+        <view class="btn btn-sm" wx:else bindtap="startShip" data-id="{{item.id}}">去发货</view>
+      </block>
+
+      <!-- 到店待核销 -->
+      <block wx:if="{{item.status === 'paid' && item.deliveryType === 'store'}}">
+        <view class="form" wx:if="{{verifyId === item.id}}">
+          <input class="ipt" type="number" maxlength="6" placeholder="请输入顾客出示的 6 位订单核销码" value="{{verifyCode}}" bindinput="onCode" />
+          <view class="row gap">
+            <view class="btn btn-sm" bindtap="doVerify">确认核销</view>
+            <view class="btn-plain btn-sm" bindtap="cancelForm">取消</view>
+          </view>
+        </view>
+        <view class="btn btn-sm" wx:else bindtap="startVerify" data-id="{{item.id}}">到店核销</view>
+      </block>
+    </view>
+
+    <view class="empty" wx:if="{{!visible.length && !loading}}">暂无订单</view>
+    <view class="empty" wx:if="{{!visible.length && loading}}">加载中…</view>
+  </view>
+</view>

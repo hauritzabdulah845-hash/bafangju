@@ -1,0 +1,26 @@
+@import '../../merchant-base.wxss';
+
+/* 自定义 tabBar 为 fixed 定位，不自动占位，需自行留出底部高度（116rpx + 安全区） */
+page { padding-bottom: calc(124rpx + env(safe-area-inset-bottom)); box-sizing: border-box; }
+
+/* 商家端 · 我的 */
+
+/* 页面根容器 */
+.mp { min-height: 100vh; }
+
+.shop-avatar {
+  width: 112rpx; height: 112rpx; border-radius: 50%; flex-shrink: 0;
+  border: 4rpx solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2) url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%2012l2-6h16l2%206%22%2F%3E%3Cpath%20d%3D%22M7%2012v13a1%201%200%200%200%201%201h16a1%201%200%200%200%201-1V12%22%2F%3E%3Cpath%20d%3D%22M6%2012h20%22%20stroke%3D%22%23C89B5A%22%2F%3E%3Cpath%20d%3D%22M13%2026v-6a3%203%200%200%201%206%200v6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 56rpx;
+}
+.shop-open {
+  font-size: 24rpx; color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.2); border-radius: 6rpx; padding: 3rpx 14rpx; height: fit-content;
+}
+.btn-sm { font-size: 28rpx; padding: 10rpx 28rpx; border-radius: 32rpx; }
+
+/* 菜单 */
+.menu { display: flex; align-items: center; padding: 26rpx 0; border-bottom: 1rpx solid #F0F0F0; }
+.menu:last-child { border-bottom: none; }
+.menu-name { flex: 1; font-size: 30rpx; color: #3F3E3E; }
+.menu-arrow { color: #999999; font-size: 30rpx; }

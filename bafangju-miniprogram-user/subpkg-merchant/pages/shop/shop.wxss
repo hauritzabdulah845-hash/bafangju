@@ -1,0 +1,50 @@
+@import '../../merchant-base.wxss';
+
+/* 门店主页装修 */
+.page { padding: 24rpx 0 40rpx; }
+
+.cover-box {
+  position: relative; width: 100%; height: 320rpx; margin-top: 20rpx;
+  border-radius: 16rpx; overflow: hidden; background: #F4F5F7;
+  border: 2rpx dashed #C9D4E2;
+}
+.cover-img { width: 100%; height: 100%; display: block; }
+.cover-empty { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.cover-plus { font-size: 56rpx; color: #98A6B8; line-height: 1; }
+.cover-hint { font-size: 26rpx; color: #8A97A8; margin-top: 12rpx; }
+.cover-badge {
+  position: absolute; right: 16rpx; bottom: 16rpx;
+  background: rgba(0, 0, 0, .45); color: #FFFFFF; font-size: 22rpx;
+  padding: 6rpx 16rpx; border-radius: 20rpx;
+}
+.cover-actions { text-align: right; margin-top: 12rpx; }
+.link-danger { font-size: 26rpx; color: #B02A30; }
+
+.label { font-size: 28rpx; color: #666666; margin: 24rpx 0 10rpx; }
+.ipt {
+  border: 1rpx solid #E5E9F0; border-radius: 12rpx; padding: 18rpx 24rpx;
+  font-size: 30rpx; background: #FFFFFF; box-sizing: border-box; width: 100%;
+}
+.area { height: 150rpx; line-height: 1.6; }
+.hint { font-size: 24rpx; color: #999999; margin-top: 10rpx; line-height: 1.6; }
+
+.time-row { display: flex; align-items: center; }
+.time-pick {
+  min-width: 180rpx; text-align: center; border: 1rpx solid #E5E9F0; border-radius: 12rpx;
+  padding: 18rpx 24rpx; font-size: 30rpx; color: #3F3E3E; background: #FFFFFF;
+}
+.time-sep { font-size: 28rpx; color: #999999; margin: 0 20rpx; }
+
+/* 选点行（复用入驻页视觉语言） */
+.loc-pick {
+  border: 1rpx solid #E5E9F0; border-radius: 12rpx; padding: 20rpx 24rpx;
+  display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; margin-top: 16rpx;
+}
+.loc-pick.picked { border-color: #B02A30; background: #FAF0F0; }
+.lp-left { display: flex; align-items: center; flex: 1; min-width: 0; }
+.lp-icon { width: 44rpx; height: 44rpx; border-radius: 50%; background: #C2410C; margin-right: 16rpx; flex-shrink: 0; }
+.lp-text { flex: 1; min-width: 0; }
+.lp-addr { font-size: 30rpx; color: #333333; line-height: 1.4; }
+.lp-hint { font-size: 24rpx; color: #666666; margin-top: 6rpx; }
+.lp-hint-tip { color: #999999; }
+.lp-go { font-size: 28rpx; color: #8F1F26; flex-shrink: 0; margin-left: 16rpx; }

@@ -1,0 +1,94 @@
+<!-- 已入驻商家：只读资料视图；未登录访客：入驻申请表单 -->
+<block wx:if="{{isMember}}">
+  <view class="notice">这里展示你入驻时提交并通过审核的店铺资料（只读）。营业执照等证件原件仅平台审核可见，不在小程序内展示。</view>
+
+  <view class="card" wx:if="{{loading}}">
+    <view class="t3">资料加载中…</view>
+  </view>
+
+  <block wx:else>
+    <view class="card">
+      <view class="title">店铺资料</view>
+      <view class="info-row"><text class="info-key">店铺名称</text><text class="info-val">{{profile.name}}</text></view>
+      <view class="info-row"><text class="info-key">登录账号</text><text class="info-val">{{profile.username}}</text></view>
+      <view class="info-row"><text class="info-key">商家 ID</text><text class="info-val">{{profile.id}}</text></view>
+      <view class="info-row"><text class="info-key">联系人</text><text class="info-val">{{profile.entryContact}}</text></view>
+      <view class="info-row"><text class="info-key">联系电话</text><text class="info-val">{{profile.entryPhone}}</text></view>
+      <view class="info-row"><text class="info-key">经营类目</text><text class="info-val">{{profile.category}}</text></view>
+      <view class="info-row"><text class="info-key">门店地址</text><text class="info-val">{{profile.address}}</text></view>
+      <view class="info-row"><text class="info-key">门店定位</text><text class="info-val {{profile.located ? '' : 'muted'}}">{{profile.locatedText}}</text></view>
+      <view class="info-row"><text class="info-key">账号状态</text><text class="info-val">{{profile.statusText}}</text></view>
+    </view>
+
+    <view class="card">
+      <view class="title">入驻审核与资质</view>
+      <view class="info-row"><text class="info-key">审核状态</text><text class="info-val">{{profile.entryStatusText}}</text></view>
+      <view class="info-row"><text class="info-key">提交时间</text><text class="info-val">{{profile.appliedAtText}}</text></view>
+      <view class="info-row"><text class="info-key">审核时间</text><text class="info-val">{{profile.reviewedAtText}}</text></view>
+      <view class="info-row"><text class="info-key">营业执照</text><text class="info-val">{{profile.licenseText}}</text></view>
+      <view class="info-row"><text class="info-key">门店门头照</text><text class="info-val">{{profile.shopText}}</text></view>
+      <view wx:if="{{profile.reviewReason}}" class="sec-note">审核备注：{{profile.reviewReason}}</view>
+    </view>
+
+    <view class="card">
+      <view class="title">资料变更</view>
+      <view class="t3">店铺名称、经营类目、门店地址、联系人及证照等资料需由平台审核后变更，请联系平台运营处理，小程序端暂不提供自助修改。</view>
+      <view class="t3" style="margin-top:8rpx">如需查询、更正或删除你的信息，也可联系平台运营。</view>
+    </view>
+
+    <view class="btn-plain btn-block" bindtap="refreshProfile">刷新资料</view>
+    <view class="btn-plain btn-block" style="margin-top:-12rpx" bindtap="goBack">返回我的</view>
+  </block>
+</block>
+<block wx:else>
+  <view class="notice">入驻为人工审核制：提交资料后由平台审核，通过即开通商家账号。营业执照等证件只用于资质审核，不会对外公开。</view>
+
+  <view class="card">
+    <view class="title">商家信息</view>
+    <input class="ipt" placeholder="商家名称（与执照一致）" value="{{form.name}}" data-k="name" bindinput="input" />
+    <input class="ipt" placeholder="联系人" value="{{form.contact}}" data-k="contact" bindinput="input" />
+    <input class="ipt" type="number" maxlength="11" placeholder="联系电话" value="{{form.phone}}" data-k="phone" bindinput="input" />
+    <view class="label">门店位置（地图选点，用于附近商家展示）</view>
+    <view class="loc-pick {{form.lat !== null ? 'picked' : ''}}" bindtap="pickLocation">
+      <view class="lp-left">
+        <view class="lp-icon"><view class="hi hi-pin"></view></view>
+        <view class="lp-text">
+          <view class="lp-addr">{{form.address ? form.address : '在地图上标注门店位置'}}</view>
+          <block wx:if="{{form.lat !== null}}">
+            <view class="lp-hint">已选点：{{form.locText}}</view>
+            <view class="lp-hint lp-hint-tip">已选点门店将出现在用户「附近商家」列表中</view>
+          </block>
+          <view class="lp-hint" wx:else>可选：不选点也能提交，但不会出现在用户附近列表</view>
+        </view>
+      </view>
+      <text class="lp-go">{{form.lat !== null ? '重新选' : '去选点'}} ›</text>
+    </view>
+    <input class="ipt" placeholder="门店详细地址（选点后可补充门牌号）" value="{{form.address}}" data-k="address" bindinput="input" />
+    <view class="label">经营类目</view>
+    <view class="cats">
+      <view wx:for="{{categories}}" wx:key="*this" class="cat {{form.category === item ? 'on' : ''}}" data-c="{{item}}" bindtap="pickCat">{{item}}</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="title">资质材料</view>
+    <view class="label">营业执照照片（必传）</view>
+    <view class="img-box" bindtap="chooseLicense">
+      <image wx:if="{{licenseImg}}" src="{{licenseImg}}" mode="aspectFill" class="img" />
+      <text wx:else class="plus">＋ 上传</text>
+    </view>
+    <view class="label">门店门头照（选填）</view>
+    <view class="img-box" bindtap="chooseShop">
+      <image wx:if="{{shopImg}}" src="{{shopImg}}" mode="aspectFill" class="img" />
+      <text wx:else class="plus">＋ 上传</text>
+    </view>
+    <input class="ipt" placeholder="备注说明（选填）" value="{{form.remark}}" data-k="remark" bindinput="input" />
+  </view>
+
+  <view class="agree" bindtap="toggleAgree">
+    <text class="check {{agreed ? 'on' : ''}}">{{agreed ? '✓' : ''}}</text>
+    <text>我已阅读并同意<text class="link" catchtap="goAgreement" data-type="terms">《平台商家入驻协议》</text>与<text class="link" catchtap="goAgreement" data-type="privacy">《隐私政策》</text>（不接受"全额返/保本"类宣传表述）</text>
+  </view>
+
+  <view class="btn {{submitting ? 'disabled' : ''}}" bindtap="submit">{{submitting ? '提交中…' : '提交入驻申请'}}</view>
+</block>

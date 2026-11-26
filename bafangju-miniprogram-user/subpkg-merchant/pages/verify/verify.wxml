@@ -1,0 +1,49 @@
+<view class="card">
+  <view class="verify-title">到店核销（用户出示的券码）</view>
+  <input class="verify-input" placeholder="输入用户出示的 8 位券码" value="{{code}}" bindinput="onCode" maxlength="8" />
+
+  <!-- 券面信息：确认是本店券、未使用，商家再填金额 -->
+  <view class="coupon-box" wx:if="{{coupon}}">
+    <view class="cb-left">{{coupon.valueText}}</view>
+    <view class="cb-main">
+      <view class="cb-title">{{coupon.title}}</view>
+      <view class="cb-sub">{{coupon.minText}}<text wx:if="{{coupon.timesText}}"> · {{coupon.timesText}}</text><text wx:if="{{coupon.expireText}}"> · 有效期至 {{coupon.expireText}}</text></view>
+      <view class="cb-status {{usable ? 'ok' : 'bad'}}">{{coupon.statusText}}</view>
+    </view>
+  </view>
+  <view class="muted" wx:if="{{noCoupon}}" style="margin:-8rpx 0 20rpx">未识别到券，请核对券码或确认是本店发放的券</view>
+
+  <input class="verify-input amount" type="digit" placeholder="顾客本次消费总额（券前金额，元）" value="{{amount}}" bindinput="onAmount" />
+
+  <!-- 实时试算：优惠多少、顾客该付多少 -->
+  <view class="preview" wx:if="{{preview}}">
+    <view class="pv-row"><text>消费总额（券前）</text><text>¥{{preview.totalYuan}}</text></view>
+    <view class="pv-row" wx:if="{{coupon.type !== 'package'}}"><text>券面优惠</text><text class="pv-off">−¥{{preview.discountYuan}}</text></view>
+    <view class="pv-row pv-pay"><text>{{coupon.type === 'package' ? '顾客应付（按套餐价）' : '顾客线下应付'}}</text><text>¥{{preview.payableYuan}}</text></view>
+    <view class="pv-warn" wx:if="{{preview.belowMin}}">未达到最低消费 ¥{{preview.minYuan}}，无法核销</view>
+  </view>
+
+  <view class="btn {{(!usable || submitting) ? 'disabled' : ''}}" bindtap="doVerify">{{submitting ? '核销中…' : '确认核销'}}</view>
+  <view class="btn-plain" style="margin-top:20rpx;" bindtap="scan">扫码填码</view>
+  <view class="muted" style="margin-top:20rpx;line-height:1.7">顾客的消费款由您线下直接收取，平台不经手货款、也不向您收取服务费。本页核销记录仅用于对账；次卡按次数核销，未用完可继续核销。</view>
+</view>
+
+<view class="card" wx:if="{{result}}">
+  <view wx:if="{{result.ok}}">
+    <view class="tag green">核销成功</view>
+    <view class="muted" style="margin-top:12rpx;">消费总额（券前）：¥{{result.amountYuan}}</view>
+    <view class="muted" wx:if="{{result.discountYuan !== '0.00'}}">券面优惠：−¥{{result.discountYuan}}</view>
+    <view class="muted" style="font-weight:700;">顾客线下应付：¥{{result.payableYuan}}</view>
+    <view class="muted" wx:if="{{result.couponFee !== '0.00'}}">服务费（满减/折扣券 3%）：¥{{result.couponFee}}</view>
+    <view class="muted" wx:if="{{result.verifyFee !== '0.00'}}">服务费（次卡/服务 5%）：¥{{result.verifyFee}}</view>
+    <view class="muted" wx:if="{{result.timesText}}">{{result.timesText}}</view>
+    <view class="muted" wx:if="{{result.totalFee !== '0.00'}}">本次服务费合计：¥{{result.totalFee}}（计入服务费账单，按月缴纳）</view>
+  </view>
+  <view wx:else>
+    <view class="tag danger">核销失败</view>
+    <view class="muted" style="margin-top:12rpx;">{{result.msg}}</view>
+  </view>
+</view>
+
+<!-- 商家工作台底栏（分包组件，非系统 tabBar） -->
+<mtab selected="{{1}}" />

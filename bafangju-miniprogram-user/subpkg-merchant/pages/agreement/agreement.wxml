@@ -1,0 +1,122 @@
+<view class="page">
+
+  <view class="grad-header">
+    <view class="hero-icon"><view class="hi hi-doc"></view></view>
+  </view>
+
+  <view class="card hero-card">
+    <view class="tabs">
+      <view class="tab {{tab === 'privacy' ? 'on' : ''}}" bindtap="switchTab" data-tab="privacy">隐私政策</view>
+      <view class="tab {{tab === 'terms' ? 'on' : ''}}" bindtap="switchTab" data-tab="terms">合作协议</view>
+    </view>
+    <view class="updated">更新日期：{{updatedAt}}</view>
+  </view>
+
+  <view class="card body">
+
+    <block wx:if="{{tab === 'privacy'}}">
+      <view class="sec">
+        <view class="h">一、我们收集的商家信息</view>
+        <view class="p">1. 主体资质：营业执照、经营者/法定代表人身份证明、相关经营许可（如适用）。</view>
+        <view class="p">2. 店铺信息：店铺名称、门头照、经营地址、联系电话、定位（用于「附近商家」展示）。</view>
+        <view class="p">3. 收款信息：提现绑定的微信实名信息、收款人姓名。</view>
+        <view class="p">4. 经营数据：券的发放与核销记录、广告投放记录、订单与售后记录。</view>
+        <view class="p">5. 你主动上传的图片：门头照、广告素材、商品图等。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">二、信息用途</view>
+        <view class="p">主体资质审核与年审；店铺在用户端的展示与推荐；券核销与广告结算；收益结算与提现打款；税务与合规申报；法律法规要求的审计留痕。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">三、信息公开与共享</view>
+        <view class="p">1. 店铺名称、门头照、经营地址、联系电话将在用户端公开展示，用于用户到店消费与咨询。</view>
+        <view class="p">2. 营业执照等主体资质仅平台审核使用，不对外公开；入驻证照按私密材料隔离存储，仅管理后台可见。</view>
+        <view class="p">3. 提现打款通过微信支付「商家转账」通道完成，仅向微信支付传递必要的收款人信息。</view>
+        <view class="p">4. 除法律法规要求或你明确同意外，我们不会向其他第三方出售或出租你的经营数据。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">四、存储与安全</view>
+        <view class="p">1. 数据存储于中国境内服务器。</view>
+        <view class="p">2. 商家会话凭据仅由服务端持有；管理后台对商家数据的所有访问与操作全程留痕审计。</view>
+        <view class="p">3. 我们采取访问控制、最小权限、传输加密等措施保护你的信息。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">五、你的权利</view>
+        <view class="p">你可以在「入驻资料」页面查看店铺信息；需要查询、更正、删除或变更资料，请联系平台运营处理，小程序端暂不提供自助修改。注销店铺需先完成未结算收益的提现。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">六、保留期限</view>
+        <view class="p">交易、结算与收益分成等资金相关记录按法律法规要求保留；店铺注销后，我们将删除或匿名化你的非必要信息，法律法规另有规定的除外。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">七、政策更新</view>
+        <view class="p">本政策更新后将在本页面公布；重大变更会通过站内消息提示。</view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="sec">
+        <view class="h">一、合作内容</view>
+        <view class="p">平台为商家提供店铺展示、券发放与核销、广告投放、订单履约、收益结算与提现等本地生活服务工具；商家在平台真实、合法地经营并向用户提供服务。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">二、入驻与资质</view>
+        <view class="p">1. 商家应提交真实、有效、在有效期内的主体资质与经营许可，平台有权审核、年审并在必要时要求补充材料。</view>
+        <view class="p">2. 资质造假、过期或与实际经营不符的，平台有权拒绝入驻、暂停服务或清退。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">三、商品与服务</view>
+        <view class="p">1. 商家应保证商品/服务的真实性、价格与品质，不得虚假宣传、不得销售法律法规禁止的商品或服务。</view>
+        <view class="p">2. 商家应按页面承诺履约，提供售后服务；因商品/服务质量引发的纠纷由商家承担相应责任。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">四、券与核销</view>
+        <view class="p">1. 券的发放规则、面额与有效期由商家自行设置，平台不参与券面金额的定价。</view>
+        <view class="p">2. 用户到店核销后，平台按约定比例收取服务费，剩余部分结为商家收益；同一张券只认第一次核销结果。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">五、广告投放</view>
+        <view class="p">广告位投放费用由平台单独保管，不计入商家货款；投放素材需合法合规，平台有权审核并拒绝违规素材。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">六、结算与提现</view>
+        <view class="p">1. 商家收益经结算周期确认后进入可提现余额；提现需绑定本人/本店实名微信，到账后需确认收款。</view>
+        <view class="p">2. 提现通道的开通以平台审核为准，平台保留根据风控与合规要求调整提现规则的权利。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">七、禁止行为</view>
+        <view class="p">禁止虚假交易、刷单套取服务费优惠、诱导用户绕开平台交易、销售违禁品、侵犯第三方知识产权。一经发现，平台有权暂停收益发放、限制功能或清退，并保留追究法律责任的权利。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">八、违规处置</view>
+        <view class="p">平台可根据违规情节采取警告、下架、暂停提现、暂停服务、清退等措施；涉及违法犯罪的，将依法移交有关部门。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">九、协议变更与争议解决</view>
+        <view class="p">本协议可能随业务调整更新并在本页面公布。争议适用中华人民共和国法律，协商不成时提交平台所在地有管辖权的人民法院。</view>
+      </view>
+
+      <view class="sec">
+        <view class="h">十、生效</view>
+        <view class="p">你开始使用商家端服务即视为已阅读并同意本协议与隐私政策。</view>
+      </view>
+    </block>
+
+  </view>
+
+  <view class="notice" style="margin:24rpx">如对本政策或协议有疑问，请联系平台运营。</view>
+</view>

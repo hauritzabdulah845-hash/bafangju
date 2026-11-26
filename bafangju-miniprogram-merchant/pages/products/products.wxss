@@ -1,0 +1,19 @@
+/* 我的商品页：表单沿用券页风格；商品卡左侧品牌色条 */
+.form-card { margin-top: 0; }
+.picker { font-size: 28rpx; color: #333333; padding: 16rpx 20rpx; background: #FAFAFA; border-radius: 10rpx; margin-bottom: 14rpx; }
+.ipt { background: #FAFAFA; border-radius: 10rpx; padding: 18rpx 20rpx; font-size: 28rpx; margin-bottom: 14rpx; }
+.row.gap { gap: 14rpx; }
+.ipt.half { flex: 1; }
+
+.prod-card { border-left: 6rpx solid #B02A30; padding-left: 18rpx; }
+.thumb { width: 72rpx; height: 72rpx; border-radius: 10rpx; margin-right: 16rpx; flex-shrink: 0; background: #F6F6F6; }
+.reject-note { margin-top: 12rpx; font-size: 26rpx; color: #E64545; background: #FAF0F0; border-radius: 10rpx; padding: 14rpx 18rpx; }
+.empty { text-align: center; padding: 80rpx 0; }
+
+/* 图片选择与预览 */
+.img-row { display: flex; align-items: center; margin-bottom: 14rpx; }
+.preview { width: 160rpx; height: 160rpx; border-radius: 12rpx; background: #F6F6F6; }
+.img-del { margin-left: 20rpx; font-size: 26rpx; color: #B02A30; }
+.btn.ghost { background: #FAFAFA; color: #666666; margin-bottom: 14rpx; }
+.btn.plain { background: transparent; color: #666666; }
+.btn.sm { width: auto; padding: 8rpx 36rpx; font-size: 26rpx; margin: 0; }

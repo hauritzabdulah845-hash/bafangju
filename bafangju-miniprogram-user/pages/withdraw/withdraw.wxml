@@ -1,0 +1,34 @@
+<view class="card">
+  <view class="sum-row"><text>可提现余额（只有推广佣金能提）</text><text class="amount">¥{{balanceYuan}}</text></view>
+  <view class="muted" wx:if="{{downNote}}">{{ct['withdraw.closed'] || downNote}}</view>
+  <block wx:if="{{withdrawEnabled}}">
+    <input class="ipt" type="digit" placeholder="提现金额（元）" value="{{amount}}" bindinput="inputAmount" />
+    <view class="muted" wx:if="{{limits}}">单笔上限 ¥{{limits.perTxn}} · 日累计上限 ¥{{limits.daily}} · 最低 ¥{{limits.min}}；72 小时内需确认收款，超时自动退回</view>
+    <view class="btn-primary" bindtap="apply">提交申请（平台审核后转账到账）</view>
+  </block>
+</view>
+
+<view class="card" wx:if="{{requests.length}}">
+  <view class="title">提现记录</view>
+  <view class="rec-item" wx:for="{{requests}}" wx:key="id">
+    <view class="row">
+      <text>¥{{item.yuan}}（还有 ¥{{item.remain}} 没发完）</text>
+      <text class="tag {{item.status === 'done' ? 'ok' : ''}}">{{item.status === 'pending_review' ? '待审核' : item.status === 'approved' ? '发放中' : item.status === 'done' ? '已完成' : item.status === 'rejected' ? '已驳回' : item.status}}</text>
+    </view>
+    <view class="rec-time">{{item.timeText}} 申请</view>
+  </view>
+</view>
+
+<view class="card" wx:if="{{transfers.length}}">
+  <view class="title">转账明细</view>
+  <view class="rec-item" wx:for="{{transfers}}" wx:key="id">
+    <view class="row">
+      <text>¥{{item.yuan}}</text>
+      <view>
+        <text class="tag {{item.status === 'confirmed' ? 'ok' : ''}}">{{item.status === 'transferred_pending_confirm' ? '待确认收款' : item.status === 'confirmed' ? '已到账' : item.status === 'expired_refunded' ? '超时退回' : item.status === 'submit_failed' ? '提交失败' : item.status}}</text>
+        <text wx:if="{{item.status === 'transferred_pending_confirm'}}" class="link" data-id="{{item.id}}" bindtap="confirm">确认收款</text>
+      </view>
+    </view>
+    <view class="rec-time">{{item.timeText}} 发放</view>
+  </view>
+</view>

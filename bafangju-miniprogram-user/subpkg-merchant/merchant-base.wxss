@@ -1,0 +1,87 @@
+/* design-tokens 全局共享（主包 app.wxss 已 @import），此处不再引入 */
+
+/* ============================================================
+   商家分包差异样式（原商家端 app.wxss 迁移，仅商家页面生效）
+   使用方式：商家分包每个页面 wxss 顶部 @import '../../merchant-base.wxss'
+   ----------------------------------------------------------
+   共享层：design-tokens.wxss（文字层级 / 卡片 / 布局 / 价格 / 合规提示 …）
+   本文件只写**商家端差异项**。改共享样式请改 design-tokens.wxss
+   （真源在 bafangju-design-tokens/，三份内容必须逐字节一致）。
+
+   与 Ardot 设计稿《商家端工作台》规范板一致
+   色板：品牌枣红 #B02A30 / 渐变 #C9525A→#B02A30 / 奖励金 #996300
+   危险 #E5484D（浅底 #FDECEC）/ 警告 #E07C24（浅底 #FDEEDD）/ 成功 #07C160（浅底 #E8F9EF）
+   页面底 #F6F6F6 / 卡片 #FFF / 主字 #3F3E3E / 次 #666 / 弱 #999 / 分割线 #EEE
+
+   可读性（WCAG 2.1 AA）：
+   品牌枣红 #B02A30 在白底上 6.52:1（AA 小字达标）；需要更强对比的浅底
+   文字用深枣红 #8F1F26（白底 8.78:1 / #FAF0F0 上 7.85:1）。
+   ============================================================ */
+
+/* ---------- 商家端差异：页面底色 + 首卡贴顶 ---------- */
+page { --page-bg: #F6F6F6; }
+.card.first { margin-top: 0; }
+
+/* ---------- 商家端差异：金额数字（较用户端更紧凑，颜色更保守） ---------- */
+.amount { color: #8F1F26; font-weight: 700; }
+.price-symbol { color: #8F1F26; }
+.price-num { font-size: 50rpx; }
+
+/* ---------- 按钮（商家端为通栏大按钮） ---------- */
+.btn {
+  background: linear-gradient(90deg, #C9525A, #B02A30);
+  color: #fff;
+  border-radius: 44rpx;
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+.btn.disabled { background: #F5CFCB; color: #FFFFFF; }
+.btn-plain {
+  background: #fff;
+  color: #8F1F26;
+  border: 1rpx solid #B02A30;
+  border-radius: 44rpx;
+  padding: 18rpx 0;
+  text-align: center;
+  font-size: 30rpx;
+}
+.btn-block { margin: 24rpx; }
+
+/* ---------- 标签（商家端为「标签 + 修饰类」写法） ---------- */
+.tag {
+  display: inline-block;
+  padding: 3rpx 14rpx;
+  border-radius: 6rpx;
+  font-size: 28rpx;
+  background: #FAF0F0;
+  color: #8F1F26;
+}
+.tag.gray { background: #F2F2F2; color: #666666; }
+.tag.green { background: #E8F9EF; color: #067F43; }
+.tag.accent { background: #FAF0F0; color: #8F1F26; } /* 品牌/普通强调标签（旧 red 类名实为橙色系，改名 accent） */
+.tag.danger { background: #FDECEC; color: #C22A2F; } /* 失败/异常标签 */
+.tag.gold { background: #FFF7E6; color: #996300; }
+
+
+/* ============================================================
+   共享功能图标库（ICON TOKENS）
+   ----------------------------------------------------------
+   替代页面头部散落的 emoji：emoji 在 iOS/Android/微信内置渲染各异，
+   且彩色面性与本系统的红金线性图标语言冲突。
+   统一基线：24×24 网格 / stroke-width 1.8 / round cap&join / fill none
+   渐变红头上的图标固定白色；浅底场景请给容器加深色底再用白色图标。
+   用法：<view class="hero-icon"><view class="hi hi-bag"></view></view>
+   ============================================================ */
+
+/* ============================================================
+   密码可见切换（眼睛开关）——登录页 / 改密页共用
+   图标基线：24 网格 / 1.8 描边 / 未激活 #666666
+   ============================================================ */
+.pwd-field { position: relative; }
+.pwd-field .login-input, .pwd-field .ipt { padding-right: 96rpx; }
+.eye { position: absolute; right: 6rpx; top: 50%; transform: translateY(-50%); width: 80rpx; height: 80rpx; display: flex; align-items: center; justify-content: center; }
+.eye-ico { width: 40rpx; height: 40rpx; background-repeat: no-repeat; background-size: contain; background-position: center; }
+.eye-ico.off { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23666666'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M2.5%2012s3.2-6%209.5-6c2%200%203.7.6%205.1%201.5M21.5%2012s-3.2%206-9.5%206c-2%200-3.7-.6-5.1-1.5'/%3E%3Cpath%20d='M4%204l16%2016'/%3E%3C/svg%3E"); }
+.eye-ico.on { background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23666666'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M2.5%2012s3.2-6%209.5-6%209.5%206%209.5%206-3.2%206-9.5%206-9.5-6-9.5-6Z'/%3E%3Ccircle%20cx='12'%20cy='12'%20r='2.6'/%3E%3C/svg%3E"); }

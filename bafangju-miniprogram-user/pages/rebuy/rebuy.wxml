@@ -1,0 +1,42 @@
+<view class="page">
+  <view class="card" wx:if="{{products.length}}">
+    <view class="row-between">
+      <text class="t1">常买商品</text>
+      <text class="muted">共 {{products.length}} 款</text>
+    </view>
+    <view class="prod" wx:for="{{products}}" wx:key="productId">
+      <image class="prod-img" src="{{item.img}}" mode="aspectFill" wx:if="{{item.img}}"></image>
+      <view class="prod-info">
+        <view class="prod-name">{{item.name}}</view>
+        <view class="muted">已买 {{item.buyCount}} 次 · {{item.categoryName}}</view>
+        <view class="prod-price">
+          <text class="muted">下一单</text>
+          <text class="price">¥{{item.nextPayYuan}}</text>
+          <text class="muted">（第 {{item.step}} / {{item.total}} 单）</text>
+        </view>
+      </view>
+      <view class="prod-btn" bindtap="goProduct" data-id="{{item.productId}}">再来一单</view>
+    </view>
+  </view>
+
+  <view class="card" wx:elif="{{!loading}}">
+    <view class="t1">还没有购买记录</view>
+    <view class="muted" style="margin-top:12rpx">去首页挑一件，最后 4 单便宜 10%~40%。</view>
+  </view>
+
+  <view class="card" wx:if="{{categories.length}}">
+    <view class="row-between">
+      <text class="t1">各类商品进度</text>
+      <text class="muted" bindtap="goProgress">完整进度 ›</text>
+    </view>
+    <view class="cat" wx:for="{{categories}}" wx:key="categoryId">
+      <view class="cat-head">
+        <text class="cat-name">{{item.name}}</text>
+        <text class="muted">已完成 {{item.done}} / {{item.total}} 单{{item.remaining ? '，还剩 ' + item.remaining + ' 单' : '，本单买完这轮就完成了'}}</text>
+      </view>
+      <view class="bar"><view class="bar-fill" style="width:{{item.done * 100 / item.total}}%"></view></view>
+    </view>
+  </view>
+
+  <view class="foot muted">阶梯优惠价按“你买到第几单 + 商品标价”实时计算；不承诺返现、不承诺保本。</view>
+</view>

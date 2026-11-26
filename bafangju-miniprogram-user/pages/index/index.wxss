@@ -1,0 +1,280 @@
+/* 自定义 tabBar 为 fixed 定位，不自动占位，需自行留出底部高度（116rpx + 安全区） */
+page { padding-bottom: calc(124rpx + env(safe-area-inset-bottom)); box-sizing: border-box; }
+
+/* 首页 · 对齐 UI 全案 v4（枣红 V3 / redesign-20261102/home.html）：
+   头部（一行式）→ 营销条咬合 → 轮播圆角卡 → 金刚区 → 复购大卡（阶梯 chip）
+   → 附近商家横图卡 → 为你推荐单列流。头部是全页唯一深色块。 */
+
+/* ---------- 头部：纯枣红 + 20rpx 底部圆角 ---------- */
+.home { min-height: 100vh; }
+.home-head {
+  background: #B02A30;
+  border-radius: 0 0 40rpx 40rpx;
+  padding: 8rpx 0 44rpx;
+}
+.hdr-row { display: flex; align-items: center; gap: 20rpx; padding: 0 32rpx; height: 68rpx; }
+.loc { display: flex; align-items: center; flex: 0 0 auto; }
+.loc-name { font-size: 30rpx; font-weight: 700; color: #FFFFFF; }
+.loc-arrow {
+  width: 0; height: 0; margin-left: 8rpx;
+  border-left: 10rpx solid transparent; border-right: 10rpx solid transparent;
+  border-top: 12rpx solid rgba(255,255,255,.9);
+}
+.search-box {
+  flex: 1; min-width: 0; height: 68rpx; border-radius: 999rpx;
+  background: rgba(255,255,255,.96);
+  display: flex; align-items: center; gap: 12rpx; padding: 0 24rpx;
+}
+.search-icon {
+  width: 26rpx; height: 26rpx; flex-shrink: 0;
+  background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNCcgaGVpZ2h0PScxNCcgdmlld0JveD0nMCAwIDE0IDE0JyBmaWxsPSdub25lJz48Y2lyY2xlIGN4PSc2LjInIGN5PSc2LjInIHI9JzQuNicgc3Ryb2tlPScjOTk5JyBzdHJva2Utd2lkdGg9JzEuNScvPjxwYXRoIGQ9J005LjggOS44TDEyLjQgMTIuNCcgc3Ryb2tlPScjOTk5JyBzdHJva2Utd2lkdGg9JzEuNScgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJy8+PC9zdmc+") no-repeat center / contain;
+}
+.search-input { flex: 1; min-width: 0; font-size: 24rpx; color: #1A1A1A; }
+.search-ph { color: #999999; }
+.search-clear { font-size: 24rpx; color: #8F1F26; font-weight: 500; flex-shrink: 0; }
+.head-bell {
+  width: 52rpx; height: 52rpx; flex: 0 0 auto; position: relative;
+  background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMCcgaGVpZ2h0PScyMCcgdmlld0JveD0nMCAwIDIwIDIwJyBmaWxsPSdub25lJz48cGF0aCBkPSdNMTAgMi42YTUgNSAwIDAgMSA1IDV2M2wxLjIgMi40SDMuOEw1IDEwLjZ2LTNhNSA1IDAgMCAxIDUtNXonIHN0cm9rZT0nI0ZGRkZGRicgc3Ryb2tlLXdpZHRoPScxLjUnIHN0cm9rZS1saW5lam9pbj0ncm91bmQnLz48cGF0aCBkPSdNOC4yIDE1LjRhMS45IDEuOSAwIDAgMCAzLjYgMCcgc3Ryb2tlPScjRkZGRkZGJyBzdHJva2Utd2lkdGg9JzEuNScgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJy8+PC9zdmc+") no-repeat center / contain;
+}
+/* 未读消息角标：铃铛右上红点，>99 显示 99+ */
+.bell-dot {
+  position: absolute; top: -8rpx; right: -12rpx;
+  min-width: 30rpx; height: 30rpx; padding: 0 8rpx; box-sizing: border-box;
+  border-radius: 999rpx; background: #FF3B30;
+  color: #FFFFFF; font-size: 18rpx; line-height: 30rpx; text-align: center;
+  border: 2rpx solid #B02A30;
+}
+
+/* ---------- 营销条：浅金券条，-32rpx 咬合头部 ---------- */
+.promo {
+  margin: -32rpx 24rpx 0; position: relative; z-index: 2;
+  height: 144rpx; border-radius: 32rpx;
+  background: linear-gradient(96deg, #F8EBD4 0%, #EFD3A2 100%);
+  box-shadow: 0 10rpx 26rpx rgba(176, 42, 48, 0.12);
+  padding: 0 32rpx;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.promo-t { font-size: 32rpx; font-weight: 700; color: #8F1F26; letter-spacing: 0.5rpx; }
+.promo-s { font-size: 22rpx; color: rgba(143,31,38,.64); margin-top: 8rpx; }
+.promo-link {
+  flex: 0 0 auto; height: 56rpx; padding: 0 24rpx; border-radius: 999rpx;
+  border: 1rpx solid rgba(143,31,38,.30);
+  color: #8F1F26; font-size: 22rpx; font-weight: 500;
+  display: flex; align-items: center; white-space: nowrap;
+}
+
+/* ---------- 活动轮播：圆角卡（业务保留广告位，视觉降噪） ---------- */
+/* banner 在头部内部：通栏无圆角，与红区连成一体（tone-1 渐变左端 = 头部红，无缝衔接） */
+.hero { position: relative; margin: 20rpx 0 0; }
+.hero-swiper { height: 300rpx; border-radius: 0; overflow: hidden; }
+.slide { position: relative; width: 100%; height: 100%; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center; }
+.slide-img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.slide-bg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.slide-bg.tone-1 { background: linear-gradient(120deg, #B02A30, #8F1F26); }
+.slide-bg.tone-2 { background: linear-gradient(120deg, #C9525A, #B02A30); }
+.slide-bg.tone-3 { background: linear-gradient(120deg, #8F1F26, #621418); }
+.slide-bg.tone-4 { background: linear-gradient(120deg, #A8383E, #7E1C22); }
+.slide-emoji { position: absolute; right: 14rpx; bottom: -14rpx; font-size: 140rpx; line-height: 1; opacity: .26; }
+.slide-shade {
+  position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,.24) 40%, rgba(0,0,0,.06) 72%, rgba(0,0,0,0) 100%);
+}
+.slide-shade.shade-bottom { background: linear-gradient(180deg, rgba(0,0,0,0) 58%, rgba(0,0,0,.3) 100%); }
+.slide-body { position: relative; padding: 0 0 0 28rpx; }
+.slide-title { font-size: 34rpx; font-weight: 800; color: #FFFFFF; letter-spacing: 1rpx; line-height: 1.26; }
+.slide-tags { display: flex; flex-wrap: wrap; align-items: center; margin-top: 16rpx; padding-right: 24rpx; }
+.slide-sub {
+  /* 原为品牌红实底，但轮播底本来就是枣红，红底压红底等于没有底色；
+     改半透明白描边胶囊，与右侧白实底按钮形成主次 */
+  background: rgba(255,255,255,.16); color: #FFFFFF;
+  border: 1rpx solid rgba(255,255,255,.44);
+  font-size: 22rpx; font-weight: 500; border-radius: 999rpx; padding: 8rpx 20rpx;
+}
+.slide-btn {
+  margin-left: 12rpx; background: rgba(255,255,255,.94); color: #8F1F26;
+  font-size: 24rpx; font-weight: 600; border-radius: 999rpx; padding: 8rpx 22rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,.10);
+}
+.slide-from {
+  position: absolute; right: 20rpx; bottom: 20rpx; max-width: 38%;
+  background: rgba(0,0,0,.32); color: #FFFFFF;
+  font-size: 24rpx; border-radius: 999rpx; padding: 6rpx 18rpx;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.s-dots { position: absolute; left: 0; right: 0; bottom: 14rpx; display: flex; justify-content: center; align-items: center; }
+.s-dot {
+  width: 14rpx; height: 14rpx; margin: 0 7rpx; border-radius: 999rpx;
+  background: rgba(255,255,255,.45); box-shadow: 0 1rpx 4rpx rgba(0,0,0,.18);
+  transition: width .2s ease, background .2s ease;
+}
+.s-dot.on { width: 40rpx; background: #FFFFFF; }
+
+/* ---------- 金刚区：通栏白底 + 浅品牌底圆 + 品牌色图标 ---------- */
+.wrap { padding-bottom: 40rpx; }
+.kk-card { margin: 20rpx 0 0; background: #FFFFFF; border-radius: 0; padding: 28rpx 8rpx 8rpx; }
+.kk-grid { display: flex; flex-wrap: wrap; }
+.kk-item { width: 20%; display: flex; flex-direction: column; align-items: center; margin-bottom: 24rpx; }
+.kk-icon {
+  width: 84rpx; height: 84rpx; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40rpx; overflow: hidden;
+}
+/* 底圆暖色三拍轮换（js bg = i%3+1）：浅红 / 浅沙金 / 米灰，均取自红金体系的低饱和端 */
+.kk-icon.bg-1 { background: #FAECEC; }
+.kk-icon.bg-2 { background: #F6EDD8; }
+.kk-icon.bg-3 { background: #F5F0E9; }
+/* 定制图占比 86%（6/7），四周留出呼吸空隙，不顶到圆边 */
+.kk-img { width: 72rpx; height: 72rpx; display: block; }
+.kk-name { font-size: 22rpx; color: #666666; margin-top: 10rpx; }
+
+/* ---------- 金刚区线性图标（红主金辅双色，描边 1.8；底圆暖色轮换见 .bg-1~3。后台 iconImage 仅对无预设图标的类目兜底） ---------- */
+.kk-icon[class*="ic-"] {
+  background-repeat: no-repeat; background-position: center; background-size: 44rpx 44rpx;
+}
+.kk-icon.ic-grain { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M6.6 8h10.8l-1.2 12H7.8L6.6 8z' stroke='%23C2410C'/%3E%3Cpath d='M9.4 8V6.2a2.6 2.6 0 0 1 5.2 0V8' stroke='%23C2410C'/%3E%3Cpath d='M9.8 13.4c1.4 1.2 3 1.2 4.4 0' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+.kk-icon.ic-veg { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M12 20.2c0-5.6 2.8-9.4 7.6-10.6-.9 5.8-3.6 9.4-7.6 10.6z' stroke='%23C2410C'/%3E%3Cpath d='M12 20.2c0-3.8-1.9-6.6-5.8-7.6 0 3.9 2 6.6 5.8 7.6z' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+.kk-icon.ic-drink { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M7 7.6h10l-1.3 11.6H8.3L7 7.6z' stroke='%23C2410C'/%3E%3Cpath d='M6.2 7.6h11.6' stroke='%23C2410C'/%3E%3Cpath d='M9.6 12h4.8' stroke='%23C2410C'/%3E%3Cpath d='M12 7.6V3.8' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+.kk-icon.ic-food { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M4.4 11.2h15.2a7.6 7.6 0 0 1-15.2 0z' stroke='%23C2410C'/%3E%3Cpath d='M14.2 4.4l-1.9 5.6M17.4 4.4l-1.9 5.6' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+.kk-icon.ic-shop { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M4.2 5.2h1.9l2.3 8.6h8.8l2.3-6.4H7.1' stroke='%23C2410C'/%3E%3Ccircle cx='9.6' cy='17.8' r='1.4' fill='%23C89B5A' stroke='none'/%3E%3Ccircle cx='16.4' cy='17.8' r='1.4' fill='%23C89B5A' stroke='none'/%3E%3C/svg%3E"); }
+.kk-icon.ic-fun { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Crect x='3.2' y='8' width='17.6' height='9' rx='4.5' stroke='%23C2410C'/%3E%3Cpath d='M7.6 10.8v3M6.1 12.3h3' stroke='%23C89B5A'/%3E%3Ccircle cx='16.2' cy='11.4' r='.9' fill='%23C89B5A' stroke='none'/%3E%3Ccircle cx='18' cy='13.2' r='.9' fill='%23C89B5A' stroke='none'/%3E%3C/svg%3E"); }
+.kk-icon.ic-beauty { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M8.4 15.5L17.8 6.2M15.6 15.5L6.2 6.2' stroke='%23C2410C'/%3E%3Ccircle cx='6.6' cy='17.4' r='2.4' stroke='%23C89B5A'/%3E%3Ccircle cx='17.4' cy='17.4' r='2.4' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+.kk-icon.ic-health { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M12 20s-6.8-4.2-6.8-8.8A3.8 3.8 0 0 1 12 8.5a3.8 3.8 0 0 1 6.8 2.7C18.8 15.8 12 20 12 20z' stroke='%23C2410C'/%3E%3Cpath d='M8.6 13.4h1.9l1-1.9 1.6 3.4 1-1.5h1.5' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+.kk-icon.ic-hotel { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M3.2 18.4v-7.2h11a3.8 3.8 0 0 1 3.8 3.8v3.4M3.2 18.4h17.6M3.2 11.2V6.4' stroke='%23C2410C'/%3E%3Ccircle cx='7.4' cy='9.6' r='1.5' fill='%23C89B5A' stroke='none'/%3E%3C/svg%3E"); }
+.kk-icon.ic-baby { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Ccircle cx='12' cy='12' r='7.8' stroke='%23C2410C'/%3E%3Ccircle cx='9.4' cy='10.4' r='.9' fill='%23C89B5A' stroke='none'/%3E%3Ccircle cx='14.6' cy='10.4' r='.9' fill='%23C89B5A' stroke='none'/%3E%3Cpath d='M9 14.4c1.8 1.5 4.2 1.5 6 0' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+.kk-icon.ic-clean { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M16.2 9.8l-6 6-3.9 1.9 1.9-3.9 6-6M12.2 15.8l2 2' stroke='%23C2410C'/%3E%3Cpath d='M14.2 3.8l6 6' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+.kk-icon.ic-home { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Cpath d='M3.8 10.4L12 4l8.2 6.4V19a1.4 1.4 0 0 1-1.4 1.4H5.2A1.4 1.4 0 0 1 3.8 19v-8.6z' stroke='%23C2410C'/%3E%3Cpath d='M9.6 20.4v-5.2h4.8v5.2' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+.kk-icon.ic-all { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8'%3E%3Crect x='4' y='4' width='6.6' height='6.6' rx='1.6' stroke='%23C2410C'/%3E%3Crect x='13.4' y='4' width='6.6' height='6.6' rx='1.6' stroke='%23C2410C'/%3E%3Crect x='4' y='13.4' width='6.6' height='6.6' rx='1.6' stroke='%23C2410C'/%3E%3Crect x='13.4' y='13.4' width='6.6' height='6.6' rx='1.6' stroke='%23C89B5A'/%3E%3C/svg%3E"); }
+/* ---------- 复购进度卡：核心卡 ---------- */
+.repro { margin-top: 24rpx; }
+.repro-title { font-size: 32rpx; font-weight: 700; color: #1A1A1A; display: flex; align-items: center; }
+.badge-gray {
+  margin-left: 12rpx; font-size: 22rpx; font-weight: 400;
+  color: #666666; background: #F2F2F2; border-radius: 8rpx; padding: 4rpx 14rpx;
+}
+.price-row { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 20rpx; }
+.price-label { font-size: 22rpx; color: #999999; margin-bottom: 4rpx; }
+.price-main { display: flex; align-items: baseline; }
+.price-main .cur { font-size: 22rpx; color: #B02A30; font-weight: 700; transform: translateY(-6rpx); }
+.price-main .val {
+  font-size: 56rpx; font-weight: 700; color: #B02A30; line-height: 1;
+  font-family: "DIN Alternate", "Helvetica Neue", sans-serif;
+}
+.price-main .price-was { font-size: 22rpx; color: #999999; text-decoration: line-through; margin-left: 10rpx; }
+.saved { font-size: 22rpx; color: #999999; }
+.saved .sv { color: #B02A30; font-weight: 700; }
+
+/* 阶梯 chip 的四态样式已提到 design-tokens.wxss（返还页共用同一套），此处不再重复定义 */
+
+.repro-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 20rpx; padding-top: 20rpx; border-top: 1rpx solid #EEEEEE;
+}
+.foot-txt { font-size: 22rpx; color: #666666; line-height: 1.5; }
+.foot-txt .em { color: #996300; font-weight: 700; }
+.foot-sub { color: #999999; }
+
+/* ---------- 区块标题 ---------- */
+.sec-block { margin: 24rpx 24rpx 0; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16rpx; }
+.sec-h2 { font-size: 32rpx; font-weight: 700; color: #1A1A1A; }
+
+/* ---------- 附近商家：横滑一行紧凑卡（商品流之后） ---------- */
+.merchant { display: flex; align-items: center; gap: 24rpx; padding: 24rpx; margin-top: 0; margin-bottom: 16rpx; }
+.m-avatar {
+  width: 96rpx; height: 96rpx; border-radius: 16rpx; flex-shrink: 0;
+  background: #FAECEC; display: flex; align-items: center; justify-content: center; font-size: 48rpx;
+}
+.m-avatar-img { width: 86%; height: 86%; }
+.m-info { flex: 1; min-width: 0; }
+.m-name { font-size: 28rpx; font-weight: 700; color: #1A1A1A; }
+.m-meta { font-size: 22rpx; color: #999999; margin-top: 6rpx; }
+.m-arrow { font-size: 36rpx; color: #CCCCCC; font-weight: 300; }
+/* 横滑容器：负 margin 让滚动区贯通屏宽，首尾卡仍对齐 24rpx 安全边距 */
+.m-scroll { white-space: nowrap; margin: 0 -24rpx; padding: 0 24rpx; box-sizing: border-box; }
+.m-h {
+  display: inline-flex; width: 300rpx; vertical-align: top;
+  margin-right: 16rpx; margin-bottom: 0; white-space: normal;
+}
+.m-h:last-child { margin-right: 0; }
+.m-h .m-avatar { width: 72rpx; height: 72rpx; }
+.m-h .m-name, .m-h .m-meta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- 为你推荐：两列大图瀑布卡（大图驱动决策，对标主流电商买菜版式） ---------- */
+.goods-grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
+.goods {
+  width: 343rpx; margin: 0 0 16rpx; padding: 0; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.g-visual {
+  width: 100%; height: 320rpx; position: relative; flex: 0 0 auto;
+  background: #F7F7F7;
+}
+.g-img { width: 100%; height: 100%; display: block; }
+.g-ph {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 26rpx; color: #666666; text-align: center; padding: 0 24rpx; box-sizing: border-box;
+  line-height: 1.5;
+}
+.g-tag {
+  position: absolute; left: 0; top: 0;
+  background: rgba(0,0,0,.28); color: #FFFFFF; font-size: 20rpx;
+  padding: 4rpx 12rpx; border-radius: 0 0 12rpx 0;
+}
+.g-info { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 18rpx 20rpx 20rpx; box-sizing: border-box; }
+.g-name {
+  font-size: 26rpx; font-weight: 700; color: #1A1A1A; line-height: 1.4;
+  overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.g-meta { font-size: 20rpx; color: #999999; margin-top: 8rpx; }
+.g-buy { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12rpx; }
+.g-price { display: flex; align-items: baseline; min-width: 0; flex-wrap: wrap; }
+.g-price .cur { font-size: 20rpx; color: #B02A30; font-weight: 700; transform: translateY(-4rpx); }
+.g-price .val {
+  font-size: 38rpx; font-weight: 700; color: #B02A30; line-height: 1;
+  font-family: "DIN Alternate", "Helvetica Neue", sans-serif;
+}
+.g-price .dec { font-size: 24rpx; color: #B02A30; font-weight: 700; }
+.g-price .price-was { font-size: 20rpx; color: #999999; text-decoration: line-through; margin-left: 8rpx; }
+/* 圆形购物车按钮（对标参照版式的右下角圆形购买钮，品牌红） */
+.g-btn {
+  flex: 0 0 auto; width: 60rpx; height: 60rpx; border-radius: 50%;
+  background: linear-gradient(135deg, #C9525A, #B02A30);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6rpx 16rpx rgba(176, 42, 48, 0.24);
+}
+.g-btn-cart {
+  width: 30rpx; height: 30rpx;
+  background-color: #FFFFFF;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4h2l2.2 11.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.2L20.5 8H6'/%3E%3Ccircle cx='9.5' cy='20' r='1.4'/%3E%3Ccircle cx='16.5' cy='20' r='1.4'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4h2l2.2 11.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.2L20.5 8H6'/%3E%3Ccircle cx='9.5' cy='20' r='1.4'/%3E%3Ccircle cx='16.5' cy='20' r='1.4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.pull { text-align: center; font-size: 20rpx; color: #CCCCCC; padding: 8rpx 0 4rpx; }
+
+.empty { text-align: center; padding: 60rpx 0; }
+
+/* ---------- 通用按钮（复购卡 foot） ---------- */
+.btn-primary {
+  background: linear-gradient(90deg, #C9525A, #B02A30);
+  color: #FFFFFF; font-size: 30rpx; font-weight: 500;
+  border-radius: 44rpx; padding: 20rpx 48rpx; text-align: center;
+  box-shadow: 0 6rpx 16rpx rgba(176, 42, 48, 0.22);
+}
+.btn-sm { font-size: 24rpx; padding: 12rpx 32rpx; }
+
+/* ---------- 商品无图占位色轮换（低饱和 6 色） ---------- */
+.tone-1 { background: linear-gradient(160deg, #F7E4E2, #EFCFCC); }
+.tone-2 { background: linear-gradient(160deg, #F6F1E7, #EBE1D0); }
+.tone-3 { background: linear-gradient(160deg, #F4F4F4, #E9E9E9); }
+.tone-4 { background: linear-gradient(160deg, #FFF3D9, #FFE7B8); }
+.tone-5 { background: linear-gradient(160deg, #F7EDF0, #EEDFE4); }
+.tone-6 { background: linear-gradient(160deg, #EFE3E2, #E2D1CF); }
+
+/* ---------- 网络诊断按钮（错误态下出现；仅开发环境可见） ---------- */
+.diag-btn {
+  display: inline-block; margin-top: 16rpx; padding: 10rpx 28rpx;
+  background: #FFF; border: 2rpx solid #B02A30; border-radius: 999rpx;
+  color: #8F1F26; font-size: 28rpx; font-weight: 500;
+}

@@ -1,0 +1,28 @@
+/* 复购 · 统一色板 V1.1
+   页面底色跟随全局 --page-bg；卡片 / 标题 / 次要文字用共享令牌，本文件只留本页特有部分。 */
+.page { min-height: 100vh; padding: 0 0 60rpx; }
+
+.prod { display: flex; align-items: center; padding: 24rpx 0; border-bottom: 1rpx solid #EEEEEE; }
+.prod:last-child { border-bottom: 0; }
+.prod-img { width: 120rpx; height: 120rpx; border-radius: 12rpx; background: #F2F2F2; margin-right: 20rpx; }
+.prod-info { flex: 1; min-width: 0; }
+.prod-name { font-size: 30rpx; color: #3F3E3E; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prod-price { margin-top: 8rpx; display: flex; align-items: baseline; gap: 8rpx; }
+/* 颜色继承全局 .price（#B02A30），此处只调字号 —— 原页面把颜色重写成 #8F1F26，与全站价格色不一致 */
+.prod-price .price { font-size: 34rpx; }
+.prod-btn {
+  padding: 14rpx 26rpx; border-radius: 30rpx;
+  background: linear-gradient(90deg, #C9525A, #B02A30);
+  color: #FFFFFF; font-size: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(176, 42, 48, 0.20);
+}
+
+.cat { padding: 20rpx 0; border-bottom: 1rpx solid #EEEEEE; }
+.cat:last-child { border-bottom: 0; }
+.cat-head { display: flex; justify-content: space-between; align-items: baseline; }
+.cat-name { font-size: 30rpx; color: #3F3E3E; }
+.bar { margin-top: 12rpx; height: 10rpx; border-radius: 5rpx; background: #F0F0F0; overflow: hidden; }
+/* 进度条改用品牌渐变，与全局 .progress-fill 同一视觉语言（原为纯色 #B02A30） */
+.bar-fill { height: 100%; background: linear-gradient(90deg, #C9525A, #B02A30); }
+
+.foot { margin: 24rpx 32rpx 0; text-align: center; line-height: 1.6; }

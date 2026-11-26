@@ -1,0 +1,32 @@
+/* 我的券（用户端）
+   券卡形态由共享令牌 .coupon 提供（面额区 + 齿孔 + 虚线段），本文件只留本页特有部分。
+   页面底色跟随全局 --page-bg，不再单独声明。 */
+.cp { min-height: 100vh; padding-bottom: 40rpx; }
+
+.tabs { display: flex; background: #FFFFFF; }
+.tab { flex: 1; text-align: center; padding: 26rpx 0; font-size: 30rpx; color: #666666; position: relative; }
+.tab.on { color: #8F1F26; font-weight: 600; }
+.tab.on::after {
+  content: ''; position: absolute; left: 50%; bottom: 10rpx; transform: translateX(-50%);
+  width: 44rpx; height: 6rpx; border-radius: 3rpx; background: linear-gradient(90deg, #C9525A, #B02A30);
+}
+
+.wrap { padding: 8rpx 0 0; }
+
+/* 核销码：浅黄底提示「可复制」，数字用文字版品牌色保证 AA（4.89:1） */
+.code {
+  margin-top: 14rpx; padding: 14rpx 18rpx;
+  background: #FFF7E6; border-radius: 12rpx;
+  font-size: 28rpx; color: #996300;
+}
+.code-num { font-size: 34rpx; font-weight: 700; letter-spacing: 4rpx; color: #8F1F26; margin: 0 6rpx; }
+
+.empty { text-align: center; color: #666666; font-size: 28rpx; padding: 80rpx 0; }
+
+/* 到店导航（领券后引导线下消费） */
+.store-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10rpx; }
+.store-addr { flex: 1; min-width: 0; font-size: 22rpx; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.store-nav { font-size: 22rpx; color: #B02A30; padding-left: 16rpx; flex-shrink: 0; }
+
+/* 次卡剩余次数：让用户一眼知道还能用几次 */
+.times-left { color: #8F1F26; font-weight: 600; }

@@ -1,0 +1,40 @@
+/* 任务中心 · 拼多多配色重设计（对应 Ardot 屏幕-任务中心 5:105） */
+
+/* 渐变带内的图标 */
+.grad-header .hero-icon {
+  width: 88rpx; height: 88rpx; line-height: 88rpx; margin: 0 auto;
+  border-radius: 50%; background: rgba(255,255,255,.22);
+  font-size: 48rpx; color: #FFFFFF;
+}
+
+/* 上浮状态卡内的贡献值进度条（原渐变头内的进度条已迁入此卡，底色改为页面灰底） */
+.hero-card .gh-progress { height: 12rpx; background: #F0F0F0; border-radius: 6rpx; margin-top: 20rpx; overflow: hidden; }
+.hero-card .gh-progress-fill { height: 100%; background: linear-gradient(90deg, #FFC940, #B7791F); border-radius: 6rpx; }
+
+/* 任务行：图标 32 + 信息列 + 按钮 */
+.task-row { display: flex; align-items: center; padding: 20rpx 0; }
+.task-icon { width: 64rpx; height: 64rpx; border-radius: 16rpx; flex-shrink: 0; }
+.ti-check { background: #FAF0F0 url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%2220%22%20height%3D%2222%22%20rx%3D%223%22%2F%3E%3Cpath%20d%3D%22M12%205h8v4h-8z%22%2F%3E%3Cpath%20d%3D%22M12%2017l3%203%206-6%22%20stroke%3D%22%23C89B5A%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 36rpx; }
+.ti-red { background: #FAF0F0 url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%2211%22%2F%3E%3Cpath%20d%3D%22M16%208a8%208%200%200%201%208%208%22%20stroke%3D%22%23C89B5A%22%20stroke-width%3D%222.6%22%2F%3E%3Cpath%20d%3D%22M16%2016v-4%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 36rpx; }
+.ti-orange { background: #FAF0F0 url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C89B5A%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M16%205l2.6%205.6%206.1.8-4.5%204.2%201.1%206L16%2018.7%2010.7%2021.6l1.1-6L7.3%2011.4l6.1-.8z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 36rpx; }
+.ti-gold { background: #FFF7E6 url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2211%22%20r%3D%224.5%22%2F%3E%3Cpath%20d%3D%22M8%2027c0-5%203.6-8%208-8s8%203%208%208%22%2F%3E%3Cpath%20d%3D%22M13%2019.8c1%20.8%202%201.2%203%201.2s2-.4%203-1.2%22%20stroke%3D%22%23C89B5A%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 36rpx; }
+.ti-gray { background: #F5F5F5 url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%224%22%20y%3D%227%22%20width%3D%2224%22%20height%3D%2218%22%20rx%3D%223%22%2F%3E%3Cpath%20d%3D%22M14%2012.5l6%203.5-6%203.5z%22%20stroke%3D%22%23C89B5A%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 36rpx; }
+.task-info { flex: 1; margin: 0 20rpx; }
+.task-btn { font-size: 28rpx; border-radius: 28rpx; padding: 10rpx 28rpx; flex-shrink: 0; text-align: center; }
+.tb-red { background: linear-gradient(90deg, #C9525A, #B02A30); color: #FFFFFF; font-weight: 500; }
+.tb-gold { background: linear-gradient(90deg, #FFC940, #B7791F); color: #5C3D00; font-weight: 600; }
+.tb-gray { background: #F2F2F2; color: #666666; }
+
+/* 连续签到块：独立底色 + 小标签，与上方「活跃门槛」进度块视觉隔离（区分两个 80） */
+.streak-box {
+  margin-top: 16rpx; padding: 18rpx 20rpx;
+  background: #FAF0F0; border-radius: 16rpx;
+}
+.streak-head { display: flex; align-items: center; flex-wrap: wrap; }
+.streak-label {
+  display: inline-block; padding: 2rpx 12rpx; border-radius: 8rpx;
+  background: #FFFFFF; color: #8F1F26; border: 1rpx solid #B02A30;
+  font-size: 24rpx; font-weight: 600; line-height: 1.6;
+}
+.streak-target { margin-left: 12rpx; font-size: 28rpx; font-weight: 600; color: #8F1F26; }
+.streak-sub { margin-top: 8rpx; }

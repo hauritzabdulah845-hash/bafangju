@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "商家工作台",
+  "usingComponents": {
+    "mtab": "/subpkg-merchant/components/mtab/mtab"
+  }
+}

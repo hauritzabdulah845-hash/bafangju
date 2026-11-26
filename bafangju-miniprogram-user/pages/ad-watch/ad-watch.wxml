@@ -1,0 +1,46 @@
+<!-- 观看广告领奖页：全屏视频 + 广告标识 + 完播领奖弹层 -->
+<view class="aw">
+  <video
+    id="adVideo"
+    class="aw-video"
+    src="{{src}}"
+    poster="{{poster}}"
+    controls="{{false}}"
+    show-center-play-btn="{{true}}"
+    enable-progress-gesture="{{false}}"
+    object-fit="contain"
+    bindtimeupdate="onTimeUpdate"
+    bindended="onEnded"
+    wx:if="{{state === 'playing'}}">
+    <view class="aw-ad-tag">广告</view>
+  </video>
+
+  <!-- 自绘进度条（禁拖动） -->
+  <view class="aw-progress" wx:if="{{state === 'playing' && !rewarded}}">
+    <view class="aw-line"><view class="aw-fill" style="width:{{progress}}%"></view></view>
+    <view class="aw-pct">{{progress}}%</view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="aw-center" wx:if="{{state === 'loading'}}">
+    <view class="aw-loading">加载中…</view>
+  </view>
+
+  <!-- 错误态 -->
+  <view class="aw-center" wx:if="{{state === 'error'}}">
+    <view class="aw-err">{{errorMsg}}</view>
+    <view class="aw-btn aw-btn-gold" bindtap="goBack">返回</view>
+  </view>
+
+  <!-- 领奖弹层 -->
+  <view class="aw-mask" wx:if="{{rewarded}}">
+    <view class="aw-reward">
+      <view class="aw-medal">✓</view>
+      <view class="aw-rt">任务完成 · 贡献值已到账</view>
+      <view class="aw-amt">+{{rewardPoints}} 贡献值</view>
+      <view class="aw-sub">当前累计 {{totalWeight}} 贡献值 · 贡献值用来算活跃度，不能提现</view>
+      <view class="aw-btn" bindtap="goProduct" wx:if="{{canGoProduct}}">去逛逛广告里的好物 ›</view>
+      <view class="aw-btn {{canGoProduct ? 'aw-btn-ghost' : ''}}" bindtap="goBack">开心收下</view>
+    </view>
+  </view>
+</view>

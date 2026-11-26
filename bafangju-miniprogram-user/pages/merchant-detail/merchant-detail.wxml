@@ -1,0 +1,85 @@
+<!-- 商家详情：门店信息卡（导航/致电）→ 门店优惠（领券）→ 在售商品（阶梯价） -->
+<view class="page" wx:if="{{!loading && merchant}}">
+
+  <!-- 门店信息卡 -->
+  <view class="card shop-card">
+    <!-- 门头照：商家自传，横向铺满卡片顶部 -->
+    <image wx:if="{{coverImg}}" class="shop-cover" src="{{coverImg}}" mode="aspectFill" bindtap="previewCover" />
+    <view class="shop-top">
+      <view class="shop-avatar"><image class="shop-avatar-img" src="{{icon}}" mode="aspectFit" /></view>
+      <view class="shop-info">
+        <view class="shop-name">{{merchant.name}}</view>
+        <view class="shop-sub">
+          <text class="shop-cat" wx:if="{{merchant.category}}">{{merchant.category}}</text>
+          <text class="shop-dist" wx:if="{{merchant.distanceText}}">距您 {{merchant.distanceText}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="shop-intro" wx:if="{{merchant.intro}}">{{merchant.intro}}</view>
+    <view class="shop-hours" wx:if="{{merchant.businessHours}}">
+      <text class="hours-label">营业时间</text>
+      <text class="hours-val">{{merchant.businessHours}}</text>
+    </view>
+    <view class="shop-addr"><text class="addr-pin"></text>{{merchant.address}}</view>
+    <view class="shop-actions">
+      <view class="act" bindtap="navigate">
+        <text class="act-icon act-compass"></text><text class="act-text">导航去这里</text>
+      </view>
+      <view class="act" bindtap="call" wx:if="{{merchant.phone}}">
+        <text class="act-icon act-phone"></text><text class="act-text">联系商家</text>
+      </view>
+      <view class="act" bindtap="goMyCoupons">
+        <text class="act-icon act-coupon"></text><text class="act-text">我的券</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 门店优惠：领券到店核销。券卡直接浮在页面底上（不套白卡外壳），齿孔才能挖出「被咬掉」的效果 -->
+  <view class="sec" wx:if="{{coupons.length}}">
+    <view class="sec-head">
+      <view class="t1">门店优惠</view>
+      <view class="t-weak">{{coupons.length}} 张可领</view>
+    </view>
+    <view class="coupon" wx:for="{{coupons}}" wx:key="id">
+      <view class="coupon-val">{{item.valueText}}</view>
+      <view class="coupon-main">
+        <view class="coupon-head">
+          <view class="t2 t-bold">{{item.title}}</view>
+          <view class="btn-primary btn-sm {{item.claimable ? '' : 'disabled'}}" bindtap="claim" data-id="{{item.id}}">{{item.claimable ? '领取' : '已领'}}</view>
+        </view>
+        <view class="t-weak">{{item.minText}}</view>
+        <view class="coupon-foot" wx:if="{{item.validUntil}}">有效期至 {{item.validUntil.slice(0, 10)}}</view>
+      </view>
+    </view>
+    <view class="sec-note">领券后到店消费，出示消费码即可抵扣；每人每券限领 1 张。</view>
+  </view>
+
+  <!-- 在售商品：阶梯优惠商城归属该门店的货 -->
+  <view class="card" wx:if="{{products.length}}">
+    <view class="row-between">
+      <view class="t1">在售商品</view>
+      <view class="t-weak">阶梯优惠同享</view>
+    </view>
+    <view class="p-row" wx:for="{{products}}" wx:key="id" data-id="{{item.id}}" bindtap="goProduct">
+      <image wx:if="{{item.img}}" class="p-img" src="{{item.img}}" mode="aspectFill" />
+      <view wx:else class="p-visual tone-{{item.tone}}">{{item.name}}</view>
+      <view class="p-info">
+        <view class="p-name">{{item.name}}</view>
+        <view class="t-weak">{{item.categoryName}}</view>
+        <view class="p-price-row">
+          <text class="p-symbol">¥</text><text class="p-price">{{item.priceYuan}}</text>
+        </view>
+      </view>
+      <view class="p-go">去购买 ›</view>
+    </view>
+  </view>
+
+  <view class="notice" style="margin:32rpx 24rpx 24rpx">本店为平台异业联盟审核入驻门店；优惠券与商品均如实展示，使用记录可在「我的券」查看。</view>
+
+  <!-- 加载 / 错误态 -->
+  <view class="empty" wx:if="{{loading}}">加载中…</view>
+  <view class="empty" wx:elif="{{!merchant}}">
+    <view>{{loadError ? '加载失败，请稍后重试' : '商家不存在或已停用'}}</view>
+    <view class="btn-outline btn-sm" style="margin-top:24rpx" bindtap="load">重试</view>
+  </view>
+</view>

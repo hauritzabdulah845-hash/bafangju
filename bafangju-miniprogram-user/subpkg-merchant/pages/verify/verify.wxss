@@ -1,0 +1,35 @@
+@import '../../merchant-base.wxss';
+
+/* 自定义 tabBar 为 fixed 定位，不自动占位，需自行留出底部高度（116rpx + 安全区） */
+page { padding-bottom: calc(124rpx + env(safe-area-inset-bottom)); box-sizing: border-box; }
+
+.verify-title { font-weight: 700; margin-bottom: 20rpx; }
+.verify-input {
+  background: #f5f6f8; border-radius: 12rpx; padding: 24rpx;
+  margin-bottom: 24rpx; letter-spacing: 4rpx; text-align: center;
+}
+.verify-input.amount { letter-spacing: 0; font-size: 32rpx; font-weight: 600; }
+
+/* 券面信息 */
+.coupon-box {
+  display: flex; align-items: stretch; background: #FFF5F4; border: 1rpx solid #F5CFCB;
+  border-radius: 14rpx; padding: 20rpx; margin-bottom: 24rpx;
+}
+.cb-left {
+  width: 150rpx; display: flex; align-items: center; justify-content: center;
+  font-size: 34rpx; font-weight: 700; color: #B02A30; border-right: 1rpx dashed #E8B4AF;
+  padding-right: 12rpx; margin-right: 16rpx; text-align: center; line-height: 1.3;
+}
+.cb-main { flex: 1; min-width: 0; }
+.cb-title { font-size: 28rpx; font-weight: 600; color: #222; }
+.cb-sub { font-size: 22rpx; color: #999; margin-top: 6rpx; }
+.cb-status { font-size: 22rpx; margin-top: 8rpx; }
+.cb-status.ok { color: #2E7D32; }
+.cb-status.bad { color: #C62828; }
+
+/* 实时试算 */
+.preview { background: #F7F8FA; border-radius: 14rpx; padding: 20rpx 24rpx; margin-bottom: 24rpx; }
+.pv-row { display: flex; justify-content: space-between; font-size: 26rpx; color: #555; padding: 6rpx 0; }
+.pv-off { color: #B02A30; }
+.pv-pay { font-size: 30rpx; font-weight: 700; color: #222; border-top: 1rpx solid #E8E8E8; margin-top: 8rpx; padding-top: 12rpx; }
+.pv-warn { font-size: 22rpx; color: #C62828; margin-top: 8rpx; }

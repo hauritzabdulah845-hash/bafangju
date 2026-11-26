@@ -1,0 +1,95 @@
+<!-- 我的返还（阶梯优惠）· 对应设计稿 return.html
+     结构：枣红头部（累计少付金额）→ 当前周期卡（下一单实付 + 阶梯 chip）
+           → 各类目复购进度 → 分红入口 → 合规说明 -->
+<view class="returns">
+
+  <!-- 头部：金额直接压在品牌底上——红底只承载一个视觉锤 -->
+  <view class="grad-header" bindtap="goRebuy" hover-class="none">
+    <view class="gh-label-wh">累计少付 · 返还金额</view>
+    <view class="gh-price">
+      <text class="gh-cur">¥</text>
+      <text class="gh-num-w num">{{savedYuan}}</text>
+    </view>
+    <view class="gh-sub-wh">已购订单比原价少付的合计；最后 4 单便宜 10%~40% 是主要优惠</view>
+  </view>
+
+  <view class="wrap">
+
+    <!-- 当前周期卡：整页主角。挑进度最深的类目，把「下一单到底多少钱」说清楚 -->
+    <view class="card cyc" wx:if="{{current}}">
+      <view class="row-between">
+        <view class="t1">这一轮 · {{current.categoryName}}</view>
+        <text class="cyc-badge num">{{current.stepText}}</text>
+      </view>
+
+      <view class="price-row">
+        <view>
+          <view class="p-label">下一单实付</view>
+          <view class="p-main">
+            <text class="p-cur">¥</text>
+            <text class="p-val num">{{current.nextPayYuan}}</text>
+            <text class="p-was num" wx:if="{{current.refYuan}}">¥{{current.refYuan}}</text>
+          </view>
+        </view>
+        <view class="p-saved" wx:if="{{current.savedYuan}}">已省 <text class="num">{{current.savedYuan}}</text></view>
+        <!-- 全价段内没有让利，右侧不能空着：明确告诉用户"为什么这单没便宜" -->
+        <view class="p-saved p-full" wx:else>按原价计</view>
+      </view>
+
+      <!-- 阶梯 chip：当前步 + 让利段，由 utils/ladder.js 统一切片（与首页同一套） -->
+      <view class="steps">
+        <block wx:for="{{current.chips}}" wx:for-item="c" wx:key="i">
+          <view class="step-gap" wx:if="{{c.gap}}">⋯</view>
+          <view class="step {{c.state}}" wx:else>
+            <text class="k">{{c.k}}</text>
+            <text class="v num">{{c.v}}</text>
+          </view>
+        </block>
+      </view>
+
+      <view class="cyc-foot">
+        <view class="foot-txt">
+          <view>{{current.hint}}</view>
+          <view class="foot-sub">这一轮买完后，回到第 1 单原价</view>
+        </view>
+        <view class="btn-primary btn-sm" bindtap="goRebuy">再去买</view>
+      </view>
+    </view>
+
+    <!-- 各类目进度：一行一档，只给「下一单价 + 步数」，不再堆重复的卡片 -->
+    <view class="card" wx:if="{{others.length}}">
+      <view class="row-between" style="margin-bottom:8rpx">
+        <view class="t1">各类商品进度</view>
+        <view class="t-weak" bindtap="goRebuy">常买清单 ›</view>
+      </view>
+
+      <view class="crow" wx:for="{{others}}" wx:key="categoryId">
+        <view class="crow-top">
+          <text class="crow-nm">{{item.categoryName}}</text>
+          <text class="crow-next num" wx:if="{{!item.voided && item.nextPayYuan}}">下一单 ¥{{item.nextPayYuan}}</text>
+          <text class="tag tag-gray" wx:elif="{{item.voided}}">已作废</text>
+          <text class="crow-go" wx:else bindtap="goShop">去逛逛 ›</text>
+        </view>
+        <view class="crow-bar">
+          <view class="progress">
+            <view class="progress-fill {{item.pct >= 80 ? 'gold' : ''}}" style="width:{{item.pct}}%"></view>
+          </view>
+          <text class="crow-step num">{{item.stepText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空态 -->
+    <view class="card" wx:if="{{!current && !others.length}}">
+      <view class="t3">还没有购买记录。在联盟商家买完第一单后，这里会显示你的优惠进度。</view>
+    </view>
+
+    <view class="card" wx:if="{{!downgrade}}">
+      <view class="t1">我的分红</view>
+      <view class="t3" style="margin-top:8rpx">每买完一轮（最后一单便宜 40%）就送 1 个分红排队号，按号分享平台真实利润。</view>
+      <view class="btn-primary" style="margin-top:24rpx" bindtap="goDividend">查看我的排队号</view>
+    </view>
+
+    <view class="notice">优惠已直接算在售价里，不形成兑付承诺；退款订单会按平台规则退回对应进度。</view>
+  </view>
+</view>

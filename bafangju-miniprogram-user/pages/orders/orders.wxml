@@ -1,0 +1,81 @@
+<!-- 我的订单 · 拼多多配色重设计（对应 Ardot 屏幕-我的订单 5:1）
+     结构：红色头部（状态 Tab 行）→ 订单卡流（店铺行/商品行/操作行）→ 空态
+     数据：GET /api/orders/list（含商品名/图）；操作仅接入真实能力（待付款可付款、其余可再次购买） -->
+<view class="orders">
+
+  <!-- 红色头部：状态 Tab（原生导航栏之下） -->
+  <view class="orders-head">
+    <view class="tabs">
+      <view class="tab {{activeTab === item.key ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="key" bindtap="switchTab" data-key="{{item.key}}">
+        <text>{{item.label}}</text>
+        <view class="tab-bar" wx:if="{{activeTab === item.key}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 阶梯规则入口：规则明细只在购买/订单链路出现 -->
+  <view class="rules-bar" bindtap="goRules">
+    <text>阶梯优惠按你自己的购买进度累计，多买多省</text>
+    <text class="arrow">规则说明 ›</text>
+  </view>
+
+  <!-- 订单卡流 -->
+  <view class="order-list">
+    <view class="card order-card" wx:for="{{visibleOrders}}" wx:key="id">
+
+      <!-- 店铺行：平台统一履约 + 状态 -->
+      <view class="row-between">
+        <view class="row shop-row">
+          <view class="shop-icon"></view>
+          <text class="t2 t-bold">八方聚联盟商家</text>
+        </view>
+        <text class="status {{item.payType === 'FREE' && item.status === 'done' ? 'st-free' : 'st-accent'}}">{{item.statusText}}</text>
+      </view>
+
+      <!-- 商品行 -->
+      <view class="row goods-row" bindtap="goProduct" data-id="{{item.productId}}">
+        <image class="goods-img" src="{{item.img}}" mode="aspectFill" wx:if="{{item.img}}" />
+        <view class="goods-img goods-img-fallback" wx:else>{{item.name ? item.name.slice(0,1) : '货'}}</view>
+        <view class="goods-info">
+          <view class="t2 goods-name">{{item.name || '商品'}}</view>
+          <view class="t-weak" wx:if="{{item.step}}">第 {{item.step}} 单专享价</view>
+          <view class="t-weak" wx:else>平台统一发货 · 到店凭证</view>
+          <view class="t-weak code-line" wx:if="{{item.showCode}}" catchtap="copyVerifyCode" data-code="{{item.verifyCode}}">消费码 {{item.verifyCode}} · 点击复制</view>
+          <view class="t-weak" wx:if="{{item.expressText}}">{{item.expressText}}</view>
+          <view class="t-weak aftersale-line" wx:if="{{item.afterSaleText}}">售后：{{item.afterSaleText}}</view>
+        </view>
+        <view class="goods-price">
+          <block wx:if="{{item.payType === 'FREE'}}">
+            <view class="tag tag-free">免单</view>
+            <view class="price-origin">¥{{item.priceYuan}}</view>
+          </block>
+          <block wx:else>
+            <view class="price-row">
+              <text class="price-symbol">¥</text><text class="price-num sm">{{item.paidYuan}}</text>
+            </view>
+            <view class="price-origin" wx:if="{{item.paidFen < item.priceFen}}">原价 ¥{{item.priceYuan}}</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 操作行：仅接入真实能力（付款 / 确认收货 / 售后 / 再次购买） -->
+      <view class="row actions">
+        <text class="t-weak order-time">{{item.timeText}}</text>
+        <view class="row actions-row">
+          <view class="btn-outline btn-sm" wx:if="{{item.status === 'pending_pay'}}" bindtap="payOrder" data-id="{{item.id}}" data-paying="{{item.paying}}">{{item.paying ? '付款中…' : '付款'}}</view>
+          <view class="btn-primary btn-sm" wx:if="{{item.canConfirm}}" bindtap="confirmOrder" data-id="{{item.id}}">确认收货</view>
+          <view class="btn-outline btn-sm" wx:if="{{item.canAfterSale}}" bindtap="applyAfterSale" data-id="{{item.id}}">申请售后</view>
+          <view class="btn-outline btn-sm" wx:if="{{item.status === 'paid' || item.status === 'shipped' || item.status === 'done'}}" bindtap="goProduct" data-id="{{item.productId}}">再次购买</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空态 -->
+    <view class="empty" wx:if="{{!visibleOrders.length && !loading}}">
+      <view class="empty-icon"></view>
+      <view class="t3">暂无相关订单</view>
+      <view class="btn-primary btn-sm" style="margin-top:24rpx" bindtap="goHome">去逛逛</view>
+    </view>
+    <view class="t-weak" style="text-align:center;padding:40rpx" wx:if="{{!visibleOrders.length && loading}}">加载中…</view>
+  </view>
+</view>

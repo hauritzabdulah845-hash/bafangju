@@ -1,0 +1,55 @@
+/* 自定义 tabBar 为 fixed 定位，不自动占位，需自行留出底部高度（116rpx + 安全区） */
+page { padding-bottom: calc(124rpx + env(safe-area-inset-bottom)); box-sizing: border-box; }
+
+/* 商家工作台 · 拼多多配色重设计（对应 Ardot 屏幕-商家端工作台 5:307） */
+
+/* 页面根容器 */
+.wb { min-height: 100vh; }
+
+/* 橙色头部：店名 + 营业中 + 三项统计 */
+.wb-head {
+  background: linear-gradient(180deg, #C9525A, #B02A30);
+  padding: 20rpx 24rpx 32rpx;
+}
+.shop-row { gap: 14rpx; }
+.shop-name { font-size: 34rpx; font-weight: 600; color: #FFFFFF; }
+.shop-open {
+  font-size: 24rpx; color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.2); border-radius: 6rpx; padding: 3rpx 14rpx;
+}
+.stat-row { display: flex; margin-top: 28rpx; }
+.stat-col { flex: 1; }
+.stat-num { font-size: 46rpx; font-weight: 700; color: #FFFFFF; line-height: 1.1; font-family: "DIN Alternate", "Helvetica Neue", sans-serif; }
+.stat-label { font-size: 28rpx; color: rgba(255, 255, 255, 0.85); margin-top: 6rpx; }
+.stat-sep { width: 1rpx; background: rgba(255, 255, 255, 0.35); margin: 6rpx 32rpx; }
+
+/* 快捷入口 */
+.quick-card { padding: 28rpx 12rpx; }
+.quick-grid { display: flex; }
+.quick-item { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.qi-icon { width: 72rpx; height: 72rpx; border-radius: 20rpx; margin-bottom: 12rpx; }
+.qi-verify { background: #FAF0F0 url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%226%22%20y%3D%224%22%20width%3D%2220%22%20height%3D%2224%22%20rx%3D%223%22%2F%3E%3Cpath%20d%3D%22M11%2010V7h3M21%2010V7h-3M11%2022v3h3M21%2022v3h-3M9%2016h14%22%20stroke%3D%22%23C89B5A%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 40rpx; }
+.qi-coupon { background: #FAF0F0 url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%2011h22v10H5z%22%2F%3E%3Cpath%20d%3D%22M10%208.5v15%22%2F%3E%3Cpath%20d%3D%22M10%208.5v15%22%20stroke-dasharray%3D%222.5%202.5%22%20stroke%3D%22%23C89B5A%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 40rpx; }
+.qi-earn { background: #FFF7E6 url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%2211%22%2F%3E%3Cpath%20d%3D%22M13%2011l3%204%203-4M16%2015v6M13%2017.5h6M13%2020h6%22%20stroke%3D%22%23C89B5A%22%20stroke-width%3D%221.8%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 40rpx; }
+.qi-withdraw { background: #E8F9EF url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%2224%22%20height%3D%2215%22%20rx%3D%223%22%2F%3E%3Cpath%20d%3D%22M4%2013h24%22%2F%3E%3Ccircle%20cx%3D%2223%22%20cy%3D%2219.5%22%20r%3D%221.6%22%20stroke%3D%22%23C89B5A%22%20stroke-width%3D%222.2%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 40rpx; }
+.qi-goods { background: #EDF4FF url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M7%2011h18l-1.5%2015a2%202%200%200%201-2%201.8H10.5A2%202%200%200%201%208.5%2026z%22%2F%3E%3Cpath%20d%3D%22M12%2011V9a4%204%200%200%201%208%200v2%22%20stroke%3D%22%23C89B5A%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 40rpx; }
+
+/* 近 7 日柱状图 */
+.chart { display: flex; align-items: flex-end; height: 180rpx; margin-top: 24rpx; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
+.bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.bar { width: 32rpx; background: linear-gradient(180deg, #C9525A, #B02A30); border-radius: 8rpx 8rpx 0 0; min-height: 6rpx; }
+.bar-label { font-size: 26rpx; color: #666666; margin-top: 10rpx; }
+
+/* 待处理 */
+.todo-row { padding: 16rpx 0; }
+.todo-dot { width: 12rpx; height: 12rpx; border-radius: 50%; margin-right: 20rpx; flex-shrink: 0; }
+.td-accent { background: #B02A30; }
+.td-gold { background: #B7791F; }
+
+/* 平台提示卡 */
+.notice-card { background: #FFF7E6; }
+.notice-icon {
+  width: 32rpx; height: 32rpx; border-radius: 50%; flex-shrink: 0; margin-right: 16rpx;
+  background: #B7791F url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23C2410C%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%2211%22%2F%3E%3Cpath%20d%3D%22M12%2020l8-8M13.5%2012H20v6.5%22%20stroke%3D%22%23C89B5A%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") no-repeat center / 18rpx;
+}

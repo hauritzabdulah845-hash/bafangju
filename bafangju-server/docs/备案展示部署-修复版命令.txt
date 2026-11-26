@@ -1,0 +1,37 @@
+# ============================================================
+# 八方聚 备案展示功能部署 · 修复版
+# 说明：部署包已确认在 /home/ubuntu/bfj-deploy.tar.gz，无需再上传
+# 修复：备份目录改到 /home/ubuntu（ubuntu 有权限）、全程 sudo、去掉会触发历史展开的感叹号
+# 用法：整段复制到网页终端，回车执行
+# ============================================================
+set -e
+APP=/opt/bafangju
+PKG=/home/ubuntu/bfj-deploy.tar.gz
+BK=/home/ubuntu/bfj-backup-$(date +%Y%m%d_%H%M%S)
+
+echo "备份将存到: $BK"
+cd $APP
+for f in public/admin.html public/css/admin-base.css public/css/merchant.css public/js/admin-adreward.js public/js/admin-audit.js public/js/admin-core.js public/js/admin-queue.js public/js/filing-badge.js public/js/merchant-pages.js public/merchant.html public/site/index.html src/domain/content.js src/routes/public.js; do
+  sudo mkdir -p "$BK/$(dirname $f)"
+  sudo cp -a "$f" "$BK/$f"
+done
+echo "备份完成"
+
+echo "解压更新文件"
+sudo tar -xzf "$PKG" -C $APP
+echo "13个文件已更新"
+
+echo "写入ICP备案号"
+DBPATH=$(sudo bash -c '. /etc/bafangju.env 2>/dev/null; echo ${BAFANGJU_DB_PATH:-/opt/bafangju/data/bafangju.db}')
+echo "数据库: $DBPATH"
+sudo node -e "const {createStore}=require('./src/store');const c=require('./src/domain/content');const db=createStore({sqlitePath:'$DBPATH'});c.setContent(db,{key:'filing.icpNo',body:'湘ICP备2026055116号',operator:'deploy'});console.log('结果:',JSON.stringify(c.filingInfo(db)));"
+
+echo "重启服务"
+sudo pm2 restart bafangju-server >/dev/null 2>&1 || (sudo pm2 delete bafangju-server >/dev/null 2>&1; cd $APP && sudo pm2 start ecosystem.config.js)
+sleep 3
+
+echo "验证"
+curl -s -m 10 https://bfjzs.com/api/filing
+echo ""
+echo "完成。浏览器打开 https://bfjzs.com 看页脚是否有 ICP 备案号。"
+echo "回滚: cd $APP && sudo cp -a $BK/. $APP/ && sudo pm2 restart bafangju-server"

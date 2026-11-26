@@ -1,0 +1,60 @@
+<!-- 我的奖励：余额 / 提现 / 实名 / 明细 -->
+<view class="cash">
+
+  <!-- 余额卡 -->
+  <view class="cash-hero" wx:if="{{cash}}">
+    <view class="ch-label">当前余额（满 ¥100 可申请提现）</view>
+    <view class="ch-val">¥ {{cash.balanceFen / 100}}</view>
+    <view class="ch-sub" wx:if="{{cash.recentGrantFen > 0}}">含 {{cash.recentGrantFen / 100}} 元次日可提（T+1）</view>
+    <view class="ch-meta">本月已提现 {{cash.monthlyUsed}}/{{cash.monthlyLimit}} 次 · 单次上限 ¥2000 · 提现按劳务报酬代扣个税</view>
+    <view class="ch-btn {{cash.canWithdraw && cash.monthlyLeft > 0 ? '' : 'ch-btn-dis'}}" bindtap="applyWithdraw">
+      {{cash.canWithdraw ? (cash.monthlyLeft > 0 ? '申请提现 · 1~3 个工作日到账' : '本月次数已用完') : '还差 ¥' + (cash.gapToFen / 100) + ' 可提现'}}
+    </view>
+  </view>
+
+  <!-- 实名认证（未实名时展开） -->
+  <view class="card" wx:if="{{cash && showRealname}}">
+    <view class="ct">实名认证</view>
+    <view class="c-weak" style="margin-top:8rpx">首次提现前需完成实名（一人一证一账号）；身份证仅用于提现核验，加密存储。</view>
+    <input class="c-input" placeholder="真实姓名" value="{{rnName}}" bindinput="onNameInput" />
+    <input class="c-input" placeholder="18 位身份证号" value="{{rnId}}" bindinput="onIdInput" maxlength="18" />
+    <view class="c-btn" bindtap="submitRealname">{{rnSubmitting ? '提交中…' : '提交实名'}}</view>
+  </view>
+  <view class="card" wx:if="{{cash && cash.realnamed && !showRealname}}">
+    <view class="row-between">
+      <view>
+        <view class="ct">已实名</view>
+        <view class="c-weak" style="margin-top:6rpx">{{cash.realnameName}}（信息已加密核验）</view>
+      </view>
+      <view class="tag tag-green">已认证</view>
+    </view>
+  </view>
+
+  <!-- 提现记录 -->
+  <view class="card" wx:if="{{withdrawals.length}}">
+    <view class="ct">提现记录</view>
+    <view class="wd-row" wx:for="{{withdrawals}}" wx:key="id">
+      <view>
+        <view class="wd-t">提现 ¥{{item.fen / 100}}<text class="wd-tax" wx:if="{{item.taxFen > 0}}">（含税 ¥{{item.taxFen / 100}}）</text></view>
+        <view class="wd-meta">{{item.appliedAt}}{{item.transferNo ? ' · 单号 ' + item.transferNo : ''}}{{item.voucherNo ? ' · 凭证 ' + item.voucherNo : ''}}{{item.reviewNote ? ' · ' + item.reviewNote : ''}}</view>
+      </view>
+      <view class="wd-status ws-{{item.status}}">
+        {{item.status === 'pending_review' ? '审核中' : item.status === 'pending_offline' ? '待线下打款' : item.status === 'paid' ? '已到账' : item.status === 'rejected' ? '已驳回' : item.status === 'failed' ? '打款失败' : '处理中'}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 明细流水 -->
+  <view class="card" wx:if="{{cash && cash.ledger.length}}">
+    <view class="ct">奖励明细</view>
+    <view class="wd-row" wx:for="{{cash.ledger}}" wx:key="index">
+      <view style="min-width:0">
+        <view class="wd-t">{{item.bizType === 'grant' ? '广告任务奖励' : item.bizType === 'withdraw_freeze' ? '提现冻结' : item.bizType === 'withdraw_fail_refund' ? '打款失败退回' : item.bizType === 'withdraw_reject_refund' ? '驳回退回' : '账户调整'}}</view>
+        <view class="wd-meta">{{item.ts}}</view>
+      </view>
+      <view class="wd-delta {{item.delta < 0 ? 'wd-out' : ''}}">{{item.delta > 0 ? '+' : ''}}{{item.delta / 100}}</view>
+    </view>
+  </view>
+
+  <view class="c-tip">奖励来自商家广告预算，只能申请提现到本人微信零钱，不可转赠。平台不承诺任何收益。</view>
+</view>

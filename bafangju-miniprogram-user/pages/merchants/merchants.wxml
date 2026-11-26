@@ -1,0 +1,79 @@
+<!-- 附近商家：定位 + 搜索 → 半径/排序 → 商家卡流（距离/在售券/在售商品） -->
+<view class="page">
+
+  <!-- 红色头部：定位 + 搜索 -->
+  <view class="m-head">
+    <view class="loc-row">
+      <view class="loc" bindtap="pickLocation">
+        <text class="loc-name">{{locName}}</text>
+        <view class="loc-arrow"></view>
+      </view>
+      <text class="head-count" wx:if="{{!loading}}">附近 {{total}} 家好店</text>
+    </view>
+    <view class="search-box">
+      <view class="search-icon"></view>
+      <input class="search-input" placeholder="搜索店名 / 类目 / 地址" placeholder-class="search-ph" value="{{keyword}}" bindinput="onSearch" confirm-type="search" />
+      <text class="search-clear" wx:if="{{keyword}}" bindtap="clearSearch">取消</text>
+    </view>
+  </view>
+
+  <!-- 筛选条：范围 + 排序（两行式，避免窄屏挤压换行） -->
+  <view class="filters">
+    <view class="f-row">
+      <text class="f-label">范围</text>
+      <view class="r-opts">
+        <view class="r-opt {{radius === item.value ? 'on' : ''}}" wx:for="{{radiusOpts}}" wx:key="value" data-v="{{item.value}}" bindtap="onRadius">{{item.label}}</view>
+      </view>
+    </view>
+    <view class="f-row">
+      <text class="f-label">排序</text>
+      <view class="sorts">
+        <view class="sort {{sort === 'distance' ? 'on' : ''}}" data-v="distance" bindtap="onSort">距离最近</view>
+        <view class="sort {{sort === 'coupon' ? 'on' : ''}}" data-v="coupon" bindtap="onSort">优惠最多</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 商家卡流 -->
+  <view class="list">
+    <view class="m-card" wx:for="{{merchants}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
+      <view class="m-top">
+        <view class="m-avatar">
+          <image wx:if="{{item.coverImg}}" class="m-avatar-img fill" src="{{item.coverImg}}" mode="aspectFill" />
+          <image wx:else class="m-avatar-img" src="{{item.icon}}" mode="aspectFit" />
+        </view>
+        <view class="m-info">
+          <view class="m-name">{{item.name}}</view>
+          <view class="m-sub">
+            <text class="m-cat" wx:if="{{item.category}}">{{item.category}}</text>
+            <text class="m-dist">{{item.distanceText}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="m-addr"><text class="addr-pin"></text>{{item.address}}</view>
+      <view class="m-coupon" wx:if="{{item.bestCoupon}}">
+        <text class="m-coupon-tag">券</text>
+        <text class="m-coupon-title">{{item.bestCoupon.title}}</text>
+        <text class="m-coupon-val">{{item.bestCoupon.valueText}}</text>
+        <text class="m-coupon-min">{{item.bestCoupon.minText}}</text>
+      </view>
+      <view class="m-foot">
+        <text class="m-meta">{{item.metaText}}</text>
+        <view class="m-go">进店 ›</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空态 / 错误态 -->
+  <view class="empty" wx:if="{{!loading && !merchants.length}}">
+    <view class="empty-icon"><image class="empty-icon-img" src="/assets/icons/cat-shop.png" mode="aspectFit" /></view>
+    <view wx:if="{{loadError}}">加载失败，请稍后重试</view>
+    <view wx:elif="{{keyword}}">没有找到「{{keyword}}」相关的商家</view>
+    <view wx:else>附近 {{radius / 1000}}km 内暂无已选点门店</view>
+    <view class="empty-hint" wx:if="{{!loadError && !keyword && radius < 10000}}">换个更大的范围试试？</view>
+    <view class="btn-primary btn-sm" wx:if="{{!loadError && !keyword && radius < 10000}}" bindtap="expandRadius">扩大到 10km</view>
+    <view class="btn-outline btn-sm" wx:if="{{loadError}}" bindtap="load">重试</view>
+  </view>
+
+  <view class="notice" style="margin:32rpx 24rpx 24rpx">{{ct['merchants.note'] || '门店由商家入驻时地图选点生成，距离按直线计算；券到店出示消费码使用。'}}</view>
+</view>
