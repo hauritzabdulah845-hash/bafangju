@@ -1,15 +1,30 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""只读复核线上开关/安全/健康状态。用法: python _ssh_check.py <密码>"""
-import sys, paramiko
-HOST="124.221.130.18"; USER="ubuntu"; PORT=22
+"""只读复核线上开关/安全/健康状态。
+用法: BFJ_SSH_HOST=<服务器IP或域名> python _ssh_check.py <密码>
+可选环境变量: BFJ_SSH_USER (默认 ubuntu), BFJ_SSH_PORT (默认 22)
+"""
+import os
+import sys
+import paramiko
+
+HOST = os.environ.get("BFJ_SSH_HOST", "").strip()
+USER = os.environ.get("BFJ_SSH_USER", "ubuntu").strip()
+PORT = int(os.environ.get("BFJ_SSH_PORT", "22"))
+
+
 def main():
-    if len(sys.argv)<2:
-        print("用法: python _ssh_check.py <密码>"); sys.exit(1)
-    pw=sys.argv[1]
-    c=paramiko.SSHClient(); c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    c.connect(HOST,port=PORT,username=USER,password=pw,timeout=20,allow_agent=False,look_for_keys=False)
-    cmd=r'''
+    if not HOST:
+        print("请先设置环境变量 BFJ_SSH_HOST=<服务器IP或域名>")
+        sys.exit(1)
+    if len(sys.argv) < 2:
+        print("用法: BFJ_SSH_HOST=<服务器IP或域名> python _ssh_check.py <密码>")
+        sys.exit(1)
+    pw = sys.argv[1]
+    c = paramiko.SSHClient()
+    c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    c.connect(HOST, port=PORT, username=USER, password=pw, timeout=20, allow_agent=False, look_for_keys=False)
+    cmd = r'''
 echo "===== 1. 提现/广告开关 ====="
 cd /opt/bafangju && sudo node -e "
 const s=require('./src/store.js');
@@ -43,9 +58,13 @@ sudo pm2 list 2>/dev/null | grep -E 'bafangju'
 echo "===== 7. 错误日志尾 ====="
 sudo pm2 logs bafangju-server --err --lines 5 --nostream 2>/dev/null | tail -8
 '''
-    i,o,e=c.exec_command(cmd,timeout=90)
-    print(o.read().decode('utf-8','replace'))
-    err=e.read().decode('utf-8','replace')
-    if err.strip(): print("===STDERR===\n"+err[:2000])
+    i, o, e = c.exec_command(cmd, timeout=90)
+    print(o.read().decode('utf-8', 'replace'))
+    err = e.read().decode('utf-8', 'replace')
+    if err.strip():
+        print("===STDERR===\n" + err[:2000])
     c.close()
-if __name__=="__main__": main()
+
+
+if __name__ == "__main__":
+    main()

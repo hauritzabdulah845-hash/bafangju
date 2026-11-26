@@ -54,13 +54,14 @@ test('两端 config.js 不含任何内网地址', () => {
 });
 
 test('内网地址仅存在于 config.dev.js', () => {
+  const ALLOWED_DEV_FILES = new Set(['config.dev.js', 'subpkg-merchant/config.dev.js']);
   for (const end of ENDS) {
     const hits = listFiles(end.dir, ['.js', '.json', '.wxml', '.wxss'])
       .filter((f) => PRIVATE_IP.test(read(f)))
-      .map((f) => path.relative(end.dir, f));
+      .map((f) => path.relative(end.dir, f).replace(/\\/g, '/'));
     // config.dev.js 允许留空命中（联调期可能填的是公网 IP 而非内网地址）
     assert.ok(
-      hits.every((f) => f === 'config.dev.js'),
+      hits.every((f) => ALLOWED_DEV_FILES.has(f)),
       end.name + ' 端出现内网地址的文件不止 config.dev.js：' + hits.join(', ')
     );
   }

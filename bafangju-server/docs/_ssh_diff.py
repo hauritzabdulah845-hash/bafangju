@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """只读对比：本地 bafangju-server 的 src/ 与 public/ 各文件 md5 vs 线上 /opt/bafangju。
-不做任何写操作。用法: python _ssh_diff.py <服务器密码>
+不做任何写操作。
+用法: BFJ_SSH_HOST=<服务器IP或域名> python _ssh_diff.py <服务器密码>
+可选环境变量: BFJ_SSH_USER (默认 ubuntu), BFJ_SSH_PORT (默认 22), BFJ_REMOTE_ROOT (默认 /opt/bafangju)
 """
-import sys, os, hashlib, paramiko
+import hashlib
+import os
+import sys
+import paramiko
 
-HOST = "124.221.130.18"
-USER = "ubuntu"
-PORT = 22
-LOCAL_ROOT = r"G:/八方聚共享平台/bafangju-server"
-REMOTE_ROOT = "/opt/bafangju"
+HOST = os.environ.get("BFJ_SSH_HOST", "").strip()
+USER = os.environ.get("BFJ_SSH_USER", "ubuntu").strip()
+PORT = int(os.environ.get("BFJ_SSH_PORT", "22"))
+LOCAL_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REMOTE_ROOT = os.environ.get("BFJ_REMOTE_ROOT", "/opt/bafangju").strip()
 DIRS = ["src", "public"]
+
 
 def local_md5(path):
     h = hashlib.md5()
@@ -18,6 +24,7 @@ def local_md5(path):
         for chunk in iter(lambda: f.read(65536), b""):
             h.update(chunk)
     return h.hexdigest()
+
 
 def collect_local():
     result = {}
@@ -30,9 +37,13 @@ def collect_local():
                 result[rel] = local_md5(p)
     return result
 
+
 def main():
+    if not HOST:
+        print("请先设置环境变量 BFJ_SSH_HOST=<服务器IP或域名>")
+        sys.exit(1)
     if len(sys.argv) < 2:
-        print("用法: python _ssh_diff.py <服务器密码>")
+        print("用法: BFJ_SSH_HOST=<服务器IP或域名> python _ssh_diff.py <服务器密码>")
         sys.exit(1)
     password = sys.argv[1]
 
@@ -67,12 +78,16 @@ def main():
     same = set(local) & set(remote) - set(diff)
 
     print("\n=== 仅本地有(线上缺, %d) ===" % len(only_local))
-    for k in only_local: print("  + %s" % k)
+    for k in only_local:
+        print("  + %s" % k)
     print("\n=== 仅线上有(本地缺, %d) ===" % len(only_remote))
-    for k in only_remote: print("  - %s" % k)
+    for k in only_remote:
+        print("  - %s" % k)
     print("\n=== 两边都有但内容不同(%d) ===" % len(diff))
-    for k in diff: print("  * %s   local=%s remote=%s" % (k, local[k][:8], remote[k][:8]))
+    for k in diff:
+        print("  * %s   local=%s remote=%s" % (k, local[k][:8], remote[k][:8]))
     print("\n=== 一致(%d) ===" % len(same))
+
 
 if __name__ == "__main__":
     main()

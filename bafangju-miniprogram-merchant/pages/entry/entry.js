@@ -33,6 +33,11 @@ Page({
     isMember: false,  // 已入驻商家：展示只读资料；未登录访客：展示入驻申请表单
     loading: false,
     profile: null,
+    // 申请进度自助查询（申请人无登录态，名称+手机号双因子）
+    showQuery: false,
+    queryForm: { name: '', phone: '' },
+    queryResult: null,
+    querying: false,
   },
   // 页面同时被「登录页 → 申请入驻」和「我的 → 入驻资料」复用，按登录态分流
   onLoad() {
@@ -142,6 +147,13 @@ Page({
     if (this.data.isMember) return; // 已入驻商家看只读资料，不允许再次提交入驻申请
     if (this.data.submitting) return;
     if (!this.data.agreed) return wx.showToast({ title: '请先同意入驻协议与平台规则', icon: 'none' });
+    // 本地预校验：与后端规则一致，避免把明显错误打到服务端才报错（体验更快）
+    if (!f.name || String(f.name).trim().length < 2) return wx.showToast({ title: '商家名称必填（至少 2 字）', icon: 'none' });
+    if (!f.contact) return wx.showToast({ title: '联系人必填', icon: 'none' });
+    if (!/^1\d{10}$/.test(String(f.phone || ''))) return wx.showToast({ title: '手机号格式不正确', icon: 'none' });
+    if (!f.category) return wx.showToast({ title: '请选择经营类目', icon: 'none' });
+    if (!f.address) return wx.showToast({ title: '门店地址必填', icon: 'none' });
+    if (!this.data.licenseImgUrl) return wx.showToast({ title: '请上传营业执照照片', icon: 'none' });
     const payload = {
       ...f, licenseImgUrl: this.data.licenseImgUrl || '', shopImgUrl: this.data.shopImgUrl || '',
     };
@@ -149,9 +161,17 @@ Page({
     const doSubmit = () => {
       this.setData({ submitting: true });
       api.post('/api/merchant-entry/apply', payload).then(() => {
+        // 记住本次提交（名称+手机号），「查询进度」可一键预填
+        try { wx.setStorageSync('entry_last', { name: f.name, phone: f.phone }); } catch (e) { /* ignore */ }
         wx.showModal({
-          title: '申请已提交', content: '资质审核通过后将获得商家账号，请留意平台通知。', showCancel: false,
-          success: () => wx.reLaunch({ url: '/pages/login/login' }),
+          title: '申请已提交',
+          content: '资质审核通过后平台将联系你开通商家账号。你可随时回到本页底部「查询申请进度」查看审核状态。',
+          showCancel: false,
+          success: () => {
+            // navigateBack 返回来源页（我的/登录页），不清顾客端页面栈（reLaunch 会把用户端 tab 栈清掉）
+            if (getCurrentPages().length > 1) wx.navigateBack({ delta: 1 });
+            else wx.redirectTo({ url: '/pages/login/login' });
+          },
         });
       }).catch((e) => wx.showToast({ title: e.message, icon: 'none' }))
         .finally(() => this.setData({ submitting: false }));
@@ -167,5 +187,45 @@ Page({
       return;
     }
     doSubmit();
+  },
+
+  // ---------- 申请进度自助查询（申请人无登录态，按名称+手机号双因子查） ----------
+  toggleQuery() {
+    const show = !this.data.showQuery;
+    const patch = { showQuery: show, queryResult: null };
+    if (show) {
+      // 预填上次提交的名称/手机号（提交成功时已记住）
+      const last = wx.getStorageSync('entry_last');
+      if (last) {
+        this.setData({ 'queryForm.name': last.name || '', 'queryForm.phone': last.phone || '' });
+      }
+    }
+    this.setData(patch);
+  },
+  queryInput(e) {
+    const k = e.currentTarget.dataset.qk;
+    this.setData({ ['queryForm.' + k]: e.detail.value });
+  },
+  queryProgress() {
+    const { name, phone } = this.data.queryForm;
+    if (!String(name || '').trim() || !String(phone || '').trim()) {
+      return wx.showToast({ title: '请填写商家名称与联系电话', icon: 'none' });
+    }
+    if (this.data.querying) return;
+    this.setData({ querying: true, queryResult: null });
+    api.get('/api/merchant-entry/status', { name: String(name).trim(), phone: String(phone).trim() })
+      .then((r) => {
+        const map = {
+          pending_review: { text: '审核中', cls: 'q-wait', tip: '平台正在审核你的资质，请耐心等待。' },
+          approved: { text: '已通过', cls: 'q-ok', tip: '审核已通过，商家账号已开通。平台会联系你交付账号与初始密码（首次登录后请修改）。' },
+          rejected: { text: '已驳回', cls: 'q-bad', tip: (r.reviewReason ? '驳回原因：' + r.reviewReason + '。' : '') + '可修改资料后重新提交申请。' },
+        };
+        const s = map[r.status];
+        this.setData({ queryResult: r.found
+          ? { found: true, text: s.text, cls: s.cls, tip: s.tip, appliedAtText: fmtTime(r.appliedAt), reviewedAtText: fmtTime(r.reviewedAt) }
+          : { found: false, text: '未找到申请', cls: 'q-bad', tip: '未查询到该名称+手机号的申请记录，请核对填写信息。' } });
+      })
+      .catch((e) => wx.showToast({ title: e.message, icon: 'none' }))
+      .finally(() => this.setData({ querying: false }));
   },
 });

@@ -1,1 +1,4 @@
-{ "navigationBarTitleText": "视频广告", "enablePullDownRefresh": true }
+{
+  "navigationBarTitleText": "视频广告",
+  "enablePullDownRefresh": true
+}

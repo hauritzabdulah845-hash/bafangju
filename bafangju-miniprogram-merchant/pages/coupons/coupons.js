@@ -73,4 +73,24 @@ Page({
       .catch((e) => wx.showToast({ title: e.message, icon: 'none' }))
       .then(() => this.setData({ creating: false }));
   },
+
+  // 暂停/恢复发券（止损）：停发不影响已领券的核销
+  toggleStatus(e) {
+    const { id, title, status } = e.currentTarget.dataset;
+    const toPause = status === 'valid';
+    wx.showModal({
+      title: toPause ? '暂停发券' : '恢复发券',
+      content: toPause
+        ? `「${title}」将立即停止发放（用户端不可再领）。已领取的券不受影响，仍可正常核销。`
+        : `「${title}」将恢复发放，用户端可继续领取。`,
+      confirmText: toPause ? '确认停发' : '确认恢复',
+      confirmColor: toPause ? '#B02A30' : '#2E7D32',
+      success: (m) => {
+        if (!m.confirm) return;
+        api.post('/api/merchant/coupons/status', { couponId: id, status: toPause ? 'paused' : 'valid' })
+          .then(() => { wx.showToast({ title: toPause ? '已停发' : '已恢复发放', icon: 'success' }); this.load(); })
+          .catch((err) => wx.showToast({ title: err.message, icon: 'none' }));
+      },
+    });
+  },
 });

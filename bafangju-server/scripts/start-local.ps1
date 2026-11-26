@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 # 八方聚 · 本地启动脚本（Windows PowerShell）
 #
 # 用法：
@@ -27,9 +27,8 @@ if (-not $EnvFile) { $EnvFile = Join-Path $root ".env.local" }
 function Find-Node {
   $cmd = Get-Command node -ErrorAction SilentlyContinue
   if ($cmd) { return $cmd.Source }
-  $portable = "C:\Users\Administrator\.workbuddy\binaries\node\versions\22.22.2-6\node.exe"
-  if (Test-Path $portable) { return $portable }
-  throw "未找到 Node.js：请安装 LTS（https://nodejs.org），或修改本脚本里的便携版路径"
+  if ($env:BAFANGJU_NODE_BIN -and (Test-Path $env:BAFANGJU_NODE_BIN)) { return $env:BAFANGJU_NODE_BIN }
+  throw "未找到 Node.js：请安装 Node.js >= 22.5（https://nodejs.org），或设置环境变量 BAFANGJU_NODE_BIN 指向 node.exe"
 }
 
 # ---------- 1. 加载 env ----------

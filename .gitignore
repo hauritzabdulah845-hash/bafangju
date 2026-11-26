@@ -18,6 +18,8 @@ logs/
 *.log
 
 # 临时文件与生成物
+__pycache__/
+*.py[cod]
 .tmp-*
 *.tar.gz
 *.tgz

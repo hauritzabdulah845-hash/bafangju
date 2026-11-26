@@ -10,3 +10,8 @@
 .row.gap { gap: 14rpx; }
 .ipt.half { flex: 1; }
 
+
+/* 暂停/恢复发券（止损开关） */
+.toggle-link { font-size: 26rpx; font-weight: 600; padding: 4rpx 0 4rpx 24rpx; flex-shrink: 0; }
+.toggle-link.stop { color: #B02A30; }
+.toggle-link.resume { color: #2E7D32; }

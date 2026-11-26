@@ -11,7 +11,9 @@
     "start": "node src/server.js",
     "test": "node --test",
     "drill": "node tools/reconcile-drill.js",
-    "check:econ": "node tools/economics-check.js"
+    "check:econ": "node tools/economics-check.js",
+    "sync:merchant": "node tools/sync-merchant-standalone.js",
+    "check:merchant": "node tools/sync-merchant-standalone.js --check"
   },
   "dependencies": {
     "express": "^4.19.2"

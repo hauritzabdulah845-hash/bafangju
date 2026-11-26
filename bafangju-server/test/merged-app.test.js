@@ -168,3 +168,27 @@ test('后台凭据交付对齐单小程序合并：指引登录入口，不再�
   const h5 = read(path.join(__dirname, '../public/merchant.html'));
   assert.match(h5, /商家入驻申请/, 'H5 登录页须指引小程序自助入驻入口');
 });
+
+test('商家端单源派生防漂移：独立包 bafangju-miniprogram-merchant 与分包真源严格同步且符合 tabBar 规范', () => {
+  const { checkSync, TABBAR_HUBS } = require('../tools/sync-merchant-standalone');
+  const res = checkSync();
+  assert.strictEqual(
+    res.ok,
+    true,
+    '独立商家端小程序与 subpkg-merchant 真源发生漂移（请运行 npm run sync:merchant）：'
+      + res.drifts.map((d) => `${d.file}(${d.reason})`).join(', ')
+  );
+
+  const standalone = path.join(ROOT, 'bafangju-miniprogram-merchant');
+  const files = walk(standalone, ['.js', '.wxml', '.wxss', '.json']);
+  const tabRe = new RegExp(`wx\\.(?:redirectTo|navigateTo)\\(\\{\\s*url:\\s*['"]\\/pages\\/(${TABBAR_HUBS.join('|')})\\/`);
+  for (const f of files) {
+    const src = read(f);
+    const rel = path.relative(standalone, f);
+    assert.ok(!src.includes('/subpkg-merchant/'), rel + ' 残留分包路径前缀 /subpkg-merchant/');
+    assert.ok(!src.includes('<mtab'), rel + ' 残留分包伪底栏 <mtab>');
+    if (rel.endsWith('.js')) {
+      assert.ok(!tabRe.test(src), rel + ' 独立包不得对系统 tabBar 页调用 redirectTo/navigateTo');
+    }
+  }
+});

@@ -1,50 +1,66 @@
-# 八方聚共享平台 · 开发版说明（V3.3 合规引擎）
+# 八方聚共享平台 · 后端与全栈工程说明（当前基线 V4.6）
+
+> **阅读提示**：本文档按时间顺序完整保留了从 V3.3 到 V4.6 的架构与合规演进记录。若直接对照当前最新代码，请重点留意以下三处模型升级（详见文末 V3.21 ~ V4.6 章节）：
+> 1. **阶梯定价模型（2026-10-29 起）**：已由早期的“0 元免单”升级为 **“全价段 $m = \lfloor 1/r \rfloor + 1$ 单 + 尾段固定 4 单让利（10% / 20% / 30% / 40%）”**，周期共 $m + 4$ 单，无 0 元免单。
+> 2. **小程序双角色合包（V4.0 起）**：商家端 16 页已并入用户端分包 `bafangju-miniprogram-user/subpkg-merchant`（唯一维护真源），单小程序内支持顾客与商家双身份并存；独立目录 `bafangju-miniprogram-merchant` 通过同步脚本自动派生保持一致。
+> 3. **联盟券计费（V4.5 起）**：`couponServiceFeeRate` 与 `verificationServiceFeeRate` 生产默认置 `0`（纯导流免费核销、线下结算）；后台修改费率开关即可随时启用 V4.4 服务费应收台账与方案 B 分佣链路。
 
 ## 目录结构
 
 ```
-bafangju-server/            后端（Node.js + Express，SQLite 持久化开发版）
-  src/domain/               合规核心域逻辑（纯函数，资金全部整数分）
-    money.js                金额工具（元/分转换、均分/权重分摊，合计守恒）
-    ladder.js               阶梯定价引擎（n=⌈1/r⌉+1、步位动态计价、快照）
-    commission.js           分佣记账结算（收益账户，不走微信分账）+ 团队长辅导池（持久化流水/分配跑批）
+bafangju-server/            后端与 Web 端（Node.js >= 22.5 + Express + 内置 node:sqlite）
+  src/server.js             应用装配根（中间件顺序、存储初始化、生产启动守卫、优雅关闭）
+  src/app-context.js        依赖注入中枢與鉴权中间件（attachUser / requireUser 等）
+  src/routes/               按域拆分的 6 个路由模块（public / user / payment / upload / admin / merchant）
+  src/domain/               32 个合规核心领域模块（纯函数为主，资金全部整数分）
+    money.js                金额工具（元/分转换、最大余数法均分/权重分摊，合计守恒）
+    ladder.js               阶梯定价引擎（m=⌊1/r⌋+1 全价段 + 4 单尾段让利 10%~40%、快照、周期算账）
+    commission.js           分佣记账结算（冻结→售后期解冻→余额）+ 团队长辅导池
     dividend.js             排队分红（队位/每日跑批/活跃快照/降级开关）
-    quarter.js              储备专户与季度分红（三门槛、60/25/15、参考价值只读公示、储备出账白名单）
+    quarter.js              储备专户与季度分红（三门槛、60/25/15、参考价值只读公示、出账白名单）
     withdraw.js             提现与商家转账记账（单笔≤500/日≤2000 拆笔、待确认收款、超时退回重发）
-    transfer.js             商家转账适配层：mock + wechat v3 骨架（商户号配置后自动挂接）
-    merchant.js             商家域（登录+token 签发/券核销幂等/广告位投放→储备专户）
-    auth.js                 登录适配：code2session（WX_APPID/WX_SECRET 配置后走真实接口）+ openid 幂等建档
-    pay.js                  支付适配层：mock + wxpay v3（真实下单 + 回调验签 AES-GCM 解密，材料齐备即可用）
-    config.js               合规开关默认值（间推默认关闭、提现默认关闭、季度三门槛等）
-  src/services.js           业务编排（订单/免单/进度/退款/任务/活跃快照/季度自动核算与发放）
-  src/domain/fulfillment.js 履约闭环（发货/到店核销/确认收货/自动收货/售后，V3.5）
-  src/server.js             API 服务 + 种子数据 + 每日跑批调度（开发版内置）
-  src/store.js              双驱动存储：内存（测试）/ SQLite 持久化（默认，重启不丢），幂等 + append-only 审计
-  public/admin.html         管理后台（11 个页签：总览/订单/商品/商家/提现/队位/储备专户/跑批/开关/风控/审计）
-  test/                     合规测试（domain + 分期回归 + economics + fulfillment + coupon + ad + authz）
-bafangju-miniprogram-user/     用户端小程序（原生，13 页面）
-bafangju-miniprogram-merchant/ 商家端小程序（原生，10 页面，登录签发 token 自动携带）
+    transfer.js             商家转账适配层：mock + wechat v3（商户号配置后自动挂接）
+    pay.js / refund.js      支付与退款适配层：mock + wxpay v3（下单签名、回调验签解密、退款查单闭环）
+    coupon.js               联盟券闭环（满减/折扣/多次次卡、默认免费导流、可选应收台账与方案 B 分佣）
+    ad.js / adReward.js     轮播广告位与视频广告激励（完播贡献值奖励、IP/设备防刷）
+    adCenter.js             广告中心三域、素材审核结算、商家广告额度账本与平台代投
+    adminAuth.js / adminUsers.js / loginLimiter.js  总账号 + 子管理员 RBAC 权限 + 双维度防爆破限流
+    fulfillment.js          商品履约闭环（快递发货/到店核销/确认收货/自动收货/售后）
+    merchant.js / catalog.js / ops.js / content.js / upload.js / risk.js / level.js ...
+  src/services.js           跨域业务编排（订单/周期进度/退款回滚/任务/活跃快照/季度核算）
+  src/store.js              双驱动存储：内存（单测）/ SQLite WAL 持久化（默认），幂等 + append-only 审计
+  public/admin.html         运营管理后台（外置模块化 CSS/JS：看板/订单/商品/商家/运营/广告三域/RBAC/审计等）
+  public/merchant.html      商家端移动端 H5 工作台（工作台/核销/商品/订单/我的）
+  public/site/index.html    品牌官网与 ICP 备案展示页
+  test/                     56 个自动化回归测试文件（420+ 子测试覆盖资金/权限/支付/UI令牌/合包防漂移）
+  tools/                    运维与对账工具（reconcile-drill / economics-check / reset-admin-password 等）
+bafangju-miniprogram-user/     主力小程序：主包 22 个用户页 + subpkg-merchant 分包 16 个商家页
+bafangju-miniprogram-merchant/ 独立商家端小程序（16 页，由 subpkg-merchant 真源自动同步派生）
+bafangju-design-tokens/        跨端共享设计令牌唯一真源（design-tokens.wxss，V3.0 枣红体系）
 ```
 
 ## 运行
 
 ```bash
 cd bafangju-server
-npm install
-npm test          # 63 项合规测试
-npm start         # API :3000，管理后台 http://127.0.0.1:3000/admin.html
+npm ci
+npm test              # 运行全量合规与回归测试套件
+npm run check:econ    # 阶梯周期经济模型验算
+npm run drill         # 月度全链路对账演练（默认免费导流；加 --paid-alliance 演练联盟收费闭环）
+npm run sync:merchant # 从 subpkg-merchant 唯一真源自动转换并同步独立商家端小程序包
+npm start             # API :3000，管理后台 /admin.html，商家 H5 /merchant.html，官网 /site/index.html
 ```
 
 **存储配置**：默认 SQLite 持久化（`data/bafangju.db`，重启数据不丢）；`BAFANGJU_DB_DRIVER=memory` 切回内存（测试）；`BAFANGJU_DB_PATH` 自定义库文件路径。
 
-小程序：微信开发者工具分别导入 `bafangju-miniprogram-user` / `bafangju-miniprogram-merchant`，**后端地址在各自的 `config.dev.js` 里配**（本地内网地址不会打进包体），`config.js` 的 `BASE_URL` 是生产域名占位，上线前必须替换；开发期在开发者工具关闭域名校验。商家端演示账号：**账号 `张记粮油店` / 密码 `demo123456`**（内置 2 张券、2 个广告位；首次登录会提示修改初始密码）。
+小程序：微信开发者工具推荐直接导入主力包 `bafangju-miniprogram-user`（已内嵌商家工作台分包，可从「我的 → 商家服务」进入）；如需单独调试独立商家包可导入 `bafangju-miniprogram-merchant`。**本地后端地址在各自的 `config.dev.js` 里配置**（默认 `http://127.0.0.1:3000`，本地文件已被 `packOptions.ignore` 排除不进包体），`config.js` 的 `BASE_URL` 已指向生产域名 `https://bfjzs.com`。商家端演示账号：**账号 `张记粮油店` / 密码 `demo123456`**（首次登录会提示修改初始密码）。
 
 ### 小程序后端地址配置（P0-4）
 
 | 文件 | 是否进包体 | 内容 |
 | ---- | ---- | ---- |
-| `config.js` | ✅ 进包 | 生产域名占位 `https://api.yourdomain.com`（**上线前必须替换**） |
-| `config.dev.js` | ❌ 不进包（`packOptions.ignore`） | 本机局域网地址，如 `http://192.168.x.x:3000` |
+| `config.js` | ✅ 进包 | 生产域名 `https://bfjzs.com` |
+| `config.dev.js` | ❌ 不进包（`packOptions.ignore`） | 本机或局域网开发地址，默认 `http://127.0.0.1:3000` |
 
 - `config.js` 通过 `try/catch` 加载 `config.dev.js`：本地存在则覆盖 `BASE_URL`，正式包内不存在该文件时静默回落生产配置。
 - 换网络后改 `config.dev.js`（`ipconfig` 查本机 IPv4），**不要**改 `config.js`。
@@ -481,12 +497,47 @@ npm run drill       # 等价于 node tools/reconcile-drill.js
 
 ---
 
+## V3.21 ~ V3.23 架构模块化、安全加固与商家自助商品（2026-10-27 ~ 10-29）
+
+| 版本 | 核心变更 |
+| --- | --- |
+| **V3.21 全面审查重构** | • `src/server.js` 拆分为装配根 + `src/routes/*.js` 6 个按域路由模块，`routes-split.test.js` 锁定鉴权中间件顺序防绕过；<br>• `public/admin.html` 拆分为外置模块化 CSS/JS，`admin-split.test.js` 校验跨文件顶层声明无冲突；<br>• 管理后台新增 `loginLimiter.js`（账号 5 次失败锁定 + 单 IP 分钟级限速）；<br>• 建立跨端共享设计令牌 `bafangju-design-tokens/design-tokens.wxss`。 |
+| **V3.22 自然日与改密** | • 新增 `bizdate.js` 统一按北京时间（UTC+8）裁定业务自然日，解决 00:00~08:00 跨日偏差；<br>• 商家支持自助修改密码（`POST /api/merchant/change-password`），改密后旧会话立即失效；<br>• 补齐超时未支付订单自动释放与本店跳转目标归属校验。 |
+| **V3.23 商家商品审核** | • 商家端支持自主提交与编辑商品，默认进入 `pending_review` 待审核态（编辑在售商品亦回退待审停售）；<br>• 管理后台新增待审商品角标与通过/驳回审核队列，驳回须填写原因。 |
+
+---
+
+## 阶梯定价新模型与品牌视觉 V3.0（2026-10-29 ~ 11-02）
+
+- **阶梯定价引擎升级（`src/domain/ladder.js`）**：
+  - 由早期“递减 + 第 $n$ 单 0 元免单”升级为 **全价段 $m = \lfloor 1/r \rfloor + 1$ 单 + 尾段固定 4 单让利（10% / 20% / 30% / 40%）**，实付依次为标价的 `90% / 80% / 70% / 60%`；
+  - 周期总单数 `total = m + 4`，第 `total` 单支付完成后自动收口重置并发放分红排队席位；
+  - **数学保本且无 0 元支付**：周期累计让利恒等于 1 单标价（`10%+20%+30%+40% = 100%`），严格小于全价段利润，且不再需要 `FREE` 免单支付通道（仅对历史存量订单保留只读兼容）。
+- **设计令牌 V3.0「枣红体系」**：
+  - 品牌主色升级为枣红 `#B02A30`、浅底文字深枣红 `#8F1F26`（满足 WCAG 2.1 AA/AAA 对比度）；
+  - 全系统功能位与空状态图标统一替换为 24×24 网格、`stroke-width: 1.8` 的线性 SVG 图标，禁用跨平台表现不一的 emoji（由 `icon-system.test.js` 守护）。
+
+---
+
+## V4.0 ~ V4.6 单小程序双角色合并、RBAC、广告额度账本与联盟导流升级（2026-11）
+
+| 版本 | 核心能力 |
+| --- | --- |
+| **V4.0 双角色合包与视频激励** | • **单小程序双角色合并**：将商家端 16 个页面完整迁入用户端分包 `bafangju-miniprogram-user/subpkg-merchant`（主包 22 页 + 分包 16 页），使用自定义 `mtab` 伪底栏与独立 `merchant_token` 实现**顾客与商家双身份并存**，彻底解决共用同一 AppID 发版互相覆盖的问题；同时提供移动端 H5 商家端 `/merchant.html` 与官网 `/site/index.html`；<br>• **视频广告激励**：新增 `adReward.js` 商家视频广告计划与用户完播激励（2026-11 合规整改统一为贡献值「点」口径，首期关闭现金提现 `adRewardEnabled: false`）。 |
+| **V4.1 子管理员 RBAC** | • 新增 `adminUsers.js`：总账号（`super`）可创建子管理员、按模块勾选授权、重置密码或停用（停用即时吊销会话）；侧边栏与看板按权限动态裁剪。 |
+| **V4.2 ~ V4.3 广告中心与额度账本** | • 后台整合为「广告中心」三域（视频广告激励 / 轮播广告位 / 任务奖励配置）；支持最大 40MB MP4 视频上传（`ftyp` 真实文件头校验）、曝光/完播/跳商品漏斗看板与结算单；<br>• 新增**商家广告额度账本**（`merchantAdQuota` + `adQuotaFlows`）：线下收款后由总账号审批发放额度，视频广告与平台代投轮播共用同一额度账户冻结与结转（旧商家自助轮播预订接口 `410` 下线）。 |
+| **V4.4 应收台账与退款闭环** | • 联盟券收费模式下引入 `merchantFeeBills` 应收台账：核销时仅挂应收单，后台确认收款（`markFeeBillPaid`）后才划入储备专户/平台留存并允许联盟分佣解冻，保证账实相符；<br>• 微信退款补齐回调幂等、失败入异常队列（`refundAnomalies`）与定时主动查单推进终态闭环（`refund.js`）。 |
+| **V4.5 默认免费导流与合规拦截** | • **联盟券默认免费导流**：`couponServiceFeeRate` 与 `verificationServiceFeeRate` 默认设为 `0`（纯导流不收费、不挂欠费单；后台改费率即可恢复收费链路，可用 `npm run drill -- --paid-alliance` 验证）；<br>• 商家支持自助维护「门店主页」（门头照/营业时间/坐标/简介）；<br>• 官网与三端支持后台动态配置 ICP 备案号（`/api/filing`）；<br>• 首页运营帧新增 `返利/返现/提现/躺赚/日结/稳赚/包赚/赚钱` 8 个违规词前后端双重拦截。 |
+| **V4.6 次卡多次核销与自助止损** | • 联盟次卡（`package`）支持 `totalTimes`（1~99 次）多次核销与剩余次数追踪；<br>• 商家发券支持一键暂停/恢复发放（不影响已领券核销）；<br>• 商家入驻申请支持「商家名称 + 手机号」双因子自助查询审核进度；三端登录与改密框补齐密码可见切换。 |
+
+---
+
 ## 生产化待办（上线前）
 
-1. ~~内存存储~~ ✅ SQLite 持久化（默认启用）；规模增大后平滑替换 MySQL（域逻辑不动，表结构对照 store.js）。
-2. ~~登录鉴权~~ ✅ code2session 已就绪；~~支付适配~~ ✅ 真实下单+回调验签+转账骨架全部就绪，**等商户号材料配置环境变量即可**。
-3. ~~团队长池进程内变量~~ ✅ 已迁移 leaderPoolFlows 持久化表。
-4. 定时任务迁移 crontab/任务框架（当前为开发版内置分钟级检查）。
-5. ~~商家收款人 openid 收集~~ ✅ 五期已闭环：商家端 wx.login 自动绑定、用户登录自动绑定、管理后台补录三通道；缺 openid 转账 submit_failed，补录后 retry-transfers 自动重发。
-6. 小程序合法域名配置、隐私协议、内容安全接口。
-7. 微信审核预案：分批提审 + 降级开关（已内置）。
+1. ~~内存存储~~ ✅ SQLite WAL 持久化（默认启用）；规模增大后平滑替换 MySQL（域逻辑不动，表结构对照 `store.js`）。
+2. ~~登录鉴权~~ ✅ code2session 已就绪；~~支付与退款适配~~ ✅ JSAPI 下单签名 + 回调验签解密 + 微信退款主动查单闭环 + 商家转账骨架全部就绪，**配置商户号环境变量即可切换 live 通道**。
+3. ~~团队长池进程内变量~~ ✅ 已迁移 `leaderPoolFlows` 持久化表。
+4. ~~多角色运营权限~~ ✅ 总账号 + 子管理员 RBAC 权限体系已就绪（V4.1）。
+5. ~~商家收款人 openid 收集~~ ✅ 合并后统一复用用户端小程序配置自动绑定、管理后台可补录。
+6. 定时任务：当前由服务端进程内置分钟级跨日检查触发，高可用多实例部署时建议迁移至系统 crontab / 独立任务节点；同时已配备 `scripts/health-watchdog.js`（PM2 健康检查看门狗）与 `scripts/deploy.sh` 自动备份。
+7. 微信审核与备案：已在 `https://bfjzs.com` 接入 HTTPS 与 ICP 备案展示，提审时可配合内置 `auditDowngrade` 降级开关使用。

@@ -91,4 +91,18 @@
   </view>
 
   <view class="btn {{submitting ? 'disabled' : ''}}" bindtap="submit">{{submitting ? '提交中…' : '提交入驻申请'}}</view>
+
+  <!-- 申请进度自助查询：申请人无登录态，按名称+手机号查询（提交成功后自动预填） -->
+  <view class="query-toggle" bindtap="toggleQuery">{{showQuery ? '收起进度查询 ▴' : '已提交过申请？查询审核进度 ▾'}}</view>
+  <view class="card query-card" wx:if="{{showQuery}}">
+    <view class="title">查询申请进度</view>
+    <input class="ipt" placeholder="商家名称（申请时填写）" value="{{queryForm.name}}" data-qk="name" bindinput="queryInput" />
+    <input class="ipt" type="number" maxlength="11" placeholder="申请时联系电话" value="{{queryForm.phone}}" data-qk="phone" bindinput="queryInput" />
+    <view class="btn-plain btn-block" bindtap="queryProgress">{{querying ? '查询中…' : '查询进度'}}</view>
+    <view class="query-result {{queryResult.cls}}" wx:if="{{queryResult}}">
+      <view class="qr-status">{{queryResult.text}}</view>
+      <view class="qr-tip" wx:if="{{queryResult.found}}">提交时间：{{queryResult.appliedAtText}}{{queryResult.reviewedAtText && queryResult.reviewedAtText !== '—' ? ' · 审核时间：' + queryResult.reviewedAtText : ''}}</view>
+      <view class="qr-tip">{{queryResult.tip}}</view>
+    </view>
+  </view>
 </block>
