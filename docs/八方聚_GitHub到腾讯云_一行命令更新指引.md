@@ -129,6 +129,15 @@ cd /opt/bafangju-repo && sudo bash bafangju-server/scripts/pull-deploy.sh --no-r
 
 脚本会提示「已是最新（<提交号>），无需更新」然后退出 —— 重复执行完全安全（幂等）。
 
+### 2.5 环境坏了想强制重来
+
+```bash
+cd /opt/bafangju-repo && sudo bash bafangju-server/scripts/pull-deploy.sh --force
+```
+
+即使代码已是最新，也会强制重新同步代码 + 重装依赖 + 重启服务（数据库、证书、日志依旧不动）。
+另外脚本带**自愈**：只要 `/opt/bafangju/src/server.js` 不存在，即使 git 是最新也会自动补同步。
+
 ---
 
 ## 三、回滚

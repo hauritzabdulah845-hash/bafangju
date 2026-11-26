@@ -19,6 +19,7 @@
 # 可用参数：
 #   --branch <名称>   指定分支（默认 main）
 #   --no-restart      只同步代码与依赖，不重启 PM2
+#   --force           即使代码已是最新，也强制重新同步 + 重启（修环境用）
 # ============================================================
 set -euo pipefail
 
@@ -36,6 +37,7 @@ ENV_FILE="${ENV_FILE:-/etc/bafangju.env}"
 PM2_APP="${PM2_APP:-bafangju-server}"
 BRANCH="main"
 DO_RESTART=1
+FORCE=0
 
 log()  { printf '\n\033[1;32m==> %s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m[注意] %s\033[0m\n' "$*"; }
@@ -45,8 +47,9 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --branch)     BRANCH="${2:-}"; shift 2 ;;
     --no-restart) DO_RESTART=0; shift ;;
+    --force)      FORCE=1; shift ;;
     -h|--help)    sed -n '2,30p' "$0"; exit 0 ;;
-    *) die "未知参数：$1（可用 --branch / --no-restart / --help）" ;;
+    *) die "未知参数：$1（可用 --branch / --no-restart / --force / --help）" ;;
   esac
 done
 
@@ -89,13 +92,17 @@ git fetch --prune origin "$BRANCH"
 git checkout -q "$BRANCH" 2>/dev/null || git checkout -q -b "$BRANCH" --track "origin/$BRANCH"
 git merge --ff-only "origin/$BRANCH"
 NEW="$(git rev-parse --short HEAD)"
-if [ "$OLD" = "$NEW" ]; then
+if [ "$OLD" = "$NEW" ] && [ -f "$APP_DIR/src/server.js" ] && [ "$FORCE" -eq 0 ]; then
   log "已是最新（$NEW），无需更新"
   [ "$DO_RESTART" -eq 1 ] || { log "按 --no-restart 要求，不重启服务"; exit 0; }
   log "如需强制重启：pm2 restart $PM2_APP"
   exit 0
 fi
-log "代码：$OLD → $NEW"
+if [ "$OLD" = "$NEW" ]; then
+  log "代码已是最新（$NEW），但运行目录缺失或需强制同步，继续执行同步"
+else
+  log "代码：$OLD → $NEW"
+fi
 
 # ---------- 3. 同步到运行目录（保留 data / backups / logs / certs / node_modules） ----------
 log "同步代码：$SRC_DIR → $APP_DIR"
